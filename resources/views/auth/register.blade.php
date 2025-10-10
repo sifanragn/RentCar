@@ -25,6 +25,7 @@
     background: #fff;
     padding: 2rem;
     text-align: center;
+    border-radius: 10px;
   }
 
   /* Header */
@@ -91,6 +92,7 @@
     border: 2px solid #ccc;
     font-size: 1rem;
     background: #f9f9f9;
+    border-radius: 10px;
     transition: 0.3s;
   }
 
@@ -124,7 +126,6 @@
     margin-top: 1.8rem;
     font-size: 1rem;
     color: #333;
-
   }
 
   .login-text a {
@@ -136,58 +137,58 @@
 @endsection
 
 @section('content')
-  <!-- Logo -->
   <div class="logo">
     <img src="/images/logo.png" alt="Logo" />
     <h3>Selamat Datang!</h3>
   </div>
 
-  <!-- Gambar ilustrasi -->
   <img src="/images/car1.png" alt="Mobil" class="hero" />
 
-  <!-- Teks pembuka -->
   <h1 class="title">Get Started Free!</h1>
   <p class="subtitle">Ayo Buat Akun Dan Cari Mobilmu</p>
   
-  <!-- Form Register -->
-<form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
-  @csrf
+<form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
 
-  <div class="input-group">
-    <label for="nama_lengkap">Nama Lengkap</label>
-    <input type="text" id="nama_lengkap" name="nama_lengkap" placeholder="Masukkan nama lengkap Anda" required>
-  </div>
+    <div class="input-group">
+      <label for="nama_lengkap">Nama Lengkap</label>
+      <input type="text" id="nama_lengkap" name="nama_lengkap" placeholder="Masukkan nama lengkap Anda" required>
+    </div>
 
-  <div class="input-group">
-    <label for="username">Username</label>
-    <input type="text" id="username" name="username" placeholder="Masukkan username Anda" required>
-  </div>
+    <div class="input-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Masukkan username Anda" required>
+    </div>
 
-  <div class="input-group">
-    <label for="email">Email</label>
-    <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required>
-  </div>
+    <div class="input-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required>
+    </div>
 
-  <div class="input-group">
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required>
-  </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required>
+    </div>
 
-  <div class="input-group">
-    <label for="kk">Upload KK</label>
-    <input type="file" id="kk" name="kk" accept=".jpg,.jpeg,.png,.pdf" required>
-  </div>
+    <div class="input-group">
+      <label for="password_confirmation">Konfirmasi Password</label>
+      <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password Anda" required>
+    </div>
 
-  <div class="input-group">
-    <label for="ktp">Upload KTP</label>
-    <input type="file" id="ktp" name="ktp" accept=".jpg,.jpeg,.png,.pdf" required>
-  </div>
+    <div class="input-group">
+      <label for="foto_kk">Upload KK</label>
+      <input type="file" id="foto_kk" name="foto_kk" accept=".jpg,.jpeg,.png,.pdf" required>
+    </div>
 
-  <button type="submit" class="btn-register">Daftar</button>
+    <div class="input-group">
+      <label for="foto_ktp">Upload KTP</label>
+      <input type="file" id="foto_ktp" name="foto_ktp" accept=".jpg,.jpeg,.png,.pdf" required>
+    </div>
 
-  <p class="login-text">
-    Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
-  </p>
-</form>
+    <button type="submit" class="btn-register">Daftar</button>
 
+    <p class="login-text">
+      Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
+    </p>
+  </form>
 @endsection

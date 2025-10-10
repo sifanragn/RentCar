@@ -246,21 +246,20 @@
   </div>
 
   <div class="card-container">
-    <a href="{{ url('/car/show') }}" class="card-link">
+  @foreach ($cars as $car)
+    <a href="{{ route('user.cars.show', $car->id) }}" class="card-link">
       <div class="card">
-        <img src="images/dmobil1.png" class="car-image" alt="Avanza">
+        <img src="{{ asset('storage/' . $car->gambar) }}" class="car-image" alt="{{ $car->model }}">
         <div class="card-content">
-          <h3>2022 Toyota Avanza 1.3 G</h3>
-          <p>Edisi Abu-Abu</p>
-          <p class="price">Rp 235.000.000</p>
+          <h3>{{ $car->tahun }} {{ $car->brand->nama_merek }} {{ $car->model }}</h3>
+          <p>{{ $car->warna }}</p>
+          <p class="price">Rp {{ number_format($car->harga, 0, ',', '.') }}</p>
           <div class="info-tags">
-            <div class="tag">20.000 km</div>
-            <div class="tag">Otomatis</div>
-            <div class="tag">7 Orang</div>
-            <div class="tag">45 Liter</div>
-            <div class="tag">Jakarta</div>
-            <div class="tag">Toyota Auto Center</div>
-            <div class="tag">6 Oktober - 25 Oktober 2025</div>
+            <div class="tag">{{ $car->kilometer }} km</div>
+            <div class="tag">{{ $car->transmisi }}</div>
+            <div class="tag">{{ $car->capacity->jumlah_orang }} Orang</div>
+            <div class="tag">{{ $car->bahan_bakar }}</div>
+            <div class="tag">{{ $car->lokasi }}</div>
           </div>
         </div>
         <div class="fav-btn">
@@ -268,7 +267,9 @@
         </div>
       </div>
     </a>
-  </div>
+  @endforeach
+</div>
+
 
   @include('partials.bottom-navbar')
 @endsection

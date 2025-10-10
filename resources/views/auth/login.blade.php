@@ -37,7 +37,7 @@
   .logo h3 {
     font-size: 1.3rem;
     font-weight: 600;
-    color: #000000;
+    color: #000;
   }
 
   /* Gambar mobil */
@@ -52,7 +52,7 @@
   .title {
     font-size: 2rem;
     font-weight: 800;
-    color: #000000;
+    color: #000;
     margin-bottom: 0.4rem;
   }
 
@@ -124,6 +124,17 @@
     text-decoration: none;
     font-weight: 600;
   }
+
+  /* Pesan error */
+  .error-message {
+    background: #ffe5e5;
+    color: #c00;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
 </style>
 @endsection
 
@@ -142,16 +153,37 @@
   <p class="subtitle">Silakan login kembali ke akun Anda</p>
 
   <!-- Form -->
-  <form action="{{ route('login') }}" method="POST">
+<form action="{{ route('login.submit') }}" method="POST">
     @csrf
+
+    {{-- Pesan error login --}}
+    @if ($errors->has('login_error'))
+      <div class="error-message">
+        {{ $errors->first('login_error') }}
+      </div>
+    @endif
+
     <div class="input-group">
       <label for="email">Email</label>
-      <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required />
+      <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        placeholder="Masukkan email Anda" 
+        value="{{ old('email') }}" 
+        required 
+      />
     </div>
 
     <div class="input-group">
       <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required />
+      <input 
+        type="password" 
+        id="password" 
+        name="password" 
+        placeholder="Masukkan password Anda" 
+        required 
+      />
     </div>
 
     <button type="submit" class="btn-login">Login</button>
