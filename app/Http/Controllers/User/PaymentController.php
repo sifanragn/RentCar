@@ -12,24 +12,58 @@ use Carbon\Carbon;
 class PaymentController extends Controller
 {
     /**
-     * 💳 Membuat pembayaran baru
+     * ✅ STEP 1: User baru selesai isi form sewa → masuk ke DETAIL (pilih metode).
+     * - Belum membuat Payment apapun di sini. Belum dihitung transaksi.
      */
-    public function store(Request $request, $rental_id)
+    public function detailRental($rental_id)
+{
+    $rental = Rental::with(['car.brand', 'car.capacity', 'user'])->findOrFail($rental_id);
+    if ($rental->user_id !== auth()->id()) abort(403);
+
+    $pending = Payment::where('rental_id', $rental->rental_id)
+        ->where('status_pembayaran', 'pending')
+        ->latest()
+        ->first();
+
+    if ($pending) {
+        return redirect()->route('user.payments.process', $pending->payment_id);
+    }
+
+    return view('user.payments.detail', compact('rental'));
+}
+
+    /**
+     * ▶️ STEP 2: User klik “Bayar” di DETAIL → buat Payment (PENDING) dan arahkan ke PROCESS
+     * - Di sinilah transaksi mulai dihitung (countdown 30 menit)
+     */
+    public function startProcess(Request $request, $rental_id)
     {
-        $rental = Rental::findOrFail($rental_id);
+        $request->validate([
+            'metode' => 'required|in:qris,bca,bri',
+        ]);
+
+        $rental = Rental::with('car.brand')->findOrFail($rental_id);
         if ($rental->user_id !== auth()->id()) abort(403);
 
-        // Cegah duplikat payment
-        $existing = Payment::where('rental_id', $rental_id)->latest()->first();
-        if ($existing) {
-            return redirect()->route('user.payments.show', $existing->payment_id);
+        // Cegah dobel pending untuk rental yang sama
+        $existingPending = Payment::where('rental_id', $rental->rental_id)
+            ->where('status_pembayaran', 'pending')
+            ->exists();
+
+        if ($existingPending) {
+            $payment = Payment::where('rental_id', $rental->rental_id)
+                ->where('status_pembayaran', 'pending')
+                ->latest()
+                ->first();
+
+            return redirect()->route('user.payments.process', $payment->payment_id);
         }
 
-        DB::transaction(function () use ($rental, &$payment) {
+        DB::transaction(function () use ($rental, $request, &$payment) {
             $payment = Payment::create([
                 'rental_id'         => $rental->rental_id,
-                'gateway'           => 'Manual',
-                'metode'            => 'qris',
+                'gateway' => 'offline', // sementara
+                'metode'            => $request->metode, // qris / bca / bri
                 'total_bayar'       => $rental->total_biaya,
                 'status_pembayaran' => 'pending',
                 'gateway_reference' => 'MAN-' . mt_rand(100000, 999999),
@@ -37,14 +71,54 @@ class PaymentController extends Controller
                 'callback_status'   => 'waiting',
                 'tanggal_bayar'     => now(),
             ]);
+
+            // kunci mobil sementara
             $rental->update(['status_rental' => 'menunggu_pembayaran']);
         });
 
-        return redirect()->route('user.payments.show', $payment->payment_id);
+        return redirect()->route('user.payments.process', $payment->payment_id);
     }
 
     /**
-     * 📋 Daftar pembayaran user
+     * 🧾 STEP 3: Halaman PROCESS — tampilkan QR/rekening sesuai metode + countdown
+     */
+    public function process($payment_id)
+    {
+        $payment = Payment::with('rental.car.brand')->findOrFail($payment_id);
+        if ($payment->rental->user_id !== auth()->id()) abort(403);
+
+        // Kalau bukan pending, arahkan ke ringkasan (success/failed)
+        if ($payment->status_pembayaran !== 'pending') {
+            return redirect()->route('user.payments.show', $payment->payment_id);
+        }
+
+        return view('user.payments.process', compact('payment'));
+    }
+
+    /**
+     * ❌ Tombol Batalkan di PROCESS — TIDAK mengubah status.
+     * - Hanya kembali ke index (status tetap pending sampai 30 menit lewat → failed otomatis)
+     */
+    public function cancelSoft($payment_id)
+{
+    $payment = Payment::with('rental')->findOrFail($payment_id);
+
+    // pastikan user adalah pemilik
+    if ($payment->rental->user_id !== auth()->id()) {
+        abort(403);
+    }
+
+    // ubah status payment & rental
+    $payment->update(['status_pembayaran' => 'failed']);
+    $payment->rental?->update(['status_rental' => 'dibatalkan']);
+
+    return redirect()
+        ->route('user.payments.index')
+        ->with('success', 'Pembayaran berhasil dibatalkan.');
+}
+
+    /**
+     * 📋 List semua pembayaran user (INDEX)
      */
     public function index()
     {
@@ -57,7 +131,8 @@ class PaymentController extends Controller
     }
 
     /**
-     * 🔍 Menampilkan detail / pending
+     * 🔍 Ringkasan setelah transaksi selesai (success/failed)
+     * - Pending sebaiknya diarahkan ke PROCESS, bukan ke sini
      */
     public function show($payment_id)
     {
@@ -65,46 +140,16 @@ class PaymentController extends Controller
         if ($payment->rental->user_id !== auth()->id()) abort(403);
 
         if ($payment->status_pembayaran === 'pending') {
-            return view('user.payments.pending', compact('payment'));
+            // pending → lanjutkan ke process
+            return redirect()->route('user.payments.process', $payment->payment_id);
         }
 
-        return view('user.payments.detail', compact('payment'));
+        return view('user.payments.success', compact('payment'));
     }
 
-    /**
-     * 🧾 Halaman proses (QRIS + countdown)
-     */
-    public function process($payment_id)
-    {
-        $payment = Payment::with('rental.car.brand')->findOrFail($payment_id);
-        if ($payment->rental->user_id !== auth()->id()) abort(403);
-        if ($payment->status_pembayaran !== 'pending') {
-            return redirect()->route('user.payments.show', $payment->payment_id);
-        }
-
-        return view('user.payments.process', compact('payment'));
-    }
 
     /**
-     * ❌ Batalkan manual
-     */
-    public function cancel($payment_id)
-    {
-        $payment = Payment::with('rental')->findOrFail($payment_id);
-        if ($payment->rental->user_id !== auth()->id()) abort(403);
-
-        if ($payment->status_pembayaran === 'pending') {
-            DB::transaction(function () use ($payment) {
-                $payment->update(['status_pembayaran' => 'failed']);
-                $payment->rental->update(['status_rental' => 'dibatalkan']);
-            });
-        }
-
-        return redirect()->route('user.payments.index');
-    }
-
-    /**
-     * ⏱ Auto-expire payment yang lewat 30 menit
+     * ⏱ Dipanggil berkala oleh JS untuk meng-expire payment pending > 30 menit
      */
     public function checkExpired()
     {

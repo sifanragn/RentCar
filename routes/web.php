@@ -78,18 +78,37 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
 });
 
 
-   Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
+   // ==================== USER PAYMENT SYSTEM ==================== //
+Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
 
-    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-    Route::post('/payments/{rental_id}', [PaymentController::class, 'store'])->name('payments.store');
-    Route::get('/payments/detail/{payment_id}', [PaymentController::class, 'show'])->name('payments.show');
-    Route::get('/payments/process/{payment_id}', [PaymentController::class, 'process'])->name('payments.process');
-    Route::post('/payments/cancel/{payment_id}', [PaymentController::class, 'cancel'])->name('payments.cancel');
-    Route::get('/payments/check-expired', [PaymentController::class, 'checkExpired'])->name('payments.checkExpired');
+    // 🧾 Daftar pembayaran (index)
+    Route::get('/payments', [PaymentController::class, 'index'])
+        ->name('payments.index');
+
+    // 🟩 Setelah user isi form sewa → pilih metode
+    Route::get('/payments/detail-rental/{rental_id}', [PaymentController::class, 'detailRental'])
+        ->name('payments.detailRental');
+
+    // 🟨 User klik “Bayar” di detail → buat payment pending + redirect ke process
+    Route::post('/payments/start/{rental_id}', [PaymentController::class, 'startProcess'])
+        ->name('payments.start');
+
+    // 🟦 Halaman proses (QRIS / rekening + countdown)
+    Route::get('/payments/process/{payment_id}', [PaymentController::class, 'process'])
+        ->name('payments.process');
+
+    // 🟥 Tombol batalkan di process (tidak ubah status, hanya kembali)
+    Route::post('/payments/cancel-soft/{payment_id}', [PaymentController::class, 'cancelSoft'])
+        ->name('payments.cancelSoft');
+
+    // 🟨 Ringkasan transaksi non-pending (success / failed)
+    Route::get('/payments/show/{payment_id}', [PaymentController::class, 'show'])
+        ->name('payments.show');
+
+    // 🔁 Auto expire checker (dipanggil via JS)
+    Route::get('/payments/check-expired', [PaymentController::class, 'checkExpired'])
+        ->name('payments.checkExpired');
 });
-
-
-
 
 
 // ==================== ADMIN AREA ==================== //

@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+// 🟩 Tambahkan ini untuk support API token
+use Laravel\Sanctum\HasApiTokens;
+
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     protected $table = 'users';
     protected $primaryKey = 'user_id';
@@ -29,20 +32,21 @@ class User extends Authenticatable
         'password',
     ];
 
-    // Cek apakah user ini admin (untuk login kombinasi)
+    // 🔹 Cek apakah user ini admin
     public function isAdmin()
     {
         return $this->role === 'admin';
     }
 
+    // 🔹 Relasi ke rental
     public function rentals()
     {
         return $this->hasMany(Rental::class, 'user_id', 'user_id');
     }
 
+    // 🔹 Cek verifikasi
     public function isVerified()
     {
         return $this->status_verifikasi === 'disetujui';
     }
-
 }
