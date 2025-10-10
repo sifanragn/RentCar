@@ -2,183 +2,189 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pembayaran</title>
+  <title>Pilih Metode Pembayaran</title>
   <style>
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f8f9fa;
+      font-family: 'Poppins', Arial, sans-serif;
+      background: #fff;
       margin: 0;
       padding: 20px;
     }
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 25px;
-      max-width: 600px;
-      margin: 0 auto;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    .container {
+      max-width: 500px;
+      margin: auto;
     }
     h2 {
       text-align: center;
-      color: #222;
       margin-bottom: 20px;
     }
     h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
       margin-top: 25px;
-      color: #333;
-      font-size: 1rem;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 6px;
     }
-    .method-row {
+    .methods {
       display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 15px;
+      gap: 10px;
       flex-wrap: wrap;
     }
-    .method-row img {
-      width: 80px;
-      height: 40px;
-      object-fit: contain;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 5px;
+    .m {
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 8px 10px;
       cursor: pointer;
-      transition: all 0.2s;
-      background: #fff;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 60px;
     }
-    .method-row img:hover {
-      border-color: #0d6efd;
-      transform: scale(1.05);
+    .m.active {
+      border-color: #00AEEF;
+      background: #F0F9FF;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
     }
     td {
       padding: 6px 0;
-      vertical-align: top;
-      color: #444;
+      font-size: 14px;
+      border-bottom: 1px solid #eee;
     }
     td:first-child {
-      width: 40%;
+      width: 160px;
       font-weight: 600;
     }
-    .pay-btn {
+    .btn {
       display: block;
       width: 100%;
       text-align: center;
-      margin-top: 25px;
-      background: #28a745;
+      background: #00C853;
       color: white;
-      border: none;
-      border-radius: 8px;
       padding: 12px;
-      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.25s ease;
+      margin-top: 25px;
+      font-size: 16px;
     }
-    .pay-btn:hover {
-      background: #218838;
-      transform: scale(1.03);
+    .btn:hover {
+      background: #009E47;
     }
-    .back-link {
+    .btn-kembali {
       display: block;
+      width: 100%;
       text-align: center;
-      margin-top: 20px;
-      color: #0d6efd;
+      background: #ccc;
+      color: #333;
+      padding: 12px;
+      border-radius: 10px;
       text-decoration: none;
+      font-weight: 600;
+      margin-top: 10px;
     }
-    .back-link:hover {
-      text-decoration: underline;
+    .metode-img {
+      width: 60px;
+      height: auto;
     }
   </style>
 </head>
 <body>
-
-  <div class="card">
+  <div class="container">
     <h2>Pembayaran</h2>
 
-    {{-- 1. Metode Pembayaran --}}
     <h3>1. Metode Pembayaran</h3>
-    <div class="method-row">
-      <img src="{{ asset('img/payments/qris.png') }}" alt="QRIS" onclick="selectMethod('QRIS')">
-      <img src="{{ asset('img/payments/bri.png') }}" alt="BRI" onclick="selectMethod('BRI')">
-      <img src="{{ asset('img/payments/bni.png') }}" alt="BNI" onclick="selectMethod('BNI')">
-      <img src="{{ asset('img/payments/mandiri.png') }}" alt="Mandiri" onclick="selectMethod('Mandiri')">
+    <div class="methods" id="methods">
+      <div class="m active" data-method="qris">
+        <img src="{{ asset('img/qris.png') }}" class="metode-img" alt="QRIS">
+      </div>
+      <div class="m" data-method="bri">
+        <img src="{{ asset('img/bri.png') }}" class="metode-img" alt="BRI">
+      </div>
+      <div class="m" data-method="bni">
+        <img src="{{ asset('img/bni.png') }}" class="metode-img" alt="BNI">
+      </div>
+      <div class="m" data-method="mandiri">
+        <img src="{{ asset('img/mandiri.png') }}" class="metode-img" alt="Mandiri">
+      </div>
     </div>
 
-    {{-- 2. Informasi Penyewa --}}
     <h3>2. Informasi Penyewa</h3>
     <table>
-      <tr><td>Nama Lengkap</td><td>: {{ auth()->user()->nama_lengkap }}</td></tr>
-      <tr><td>Email</td><td>: {{ auth()->user()->email }}</td></tr>
+      <tr>
+        <td>Nama Lengkap</td>
+        <td>: {{ $rental->user->nama_lengkap ?? '-' }}</td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>: {{ $rental->user->email ?? '-' }}</td>
+      </tr>
     </table>
 
-    {{-- 3. Detail Pesanan --}}
     <h3>3. Detail Pesanan</h3>
     <table>
       <tr>
         <td>Nama Mobil</td>
-        <td>: {{ $payment->rental->car->brand->nama_merek ?? '-' }} {{ $payment->rental->car->model }}</td>
+        <td>: {{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '-' }}</td>
       </tr>
-      <tr><td>Tahun Mobil</td><td>: {{ $payment->rental->car->tahun ?? '-' }}</td></tr>
-      <tr><td>Harga Sewa</td><td>: Rp{{ number_format($payment->rental->car->harga_sewa_per_hari,0,',','.') }} / Hari</td></tr>
-      <tr><td>Durasi</td><td>: {{ $payment->rental->durasi_hari }} Hari</td></tr>
-      <tr><td>Kapasitas</td><td>: {{ $payment->rental->car->kapasitas_orang ?? '-' }} Orang</td></tr>
+      <tr>
+        <td>Tahun Mobil</td>
+        <td>: {{ $rental->car->tahun ?? '-' }}</td>
+      </tr>
+      <tr>
+        <td>Harga Sewa</td>
+        <td>: Rp{{ number_format($rental->car->harga_sewa_per_hari ?? 0,0,',','.') }} / Hari</td>
+      </tr>
+      <tr>
+        <td>Kapasitas</td>
+        <td>: {{ $rental->car->capacity->jumlah_orang ?? '-' }} Orang</td>
+      </tr>
+      <tr>
+        <td>Durasi</td>
+        <td>: {{ $rental->durasi_hari }} Hari</td>
+      </tr>
       <tr>
         <td>Pakai Sopir</td>
-        <td>: {{ $payment->rental->driver === 'ya' ? 'Ya (+Rp150.000/hari)' : 'Tidak' }}</td>
+        <td>: {{ $rental->driver === 'ya' ? 'Ya - Rp '.number_format(150000 * $rental->durasi_hari,0,',','.') : 'Tidak' }}</td>
       </tr>
       <tr>
         <td>Dari - Sampai</td>
-        <td>: {{ \Carbon\Carbon::parse($payment->rental->tanggal_mulai)->format('d/m/y') }}
-              s.d {{ \Carbon\Carbon::parse($payment->rental->tanggal_selesai)->format('d/m/y') }}</td>
+        <td>: {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m/Y') }} s.d {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m/Y') }}</td>
       </tr>
       <tr>
         <td>Total Biaya Sewa</td>
-        <td>: <b>Rp{{ number_format($payment->total_bayar,0,',','.') }}</b></td>
+        <td>: <b>Rp{{ number_format($rental->total_biaya,0,',','.') }}</b></td>
       </tr>
       <tr>
         <td>Lokasi Pengambilan</td>
-        <td>: {{ $payment->rental->car->lokasi ?? 'Belum ditentukan' }}</td>
+        <td>: {{ $rental->car->lokasi ?? 'Lokasi belum ditentukan' }}</td>
       </tr>
     </table>
 
-    <button class="pay-btn" id="payNowBtn">Bayar</button>
-    <a href="{{ route('user.payments.index') }}" class="back-link">← Kembali</a>
+    {{-- Form Bayar --}}
+    <form action="{{ route('user.payments.start', $rental->rental_id) }}" method="POST" id="startForm">
+      @csrf
+      <input type="hidden" name="metode" id="metode" value="qris">
+      <button type="submit" class="btn">Bayar</button>
+    </form>
+
+    {{-- Kembali ke dashboard mobil --}}
+    <a href="{{ route('user.cars.index') }}" class="btn-kembali">← Kembali</a>
   </div>
 
   <script>
-    let selectedMethod = null;
-
-    function selectMethod(method) {
-      selectedMethod = method;
-      document.querySelectorAll('.method-row img').forEach(img => img.style.borderColor = '#ddd');
-      event.target.style.borderColor = '#0d6efd';
-    }
-
-    document.getElementById('payNowBtn').addEventListener('click', () => {
-      if (!selectedMethod) {
-        alert('Silakan pilih metode pembayaran terlebih dahulu!');
-        return;
-      }
-
-      // Simulasi redirect pembayaran (bisa diganti Midtrans Snap)
-      alert('Metode ' + selectedMethod + ' dipilih.\nPembayaran sedang diproses...');
-      window.location.href = "{{ route('user.payments.index') }}";
-    });
-
-    // Auto cancel jika user keluar halaman
-    window.addEventListener('beforeunload', function () {
-      navigator.sendBeacon(
-        "{{ route('user.payments.cancelOnExit') }}",
-        new Blob([JSON.stringify({ payment_id: "{{ $payment->payment_id }}" })], { type: 'application/json' })
-      );
+    let selected = 'qris';
+    const metodeInput = document.getElementById('metode');
+    document.getElementById('methods').addEventListener('click', e => {
+      const m = e.target.closest('.m');
+      if (!m) return;
+      document.querySelectorAll('.m').forEach(x => x.classList.remove('active'));
+      m.classList.add('active');
+      selected = m.dataset.method;
+      metodeInput.value = selected;
     });
   </script>
 </body>

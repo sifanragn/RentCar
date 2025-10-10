@@ -6,15 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Rental;
 use App\Models\Car;
-use App\Models\Payment;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class RentalController extends Controller
 {
-    /** 
-     * Tampilkan semua penyewaan milik user
+    /**
+     * 🧾 Tampilkan daftar penyewaan user
      */
     public function index()
     {
@@ -27,7 +25,7 @@ class RentalController extends Controller
     }
 
     /**
-     * Form penyewaan
+     * 🚗 Form penyewaan mobil
      */
     public function create($car_id)
     {
@@ -36,7 +34,7 @@ class RentalController extends Controller
     }
 
     /**
-     * Simpan data penyewaan dan arahkan langsung ke halaman pembayaran
+     * 💾 Simpan data penyewaan baru, tapi belum buat pembayaran
      */
     public function store(Request $request, $car_id)
     {
@@ -55,7 +53,7 @@ class RentalController extends Controller
             ], 409);
         }
 
-        // ✅ Validasi input
+        // ✅ Validasi form
         $validated = $request->validate([
             'tanggal_mulai'   => 'required|date|after_or_equal:today',
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
@@ -92,38 +90,23 @@ class RentalController extends Controller
             'status'    => $statusAwal
         ]);
 
-        // 🚫 Jika user belum diverifikasi
+        // 🚫 Jika belum diverifikasi, arahkan ke profil
         if ($statusAwal === 'verifikasi_diperlukan') {
             return response()->json([
                 'success' => false,
-                'redirect_url' => route('user.profile')
+                'redirect_url' => route('user.profile'),
             ]);
         }
 
-        // ✅ Buat data pembayaran otomatis
-        $payment = Payment::create([
-            'rental_id'         => $rental->rental_id,
-            'gateway'           => 'midtrans',
-            'metode'            => 'online',
-            'total_bayar'       => $total,
-            'status_pembayaran' => 'pending',
-            'gateway_reference' => 'MID-' . rand(100000, 999999),
-            'payment_token'     => 'PAY-' . strtoupper(uniqid()),
-            'callback_status'   => 'waiting',
-            'tanggal_bayar'     => now(),
-        ]);
-
-        // URL tujuan ke halaman pembayaran
-        $redirectUrl = route('user.payments.show', $payment->payment_id);
-
+        // ✅ Jika sudah diverifikasi, arahkan ke detail pembayaran
         return response()->json([
             'success' => true,
-            'redirect_url' => $redirectUrl
+            'redirect_url' => route('user.payments.detailRental', $rental->rental_id),
         ]);
     }
 
     /**
-     * Detail penyewaan user
+     * 🔍 Detail penyewaan (untuk tampilan biasa)
      */
     public function show($id)
     {
@@ -135,7 +118,7 @@ class RentalController extends Controller
     }
 
     /**
-     * Batalkan penyewaan terbaru yang belum diproses
+     * ❌ Batalkan penyewaan terbaru (belum dibayar)
      */
     public function cancelLatest()
     {
@@ -148,6 +131,6 @@ class RentalController extends Controller
             $rental->update(['status_rental' => 'dibatalkan']);
         }
 
-        return response()->json(['message' => 'Transaksi dibatalkan']);
+        return response()->json(['message' => 'Transaksi dibatalkan.']);
     }
 }
