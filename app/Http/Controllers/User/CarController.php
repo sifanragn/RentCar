@@ -7,5 +7,8 @@ use Illuminate\Http\Request;
 
 class CarController extends Controller
 {
-    //
+    public function show()
+    {
+        return view('user.car.show');
+    }
 }
