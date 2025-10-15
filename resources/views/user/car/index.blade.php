@@ -308,7 +308,6 @@
   </form>
 </div>
 
-<<<<<<< HEAD
 <div class="card-container">
   @foreach ($cars as $car)
     <a href="{{ route('user.cars.show', $car->car_id) }}" class="card-link">
@@ -316,7 +315,6 @@
         <img src="{{ asset('images/dmobil1.png') }}" alt="Mobil" class="car-image">
         <div class="card-content">
           <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
-=======
   {{-- 🚗 Daftar Mobil --}}
   <div class="car-list">
     @php
@@ -347,7 +345,6 @@
 
         <div class="car-info">
           <h4>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h4>
->>>>>>> 4721d82cfb8a89e8640ff543dca15f3de4a0aac6
           <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
           <p class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</p>
           <div class="info-tags">
@@ -383,7 +380,6 @@
       <a href="{{ route('user.cars.index') }}" class="btn-see-other">Lihat Mobil Lain</a>
     </div>
 
-<<<<<<< HEAD
     {{-- Bisa tampilkan suggestions juga --}}
     @if($suggestions->isNotEmpty())
       <div class="suggestion-container">
@@ -397,7 +393,6 @@
   @endif
 </div>
 
-=======
     {{-- Rekomendasi kalau semua hasil sedang disewa --}}
     @if(count($cars) > 0 && count($availableCars) === 0)
       <div class="suggest-box">
@@ -415,7 +410,6 @@
       </div>
     @endif
   </div>
->>>>>>> 4721d82cfb8a89e8640ff543dca15f3de4a0aac6
 
   @include('partials.bottom-navbar')
 @endsection
