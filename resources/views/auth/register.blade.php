@@ -25,6 +25,17 @@
 
   <div class="card">
     <h2>Daftar Akun Baru</h2>
+    @if ($errors->any())
+  <div style="background:#f8d7da;color:#842029;padding:10px;border-radius:8px;margin-bottom:15px;">
+    <strong>Terjadi kesalahan:</strong>
+    <ul style="margin:8px 0 0 20px;">
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </div>
+@endif
+
 
     @if(session('success'))
       <div class="alert">{{ session('success') }}</div>

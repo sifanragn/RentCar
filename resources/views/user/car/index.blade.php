@@ -34,6 +34,10 @@
       position:absolute;top:10px;left:10px;background:rgba(220,53,69,0.9);
       color:white;padding:5px 10px;border-radius:6px;font-size:13px;
     }
+    .pending {
+      position:absolute;top:10px;left:10px;background:rgba(255,193,7,0.9);
+      color:#222;padding:5px 10px;border-radius:6px;font-size:13px;font-weight:600;
+    }
     .car-card.disabled { opacity:0.6; }
 
     .suggest-box {
@@ -84,18 +88,22 @@
 
     @foreach($cars as $car)
       @php
-        $isUnavailable = \App\Models\Rental::where('car_id', $car->car_id)
-            ->whereIn('status_rental', ['verifikasi_diperlukan','menunggu','berjalan'])
-            ->exists();
-        if ($isUnavailable) $unavailableCars[] = $car;
-        else $availableCars[] = $car;
+        $rental = \App\Models\Rental::where('car_id', $car->car_id)
+            ->whereIn('status_rental', ['verifikasi_diperlukan','menunggu','menunggu_pembayaran','berjalan'])
+            ->latest()
+            ->first();
+        $isUnavailable = !!$rental;
       @endphp
 
       <div class="car-card {{ $isUnavailable ? 'disabled' : '' }}">
         <div style="position:relative;">
           <img src="{{ asset('storage/' . $car->foto) }}" alt="{{ $car->model }}">
-          @if($isUnavailable)
-            <div class="unavailable">🚫 Sedang Disewa</div>
+          @if($rental)
+            @if($rental->status_rental === 'menunggu_pembayaran')
+              <div class="pending">💰 Menunggu Pembayaran Penyewa</div>
+            @else
+              <div class="unavailable">🚫 Sedang Disewa</div>
+            @endif
           @endif
         </div>
 
@@ -124,28 +132,11 @@
       </div>
     @endforeach
 
-    {{-- Jika semua hasil sedang disewa, tampilkan rekomendasi --}}
+    {{-- Rekomendasi kalau semua hasil sedang disewa --}}
     @if(count($cars) > 0 && count($availableCars) === 0)
       <div class="suggest-box">
         <h3>Semua mobil di filter kamu sedang disewa 😢</h3>
         <p>Berikut beberapa mobil lain yang masih tersedia:</p>
-        <ul class="suggest-list">
-          @foreach($suggestions as $sug)
-            <li>
-              🚗 <a href="{{ route('user.cars.show', $sug->car_id) }}">
-                {{ $sug->brand->nama_merek ?? '-' }} {{ $sug->model }}
-              </a> — Rp {{ number_format($sug->harga_sewa_per_hari, 0, ',', '.') }}
-            </li>
-          @endforeach
-        </ul>
-      </div>
-    @endif
-
-    {{-- Kalau tidak ada hasil sama sekali --}}
-    @if(count($cars) === 0)
-      <div class="suggest-box">
-        <h3>Tidak ada hasil dari pencarianmu 😢</h3>
-        <p>Coba lihat mobil lain yang tersedia:</p>
         <ul class="suggest-list">
           @foreach($suggestions as $sug)
             <li>

@@ -14,7 +14,9 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\RentalController;
 use App\Http\Controllers\User\PaymentController;
-
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\Admin\AdminPaymentController;
+use App\Http\Controllers\User\ContactController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -44,75 +46,67 @@ Route::get('/check-auth', function () {
     : '❌ Belum login';
 });
 
-// ==================== AUTH (LOGIN / REGISTER / LOGOUT) ==================== //
-Route::get('/login', [LoginController::class, 'index'])->name('login');
-Route::post('/login', [LoginController::class, 'authenticate'])->name('login.submit');
 
-Route::get('/register', [RegisterController::class, 'index'])->name('register');
-Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+// ==================== AUTH (LOGIN / REGISTER / LOGOUT) ==================== //
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'index'])->name('login');
+    Route::post('/login', [LoginController::class, 'authenticate'])->name('login.submit');
+
+    Route::get('/register', [RegisterController::class, 'index'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+});
 
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
-// ==================== USER AREA ==================== //
-Route::prefix('user')->middleware(['auth'])->group(function () {
-
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Dashboard
-    Route::get('/dashboard', [UserDashboardController::class, 'index'])
-    ->name('user.dashboard');
-    
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+
     // Mobil
-    Route::get('/cars', [CarController::class, 'index'])->name('user.cars.index');
-    Route::get('/cars/{id}', [CarController::class, 'show'])->name('user.cars.show');
-    
-    // Profil User - Upload KTP & KK
-    Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
-    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
-    
-    
-    
+    Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
+    Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
+
+    // Profil
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+
     // Rental
-    Route::get('rentals', [RentalController::class, 'index'])->name('user.rentals.index');
-    Route::get('rentals/create/{car_id}', [RentalController::class, 'create'])->name('user.rentals.create');
-    Route::post('rentals/store/{car_id}', [RentalController::class, 'store'])->name('user.rentals.store');
-    Route::post('rentals/cancel-latest', [RentalController::class, 'cancelLatest'])->name('user.rentals.cancelLatest');
+    Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
+    Route::get('/rentals/create/{car_id}', [RentalController::class, 'create'])->name('rentals.create');
+    Route::post('/rentals/store/{car_id}', [RentalController::class, 'store'])->name('rentals.store');
+    Route::post('/rentals/cancel-latest', [RentalController::class, 'cancelLatest'])->name('rentals.cancelLatest');
+
+    // 💳 Pembayaran
+    Route::get('/payments/{id}/json', [PaymentController::class, 'json'])->name('payments.json');
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/detail-rental/{rental_id}', [PaymentController::class, 'detailRental'])->name('payments.detailRental');
+    Route::post('/payments/start/{rental_id}', [PaymentController::class, 'startProcess'])->name('payments.start');
+    Route::get('/payments/process/{payment_id}', [PaymentController::class, 'process'])->name('payments.process');
+    Route::post('/payments/cancel-soft/{payment_id}', [PaymentController::class, 'cancelSoft'])->name('payments.cancelSoft');
+    Route::get('/payments/show/{payment_id}', [PaymentController::class, 'show'])->name('payments.show');
+    Route::get('/payments/check-expired', [PaymentController::class, 'checkExpired'])->name('payments.checkExpired');
+    Route::get('/payments/check-status/{payment_id}', [PaymentController::class, 'checkStatus'])->name('payments.checkStatus');
+    Route::get('/payments/continue/{payment_id}', [PaymentController::class, 'continuePayment'])->name('payments.continue');
+
+    //ONGKIR
+    Route::post('/pickup/distance', [\App\Http\Controllers\User\PickupController::class, 'distance'])
+    ->name('pickup.distance');
+
+    // 📞 Halaman Hubungi Kami
+    Route::get('/kontak', [\App\Http\Controllers\User\ContactController::class, 'index'])->name('kontak.index');
+    Route::post('/kontak', [\App\Http\Controllers\User\ContactController::class, 'store'])->name('kontak.store');
+
 });
-
-
-   // ==================== USER PAYMENT SYSTEM ==================== //
-Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
-
-    // 🧾 Daftar pembayaran (index)
-    Route::get('/payments', [PaymentController::class, 'index'])
-        ->name('payments.index');
-
-    // 🟩 Setelah user isi form sewa → pilih metode
-    Route::get('/payments/detail-rental/{rental_id}', [PaymentController::class, 'detailRental'])
-        ->name('payments.detailRental');
-
-    // 🟨 User klik “Bayar” di detail → buat payment pending + redirect ke process
-    Route::post('/payments/start/{rental_id}', [PaymentController::class, 'startProcess'])
-        ->name('payments.start');
-
-    // 🟦 Halaman proses (QRIS / rekening + countdown)
-    Route::get('/payments/process/{payment_id}', [PaymentController::class, 'process'])
-        ->name('payments.process');
-
-    // 🟥 Tombol batalkan di process (tidak ubah status, hanya kembali)
-    Route::post('/payments/cancel-soft/{payment_id}', [PaymentController::class, 'cancelSoft'])
-        ->name('payments.cancelSoft');
-
-    // 🟨 Ringkasan transaksi non-pending (success / failed)
-    Route::get('/payments/show/{payment_id}', [PaymentController::class, 'show'])
-        ->name('payments.show');
-
-    // 🔁 Auto expire checker (dipanggil via JS)
-    Route::get('/payments/check-expired', [PaymentController::class, 'checkExpired'])
-        ->name('payments.checkExpired');
-});
-
 
 // ==================== ADMIN AREA ==================== //
 Route::prefix('admin')->middleware('admin.session')->group(function () {
+ Route::post('/invoices/{invoice}/retry-payment', [App\Http\Controllers\Admin\InvoiceController::class, 'retryPayment'])
+    ->name('admin.invoices.retryPayment');
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('admin.invoices.index');
+    Route::get('/invoices/{rental_id}/create', [InvoiceController::class, 'create'])->name('admin.invoices.create');
+    Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('admin.invoices.store');
+    Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('admin.invoices.show');
+    Route::post('/admin/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
     
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])
@@ -145,4 +139,14 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::get('/rentals', [RentalAdminController::class, 'index'])->name('admin.rentals.index');
     Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('admin.rentals.show');
     Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('admin.rentals.updateStatus');
+
+Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])
+    ->name('admin.payments.refresh');
+
+    // 📩 Pesan Kontak dari User
+Route::get('/kontak', [\App\Http\Controllers\Admin\ContactAdminController::class, 'index'])
+    ->name('admin.kontak.index');
+Route::post('/kontak/{id}/reply', [\App\Http\Controllers\Admin\ContactAdminController::class, 'reply'])
+    ->name('admin.kontak.reply');
+
 });

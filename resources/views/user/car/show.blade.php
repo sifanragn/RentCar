@@ -1,50 +1,60 @@
-<h2>Detail Mobil</h2>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ $car->brand->nama_merek ?? 'Detail Mobil' }}</title>
+  <style>
+    body { font-family:'Segoe UI',Arial,sans-serif;background:#f8f9fa;margin:0;padding:20px; }
+    .container { max-width:800px;margin:auto;background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    img { width:100%;border-radius:12px;margin-bottom:20px;object-fit:cover; }
+    h2 { margin-bottom:10px;color:#222; }
+    p { margin:5px 0;color:#555; }
+    .price { font-size:22px;color:#000;font-weight:bold;margin-top:10px; }
+    .btn {
+      display:inline-block;padding:10px 20px;background:#007bff;color:#fff;text-decoration:none;
+      border-radius:8px;margin-top:20px;font-weight:600;
+    }
+    .btn:hover { background:#0056b3; }
+    .alert {
+      margin-top:20px;padding:15px;border-radius:8px;
+    }
+    .alert-warning {
+      background:#fff3cd;border:1px solid #ffeeba;color:#856404;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="{{ asset('storage/'.$car->foto) }}" alt="{{ $car->model }}">
+    <h2>{{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h2>
+    <p>Tahun: {{ $car->tahun }}</p>
+    <p>Warna: {{ ucfirst($car->warna ?? '-') }}</p>
+    <p>Transmisi: {{ ucfirst($car->tipe_transmisi ?? '-') }}</p>
+    <p>Kapasitas: {{ $car->capacity->jumlah_orang ?? '-' }} orang</p>
+    <p>Lokasi: {{ ucfirst($car->lokasi ?? '-') }}</p>
+    <p class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }} / hari</p>
 
-@php
-  $isUnavailable = \App\Models\Rental::where('car_id', $car->car_id)
-      ->whereIn('status_rental', ['verifikasi_diperlukan', 'menunggu', 'berjalan'])
-      ->exists();
-@endphp
+    @php
+      $rental = \App\Models\Rental::where('car_id', $car->car_id)
+          ->whereIn('status_rental', ['verifikasi_diperlukan','menunggu','menunggu_pembayaran','berjalan'])
+          ->latest()
+          ->first();
+    @endphp
 
-<div style="display:flex; gap:30px;">
-    <div>
-        @if($car->foto)
-            <img src="{{ asset('storage/' . $car->foto) }}" alt="Mobil" width="350" style="border-radius:10px;">
-        @else
-            <img src="{{ asset('img/no-image.png') }}" width="350">
-        @endif
-        @if($isUnavailable)
-          <p style="margin-top:10px;color:#dc3545;font-weight:bold;">🚫 Mobil ini sedang disewa / menunggu konfirmasi</p>
-        @endif
-    </div>
-
-    <div>
-        <h3>{{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
-        <p><strong>Tahun:</strong> {{ $car->tahun }}</p>
-        <p><strong>Warna:</strong> {{ $car->warna }}</p>
-        <p><strong>Transmisi:</strong> {{ ucfirst($car->tipe_transmisi) }}</p>
-        <p><strong>Kapasitas:</strong> {{ $car->capacity->jumlah_orang ?? '-' }} Orang</p>
-        <p><strong>Bahan Bakar:</strong> {{ ucfirst($car->bahan_bakar) }}</p>
-        <p><strong>Harga:</strong> Rp{{ number_format($car->harga_sewa_per_hari, 0, ',', '.') }} / Hari</p>
-        <p><strong>Lokasi:</strong> {{ $car->lokasi }}</p>
-        <p><strong>Deskripsi:</strong><br>{{ $car->deskripsi ?? '-' }}</p>
-
-        <div style="margin-top:15px;">
-            <a href="{{ route('user.cars.index') }}" 
-                style="display:inline-block;background:#555;color:#fff;padding:6px 10px;border-radius:5px;text-decoration:none;">
-                ← Kembali ke daftar
-            </a>
-
-            @if(!$isUnavailable)
-              <a href="{{ url('user/rentals/create/' . $car->car_id) }}" 
-                style="display:inline-block;background:#0d6efd;color:#fff;padding:8px 14px;border-radius:6px;text-decoration:none;margin-left:10px;">
-                🚗 Sewa Sekarang
-              </a>
-            @else
-              <button disabled style="background:#6c757d;color:#fff;padding:8px 14px;border:none;border-radius:6px;margin-left:10px;">
-                Tidak Tersedia
-              </button>
-            @endif
-        </div>
-    </div>
-</div>
+    @if($rental && $rental->status_rental === 'menunggu_pembayaran')
+      <div class="alert alert-warning">
+        ⚠️ Mobil ini sedang <b>menunggu pembayaran penyewa</b>.  
+        Silakan pilih mobil lain terlebih dahulu.
+      </div>
+    @elseif($rental)
+      <div class="alert alert-warning">
+        🚫 Mobil ini sedang disewa oleh pengguna lain.  
+        Silakan pilih mobil lain.
+      </div>
+    @else
+      <a href="{{ route('user.rentals.create', $car->car_id) }}" class="btn">🚗 Sewa Mobil Ini</a>
+    @endif
+  </div>
+</body>
+</html>
