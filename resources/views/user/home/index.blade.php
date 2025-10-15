@@ -35,6 +35,13 @@
   cursor: pointer;
   transition: all 0.3s ease;
   line-height: 1;
+    text-decoration: none; /* tambahkan ini */
+  display: inline-block; 
+}
+
+.header a {
+  text-decoration: none; /* hilangkan garis bawah */
+  display: inline-block;  /* biar bisa kasih padding & border */
 }
 
 .btn-login {
@@ -164,6 +171,7 @@
   padding: 8px;
   gap: 10px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-left: -15px;
 }
 
 .card:hover {
@@ -307,12 +315,31 @@
 @endsection
 
 @section('content')
+@include('partials.verification-alert')
+
 <header class="header">
   <h1>Daftar Membership</h1>
-  <div>
-    <button class="btn btn-login">Login</button>
-    <button class="btn btn-register">Register</button>
-  </div>
+
+  @guest
+    <div>
+      <a href="{{ route('login') }}">
+        <button class="btn btn-login">Login</button>
+      </a>
+      <a href="{{ route('register') }}">
+        <button class="btn btn-register">Register</button>
+      </a>
+    </div>
+  @else
+    <div>
+      <a href="{{ route('logout') }}"
+         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        <button class="btn btn-register">Logout</button>
+      </a>
+      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+      </form>
+    </div>
+  @endguest
 </header>
 
 <!-- Carousel -->
@@ -345,13 +372,9 @@
   </div>
 
   <div class="brand-scroll">
-    <button class="brand-btn">Toyota</button>
-    <button class="brand-btn">Mercedes</button>
-    <button class="brand-btn">Tesla</button>
-    <button class="brand-btn">Honda</button>
-    <button class="brand-btn">BMW</button>
-    <button class="brand-btn">Audi</button>
-    <button class="brand-btn">Hyundai</button>
+    @foreach($brands as $brand)
+      <button class="brand-btn">{{ $brand->nama_merek }}</button>
+    @endforeach
   </div>
 </div>
 
@@ -363,79 +386,59 @@
   </div>
 
   <div class="card-container">
-    <div class="card">
-      <img src="images/dmobil1.png" class="car-image" alt="Avanza">
-      <div class="card-content">
-        <h3>2022 Toyota Avanza 1.3 G</h3>
-        <p>Edisi Abu-Abu</p>
-        <p class="price">Rp 235.000.000</p>
-        <div class="info-tags">
-          <div class="tag">20.000 km</div>
-          <div class="tag">Otomatis</div>
-          <div class="tag">7 Orang</div>
-          <div class="tag">45 Liter</div>
-          <div class="tag">Jakarta</div>
-          <div class="tag">Toyota Auto Center</div>
-          <div class="tag">6 Oktober - 25 Oktober 2025</div>
+    @foreach($popularCars as $car)
+    <a href="{{ route('user.cars.index', ['brand_id' => $car->brand_id]) }}" style="text-decoration: none; color: inherit;">
+      <div class="card">
+        <img src="{{ asset('images/dmobil1.png') }}" alt="Mobil" class="car-image">
+        <div class="card-content">
+          <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
+          <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
+          <p class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</p>
+          <div class="info-tags">
+            <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
+            <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
+            <div class="tag">{{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
+            <div class="tag">{{ $car->liter_tangki ?? 0 }} Liter</div>
+            <div class="tag">{{ ucfirst($car->lokasi ?? '-') }}</div>
+            <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
+            <div class="tag">{{ \Carbon\Carbon::parse($car->tanggal_mulai)->format('j M') }} - {{ \Carbon\Carbon::parse($car->tanggal_selesai)->format('j M Y') }}</div>
+          </div>
+        </div>
+        <div class="fav-btn">
+          <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
         </div>
       </div>
-      <div class="fav-btn">
-        <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
-      </div>
-    </div>
+    @endforeach
+  </div>
+</div>
 
-    <div class="card">
-      <img src="images/dmobil2.png" class="car-image" alt="Lamborghini">
-      <div class="card-content">
-        <h3>2022 Lamborghini Aventador</h3>
-        <p>Edisi Abu-Abu</p>
-        <p class="price">Rp 235.000.000</p>
-        <div class="info-tags">
-          <div class="tag">23.000 km</div>
-          <div class="tag">Otomatis</div>
-          <div class="tag">2 Orang</div>
-          <div class="tag">45 Liter</div>
-          <div class="tag">Jakarta</div>
-          <div class="tag">Auto Center</div>
-          <div class="tag">1 November - 8 November 2025</div>
-        </div>
-      </div>
-
-      <div class="fav-btn">
-        <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
-      </div>
-    </div>
-
-    <div class="section-container">
+<div class="section-container">
   <div class="section-header">
     <h2>Kenapa Memilih Kita?</h2>
-  </div> 
-
-<div class="choose-scroll">
-  <div class="choose-card">
-    <div class="choose-card-title">Armada Lengkap & Terawat</div>
-    <img src="images/why1.png" alt="Armada Lengkap & Terawat">
   </div>
 
-  <div class="choose-card">
-    <div class="choose-card-title">Layanan Cepat & Mudah</div>
-    <img src="images/why2.png" alt="Layanan Cepat & Mudah">
-  </div>
+  <div class="choose-scroll">
+    <div class="choose-card">
+      <div class="choose-card-title">Armada Lengkap & Terawat</div>
+      <img src="{{ asset('images/why1.png') }}" alt="Armada Lengkap & Terawat">
+    </div>
 
-  <div class="choose-card">
-    <div class="choose-card-title">Jangkauan Luas & Antar Jemput</div>
-    <img src="images/why4.png" alt="Jangkauan Luas & Antar Jemput">
-  </div>
+    <div class="choose-card">
+      <div class="choose-card-title">Layanan Cepat & Mudah</div>
+      <img src="{{ asset('images/why2.png') }}" alt="Layanan Cepat & Mudah">
+    </div>
 
-  <div class="choose-card">
-    <div class="choose-card-title">Pilihan Mobil Beragam</div>
-    <img src="images/why5.png" alt="Pilihan Mobil Beragam">
-  </div>
-</div>
+    <div class="choose-card">
+      <div class="choose-card-title">Jangkauan Luas & Antar Jemput</div>
+      <img src="{{ asset('images/why4.png') }}" alt="Jangkauan Luas & Antar Jemput">
+    </div>
 
+    <div class="choose-card">
+      <div class="choose-card-title">Pilihan Mobil Beragam</div>
+      <img src="{{ asset('images/why5.png') }}" alt="Pilihan Mobil Beragam">
+    </div>
   </div>
 </div>
-
 @include('partials.bottom-navbar')
 @endsection
 

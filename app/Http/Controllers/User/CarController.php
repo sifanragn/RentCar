@@ -65,4 +65,6 @@ class CarController extends Controller
         $car = Car::with(['brand', 'capacity'])->findOrFail($id);
         return view('user.car.show', compact('car'));
     }
+    
 }
+

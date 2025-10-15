@@ -11,9 +11,11 @@ use App\Http\Controllers\Admin\UserVerificationController;
 use App\Http\Controllers\Admin\RentalAdminController;
 use App\Http\Controllers\User\CarController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\RentalController;
 use App\Http\Controllers\User\PaymentController;
+use App\Http\Controllers\User\UserVerifikasiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,10 +25,6 @@ use App\Http\Controllers\User\PaymentController;
 |--------------------------------------------------------------------------
 */
 
-// ==================== LANDING PAGE ==================== //
-Route::get('/', function () {
-    return view('landingpage');
-})->name('landingpage');
 
 // ==================== DEBUG / TEST ==================== //
 Route::get('/test-log', function () {
@@ -53,22 +51,35 @@ Route::post('/register', [RegisterController::class, 'store'])->name('register.s
 
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
+
+// Halaman home publik
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+// Root / redirect ke home
+Route::get('/', function() {
+    return redirect()->route('home');
+});
+
+// Publik
+Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
+Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
+Route::get('/cars', [CarController::class, 'index'])->name('user.cars.index');
+Route::get('/cars/{id}', [CarController::class, 'show'])->name('user.cars.show');
+
+
 // ==================== USER AREA ==================== //
 Route::prefix('user')->middleware(['auth'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])
-    ->name('user.dashboard');
-    
-    // Mobil
-    Route::get('/cars', [CarController::class, 'index'])->name('user.cars.index');
-    Route::get('/cars/{id}', [CarController::class, 'show'])->name('user.cars.show');
-    
-    // Profil User - Upload KTP & KK
-    Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
-    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
-    
-    
+        ->name('user.dashboard');
+
+Route::get('/verifikasi', [UserVerifikasiController::class, 'index'])
+    ->name('user.verifikasi.index');
+
+// Submit upload dokumen
+Route::post('/user/verifikasi', [UserVerifikasiController::class, 'store'])
+    ->name('user.verifikasi.store');
     
     // Rental
     Route::get('rentals', [RentalController::class, 'index'])->name('user.rentals.index');
@@ -146,12 +157,3 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('admin.rentals.show');
     Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('admin.rentals.updateStatus');
 });
-
-//Auth
-Route::get('/login', fn() => view('auth.login'))->name('login');
-Route::get('/register', fn() => view('auth.register'))->name('register');
-
-//Home User 
-Route::get('/home', fn() => view('user.home.index'))->name('home');
-Route::get('/car', fn() => view('user.car.index'))->name('car');
-Route::get('/car/show', [CarController::class, 'show'])->name('car.show');

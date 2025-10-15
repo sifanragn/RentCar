@@ -120,13 +120,13 @@
     <span>Transaksi</span>
   </a>
 
-  {{-- Tombol Tengah --}}
-  <div class="center-wrap">
-    <a class="center-btn {{ request()->is('daftar-mobil') ? 'active' : '' }}" href="{{ url('/car') }}">
-      <img src="/images/navbar.png" alt="Mobil">
+{{-- Tombol Tengah --}}
+<div class="center-wrap">
+    <a class="center-btn {{ request()->is('cars*') ? 'active' : '' }}" href="{{ route('user.cars.index') }}">
+        <img src="/images/navbar.png" alt="Mobil">
     </a>
     <div class="center-label">Daftar Mobil</div>
-  </div>
+</div>
 
   {{-- Hubungi Kami --}}
   <a class="nav-item {{ request()->is('hubungi-kami') ? 'active' : '' }}" href="{{ url('/hubungi-kami') }}">

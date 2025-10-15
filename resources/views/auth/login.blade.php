@@ -44,7 +44,7 @@
   .hero {
     width: 100%;
     max-width: 300px;
-    margin-left: -60px;
+    margin-left: -70px;
     display: block;
   }
 
@@ -115,6 +115,8 @@
   .register-text {
     text-align: center;
     margin-top: 1.8rem;
+      margin-bottom: 70px; /* tambah ini supaya nggak tertutup navbar */
+
     font-size: 1rem;
     color: #333;
   }
@@ -192,4 +194,5 @@
       Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
     </p>
   </form>
+  @include('partials.bottom-navbar')
 @endsection

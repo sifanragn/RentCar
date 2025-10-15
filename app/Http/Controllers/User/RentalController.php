@@ -29,16 +29,17 @@ class RentalController extends Controller
      */
     public function create($car_id)
     {
-        $car = Car::with('brand')->findOrFail($car_id);
-        return view('user.rentals.create', compact('car'));
+        $car  = Car::with('brand')->findOrFail($car_id);
+        $user = auth()->user()->refresh(); // pastikan data terbaru
+        return view('user.rentals.create', compact('car', 'user'));
     }
 
     /**
-     * 💾 Simpan data penyewaan baru, tapi belum buat pembayaran
+     * 💾 Simpan data penyewaan baru
      */
     public function store(Request $request, $car_id)
     {
-        $user = auth()->user();
+        $user = auth()->user()->refresh(); // pastikan data terbaru
         $car  = Car::findOrFail($car_id);
 
         // 🚫 Cegah mobil disewa ganda
@@ -62,14 +63,15 @@ class RentalController extends Controller
         ]);
 
         // 🔹 Hitung durasi & total biaya
-        $durasi = Carbon::parse($validated['tanggal_mulai'])->diffInDays(Carbon::parse($validated['tanggal_selesai']));
+        $durasi      = Carbon::parse($validated['tanggal_mulai'])->diffInDays(Carbon::parse($validated['tanggal_selesai']));
         $hargaDriver = $validated['driver'] === 'ya' ? 150000 * $durasi : 0;
-        $total = ($car->harga_sewa_per_hari * $durasi) + $hargaDriver;
+        $total       = ($car->harga_sewa_per_hari * $durasi) + $hargaDriver;
 
-        // 🔹 Tentukan status awal
-        $statusAwal = ($user->status_verifikasi === 'disetujui')
-            ? 'menunggu_pembayaran'
-            : 'verifikasi_diperlukan';
+        // 🔹 Pengecekan dokumen & verifikasi
+        $hasDocuments = $user->foto_ktp && $user->foto_kk;
+        $statusAwal = (!$hasDocuments || $user->status_verifikasi !== 'disetujui')
+            ? 'verifikasi_diperlukan'
+            : 'menunggu_pembayaran';
 
         // 🔹 Simpan data rental
         $rental = Rental::create([
@@ -90,7 +92,7 @@ class RentalController extends Controller
             'status'    => $statusAwal
         ]);
 
-        // 🚫 Jika belum diverifikasi, arahkan ke profil
+        // 🔹 Kalau belum diverifikasi atau belum upload dokumen, redirect ke profil
         if ($statusAwal === 'verifikasi_diperlukan') {
             return response()->json([
                 'success' => false,
@@ -98,7 +100,7 @@ class RentalController extends Controller
             ]);
         }
 
-        // ✅ Jika sudah diverifikasi, arahkan ke detail pembayaran
+        // 🔹 Kalau sudah diverifikasi, arahkan ke detail pembayaran
         return response()->json([
             'success' => true,
             'redirect_url' => route('user.payments.detailRental', $rental->rental_id),
@@ -106,7 +108,7 @@ class RentalController extends Controller
     }
 
     /**
-     * 🔍 Detail penyewaan (untuk tampilan biasa)
+     * 🔍 Detail penyewaan
      */
     public function show($id)
     {

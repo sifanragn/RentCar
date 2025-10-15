@@ -4,69 +4,51 @@
 
 @section('styles')
 <style>
-/* ===== Container Utama ===== */
+  body {
+  margin: 0;
+  padding: 0;
+}
+
 .detail-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 8px 12px; /* kanan kiri kecil */
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0; /* biar full kiri-kanan */
   font-family: 'Poppins', sans-serif;
   color: #000;
 }
 
-/* ===== Tombol Kembali ===== */
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #000;
-  text-decoration: none;
-  transition: color 0.2s;
-  width: 100%;
-  justify-content: flex-start;
-  margin-bottom: 10px;
-}
-.back-link:hover {
-  color: #0077b6;
-}
-.back-link svg {
-  width: 18px;
-  height: 18px;
-}
-
-/* ===== Gambar Mobil ===== */
 .car-image-container {
   width: 100%;
   border-radius: 16px;
   overflow: hidden;
-  background: linear-gradient(to bottom, #f3f3f3, #d9d9d9);
+  background: #f0f0f0;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 16px 0;
+  padding: 12px 0;
 }
+
 .car-image {
-  width: 90%;
+  width: 100%;
   height: auto;
   object-fit: contain;
 }
 
-/* ===== Informasi Mobil ===== */
 .car-info {
-  background-color: #222;
+  background-color: #262625;
   color: #fff;
-  border-radius: 24px;
+  border-radius: 20px;
   padding: 16px;
-  margin-top: -20px;
-  position: relative;
-  z-index: 2;
+  margin-top: -30px;
+  margin-left: -10px;
+  margin-right: -10px;
+  padding-bottom: 60px;
 }
 
 .car-info h2 {
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 4px;
 }
 
 .car-info .price {
@@ -77,27 +59,14 @@
   border-radius: 10px;
   font-weight: 600;
   font-size: 13px;
-  margin-bottom: 10px;
+  margin: 8px 0;
 }
 
-.car-info p {
-  font-size: 12px;
-  line-height: 1.5;
-  color: #ddd;
-}
-
-/* ===== Section Judul ===== */
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin: 16px 0 8px;
-}
-
-/* ===== Tag Grid ===== */
 .tag-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 8px;
+  margin-bottom: 12px;
 }
 
 .tag-box {
@@ -110,83 +79,132 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-weight: 500;
 }
 
-/* Icon Placeholder */
 .tag-box img {
   width: 20px;
   height: 20px;
   margin-bottom: 6px;
 }
+
+  .btn-rent {
+    display: block;
+    text-align: center;
+    background-color: #555; /* abu-abu elegan */
+    color: #fff;
+    border-radius: 12px;
+    padding: 6px 0;
+    font-weight: 600;
+    margin-top: 16px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-rent:hover {
+    background-color: #444; /* sedikit lebih gelap saat hover */
+  }
+
+.back-link {
+  color: #000; /* warna hitam */
+  text-decoration: none; /* hilangkan garis bawah */
+  font-weight: 250; /* biar sedikit tegas */
+  font-size: 15px;
+}
+
+.back-link:hover {
+  text-decoration: underline; /* efek hover halus */
+}
+
+.carousel {
+  width: 100%;
+  margin-top: 15px;
+}
+
+.carousel-inner {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.car-slide-img {
+  width: 100%;
+  height: 200px; /* naikkan biar proporsional */
+  object-fit: contain; /* biar gambar nggak kepotong */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(100%);
+}
+
 </style>
 @endsection
 
 @section('content')
 <div class="detail-container">
 
-  {{-- Tombol Kembali --}}
-  <a href="{{ url('/car') }}" class="back-link">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-    </svg>
-    Detail Mobil
-  </a>
+  {{-- Link Kembali --}}
+  <a href="{{ route('user.cars.index') }}" class="back-link">← Kembali ke Daftar Mobil</a>
 
-  {{-- Gambar Mobil --}}
-  <div class="car-image-container">
-    <img src="/images/dmobil1.png" alt="Avanza" class="car-image">
+{{-- Gambar Mobil (Carousel) --}}
+<div id="carCarousel" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner rounded-3 shadow-sm">
+    <div class="carousel-item active">
+      <img src="{{ asset('images/detail1.png') }}" class="d-block w-100 car-slide-img" alt="Mobil 1">
+    </div>
+    <div class="carousel-item">
+      <img src="{{ asset('images/detail2.png') }}" class="d-block w-100 car-slide-img" alt="Mobil 2">
+    </div>
+    <div class="carousel-item">
+      <img src="{{ asset('images/detail3.png') }}" class="d-block w-100 car-slide-img" alt="Mobil 3">
+    </div>
+    <div class="carousel-item">
+      <img src="{{ asset('images/detail4.png') }}" class="d-block w-100 car-slide-img" alt="Mobil 4">
+    </div>
   </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
 
   {{-- Informasi Mobil --}}
   <div class="car-info">
-    <h2>2022 Toyota Avanza 1.3 G – Abu Abu</h2>
-    <div class="price">Rp 235.000.000</div>
-    <p>2022 Toyota Avanza 1.3 G – Abu-Abu adalah MPV yang nyaman, irit, dan cocok untuk perjalanan keluarga atau aktivitas harian dengan tampilan elegan dan modern.</p>
-
-    {{-- Ringkasan Mobil --}}
-    <div class="section-title">Ringkasan Mobil</div>
-    <div class="tag-grid">
-      <div class="tag-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/1059/1059262.png" alt="">
-        20.000 km
-      </div>
-      <div class="tag-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/906/906175.png" alt="">
-        Otomatis
-      </div>
-      <div class="tag-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/883/883746.png" alt="">
-        12 Orang
-      </div>
-      <div class="tag-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/891/891462.png" alt="">
-        45 Liter
-      </div>
-    </div>
+    <h2>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }} – {{ ucfirst($car->warna) }}</h2>
+    <div class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</div>
+    <p>{{ $car->deskripsi ?? '-' }}</p>
 
     {{-- Spesifikasi Mobil --}}
     <div class="section-title">Spesifikasi Mobil</div>
     <div class="tag-grid">
-      <div class="tag-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/106/106830.png" alt="">
-        Mesin 1.3L DOHC Dual VVT-i
-      </div>
-      <div class="tag-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/764/764564.png" alt="">
-        95 HP
-      </div>
-      <div class="tag-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/107/107794.png" alt="">
-        Kapasitas bagasi ± 200L
-      </div>
-      <div class="tag-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/61/61456.png" alt="">
-        Tersedia Sistem Audio
-      </div>
+      <div class="tag-box"><img src="https://cdn-icons-png.flaticon.com/512/1059/1059262.png" alt=""> {{ number_format($car->kilometer ?? 0) }} km</div>
+      <div class="tag-box"><img src="https://cdn-icons-png.flaticon.com/512/906/906175.png" alt=""> {{ ucfirst($car->tipe_transmisi) }}</div>
+      <div class="tag-box"><img src="https://cdn-icons-png.flaticon.com/512/883/883746.png" alt=""> {{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
+      <div class="tag-box"><img src="https://cdn-icons-png.flaticon.com/512/891/891462.png" alt=""> {{ $car->liter_tangki ?? 0 }} Liter</div>
     </div>
-  </div>
+
+    {{-- Detail Teknis --}}
+    <div class="section-title">Detail Teknis</div>
+    <div class="tag-grid">
+      <div class="tag-box"><img src="https://cdn-icons-png.flaticon.com/512/106/106830.png" alt=""> Mesin {{ $car->mesin ?? '-' }}</div>
+      <div class="tag-box"><img src="https://cdn-icons-png.flaticon.com/512/764/764564.png" alt=""> {{ $car->horse_power ?? '-' }} HP</div>
+      <div class="tag-box"><img src="https://cdn-icons-png.flaticon.com/512/107/107794.png" alt=""> Kapasitas bagasi ± {{ $car->bagasi ?? '-' }} L</div>
+      <div class="tag-box"><img src="https://cdn-icons-png.flaticon.com/512/61/61456.png" alt=""> {{ $car->sistem_audio ? 'Tersedia Sistem Audio' : 'Tidak Ada' }}</div>
+    </div>
+
+    {{-- Tombol Sewa --}}
+@auth
+<a href="{{ route('user.rentals.create', $car->car_id) }}" class="btn-rent">Sewa Sekarang</a>
+@else
+  <a href="{{ route('login') }}" class="btn-rent"
+     onclick="return confirm('Kamu perlu login dulu untuk menyewa mobil. Mau login sekarang?')">
+    Sewa Sekarang
+  </a>
+@endauth  
+</div>
 </div>
 
 @include('partials.bottom-navbar')

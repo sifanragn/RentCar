@@ -191,6 +191,26 @@
   height: 13px;
 }
 
+.btn-see-other {
+  display: inline-block;
+  background-color: #4299e1;  /* biru */
+  color: white;
+  font-weight: 500;
+  font-size: 12px;             /* lebih kecil */
+  padding: 4px 12px;           /* lebih compact */
+  border-radius: 6px;          /* agak bulat */
+  text-decoration: none;
+  margin: 5px 0 10px 15px;     /* atas-kanan-bawah-kiri */
+  transition: 0.3s;
+  margin-left: 40px;
+  margin-top: 0px;
+}
+
+.btn-see-other:hover {
+  background-color: #2b6cb0;
+}
+
+
 /* ===== Responsive ===== */
 @media (max-width: 480px) {
   .card {
@@ -216,50 +236,71 @@
   .info-tags {
     justify-content: center;
   }
+
+  .no-result {
+  text-align: center;
+  margin: 40px 0;
+}
+
 }
 </style>
 @endsection
 
 @section('content')
-  <div class="filter-wrapper">
+ <div class="filter-wrapper">
+  <form method="GET" action="{{ route('user.cars.index') }}">
     <div class="filter-bar-horizontal">
-      <select id="brand" class="filter-select">
-        <option value="">Cari Mobil</option>
-        <option value="toyota">Toyota</option>
-        <option value="honda">Honda</option>
-        <option value="bmw">BMW</option>
+
+      {{-- Brand --}}
+      <select name="brand_id" class="filter-select">
+        <option value="">Semua Merek</option>
+        @foreach($brands as $brand)
+          <option value="{{ $brand->brand_id }}" {{ request('brand_id') == $brand->brand_id ? 'selected' : '' }}>
+            {{ $brand->nama_merek }}
+          </option>
+        @endforeach
       </select>
 
-      <input type="date" id="date" class="filter-input" />
+      {{-- Tanggal sewa --}}
+      <input type="date" name="date" class="filter-input" value="{{ request('date') }}">
 
-      <select id="capacity" class="filter-select">
-        <option value="">Kapasitas</option>
-        <option value="2">2 Orang</option>
-        <option value="4">4 Orang</option>
-        <option value="7">7 Orang</option>
+      {{-- Capacity --}}
+      <select name="capacity_id" class="filter-select">
+        <option value="">Semua Kapasitas</option>
+        @foreach($capacities as $capacity)
+          <option value="{{ $capacity->capacity_id }}" {{ request('capacity_id') == $capacity->capacity_id ? 'selected' : '' }}>
+            {{ $capacity->jumlah_orang }} Orang
+          </option>
+        @endforeach
       </select>
 
-      <input type="text" id="model" class="filter-input" placeholder="Model Mobil">
+      {{-- Cari model --}}
+      <input type="text" name="search" class="filter-input" placeholder="Model Mobil" value="{{ request('search') }}">
 
-      <button class="btn-search">Search</button>
+      {{-- Tombol Search --}}
+      <button type="submit" class="btn-search">Search</button>
+
     </div>
-  </div>
+  </form>
+</div>
 
-  <div class="card-container">
+<div class="card-container">
   @foreach ($cars as $car)
-    <a href="{{ route('user.cars.show', $car->id) }}" class="card-link">
+    <a href="{{ route('user.cars.show', $car->car_id) }}" class="card-link">
       <div class="card">
-        <img src="{{ asset('storage/' . $car->gambar) }}" class="car-image" alt="{{ $car->model }}">
+        <img src="{{ asset('images/dmobil1.png') }}" alt="Mobil" class="car-image">
         <div class="card-content">
-          <h3>{{ $car->tahun }} {{ $car->brand->nama_merek }} {{ $car->model }}</h3>
-          <p>{{ $car->warna }}</p>
-          <p class="price">Rp {{ number_format($car->harga, 0, ',', '.') }}</p>
+          <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
+          <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
+          <p class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</p>
           <div class="info-tags">
-            <div class="tag">{{ $car->kilometer }} km</div>
-            <div class="tag">{{ $car->transmisi }}</div>
-            <div class="tag">{{ $car->capacity->jumlah_orang }} Orang</div>
-            <div class="tag">{{ $car->bahan_bakar }}</div>
-            <div class="tag">{{ $car->lokasi }}</div>
+            <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
+            <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
+            <div class="tag">{{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
+            <div class="tag">{{ $car->liter_tangki ?? 0 }} Liter</div>
+            <div class="tag">{{ ucfirst($car->lokasi ?? '-') }}</div>
+            <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
+            <div class="tag">{{ \Carbon\Carbon::parse($car->tanggal_mulai)->format('j M') }} - {{ \Carbon\Carbon::parse($car->tanggal_selesai)->format('j M Y') }}</div>
           </div>
         </div>
         <div class="fav-btn">
@@ -268,6 +309,34 @@
       </div>
     </a>
   @endforeach
+</div>
+
+<div class="card-container">
+  @if($cars->isNotEmpty())
+    @foreach($cars as $car)
+      <a href="{{ route('user.cars.show', $car->car_id) }}" class="card-link">
+        {{-- Card mobil --}}
+      </a>
+    @endforeach
+  @else
+    <div class="no-result">
+      <p style="color: red; font-size: 12px; margin-bottom: 15px;">
+  Kriteria yang Anda cari tidak tersedia.
+</p>
+      <a href="{{ route('user.cars.index') }}" class="btn-see-other">Lihat Mobil Lain</a>
+    </div>
+
+    {{-- Bisa tampilkan suggestions juga --}}
+    @if($suggestions->isNotEmpty())
+      <div class="suggestion-container">
+        @foreach($suggestions as $car)
+          <a href="{{ route('user.cars.show', $car->car_id) }}" class="card-link">
+            {{-- Card mobil saran --}}
+          </a>
+        @endforeach
+      </div>
+    @endif
+  @endif
 </div>
 
 

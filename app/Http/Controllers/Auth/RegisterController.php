@@ -49,6 +49,7 @@ class RegisterController extends Controller
             'role' => 'user',
         ]);
 
+        
         return redirect()->route('login')->with('success', 'Pendaftaran berhasil. Silakan login.');
     }
 }

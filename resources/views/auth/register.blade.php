@@ -52,7 +52,7 @@
   .hero {
     width: 100%;
     max-width: 300px;
-    margin-left: -60px;
+    margin-left: -70px;
     display: block;
   }
 
@@ -120,13 +120,13 @@
     background: #222;
   }
 
-  /* Link login */
-  .login-text {
-    text-align: center;
-    margin-top: 1.8rem;
-    font-size: 1rem;
-    color: #333;
-  }
+.login-text {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 70px; /* tambah ini supaya nggak tertutup navbar */
+  font-size: 1rem;
+  color: #333;
+}
 
   .login-text a {
     color: #0077b6;
@@ -175,20 +175,12 @@
       <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password Anda" required>
     </div>
 
-    <div class="input-group">
-      <label for="foto_kk">Upload KK</label>
-      <input type="file" id="foto_kk" name="foto_kk" accept=".jpg,.jpeg,.png,.pdf" required>
-    </div>
-
-    <div class="input-group">
-      <label for="foto_ktp">Upload KTP</label>
-      <input type="file" id="foto_ktp" name="foto_ktp" accept=".jpg,.jpeg,.png,.pdf" required>
-    </div>
-
     <button type="submit" class="btn-register">Daftar</button>
 
     <p class="login-text">
       Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
     </p>
   </form>
+  @include('partials.bottom-navbar')
+
 @endsection
