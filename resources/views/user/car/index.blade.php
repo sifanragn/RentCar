@@ -11,6 +11,30 @@
   padding: 10px 0;
   margin-top: -20px; /* dinaikin ke atas */
 }
+    .car-list { display:flex;flex-direction:column;gap:20px; }
+    .car-card {
+      background:white;border:1px solid #ddd;border-radius:12px;display:flex;align-items:center;
+      gap:16px;padding:16px;box-shadow:0 2px 6px rgba(0,0,0,0.08);transition:transform 0.2s;position:relative;
+    }
+    .car-card:hover { transform:translateY(-3px); }
+    .car-card img { width:200px;border-radius:8px;object-fit:cover; }
+    .car-info { flex:1; }
+    .car-info h4 { margin:0;font-size:18px;color:#222;font-weight:600; }
+    .car-info p { margin:4px 0;color:#555; }
+    .price { font-weight:bold;color:#000;margin-top:5px;font-size:20px; }
+    .specs { display:flex;flex-wrap:wrap;gap:8px;margin-top:8px; }
+    .specs span {
+      background:#fff;border:1px solid #ccc;border-radius:30px;padding:6px 12px;font-size:13px;color:#444;
+    }
+    .unavailable {
+      position:absolute;top:10px;left:10px;background:rgba(220,53,69,0.9);
+      color:white;padding:5px 10px;border-radius:6px;font-size:13px;
+    }
+    .pending {
+      position:absolute;top:10px;left:10px;background:rgba(255,193,7,0.9);
+      color:#222;padding:5px 10px;border-radius:6px;font-size:13px;font-weight:600;
+    }
+    .car-card.disabled { opacity:0.6; }
 
 /* ===== Bar Horizontal ===== */
 .filter-bar-horizontal {
@@ -284,6 +308,7 @@
   </form>
 </div>
 
+<<<<<<< HEAD
 <div class="card-container">
   @foreach ($cars as $car)
     <a href="{{ route('user.cars.show', $car->car_id) }}" class="card-link">
@@ -291,6 +316,38 @@
         <img src="{{ asset('images/dmobil1.png') }}" alt="Mobil" class="car-image">
         <div class="card-content">
           <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
+=======
+  {{-- 🚗 Daftar Mobil --}}
+  <div class="car-list">
+    @php
+      $availableCars = [];
+      $unavailableCars = [];
+    @endphp
+
+    @foreach($cars as $car)
+      @php
+        $rental = \App\Models\Rental::where('car_id', $car->car_id)
+            ->whereIn('status_rental', ['verifikasi_diperlukan','menunggu','menunggu_pembayaran','berjalan'])
+            ->latest()
+            ->first();
+        $isUnavailable = !!$rental;
+      @endphp
+
+      <div class="car-card {{ $isUnavailable ? 'disabled' : '' }}">
+        <div style="position:relative;">
+          <img src="{{ asset('storage/' . $car->foto) }}" alt="{{ $car->model }}">
+          @if($rental)
+            @if($rental->status_rental === 'menunggu_pembayaran')
+              <div class="pending">💰 Menunggu Pembayaran Penyewa</div>
+            @else
+              <div class="unavailable">🚫 Sedang Disewa</div>
+            @endif
+          @endif
+        </div>
+
+        <div class="car-info">
+          <h4>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h4>
+>>>>>>> 4721d82cfb8a89e8640ff543dca15f3de4a0aac6
           <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
           <p class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</p>
           <div class="info-tags">
@@ -326,6 +383,7 @@
       <a href="{{ route('user.cars.index') }}" class="btn-see-other">Lihat Mobil Lain</a>
     </div>
 
+<<<<<<< HEAD
     {{-- Bisa tampilkan suggestions juga --}}
     @if($suggestions->isNotEmpty())
       <div class="suggestion-container">
@@ -339,6 +397,25 @@
   @endif
 </div>
 
+=======
+    {{-- Rekomendasi kalau semua hasil sedang disewa --}}
+    @if(count($cars) > 0 && count($availableCars) === 0)
+      <div class="suggest-box">
+        <h3>Semua mobil di filter kamu sedang disewa 😢</h3>
+        <p>Berikut beberapa mobil lain yang masih tersedia:</p>
+        <ul class="suggest-list">
+          @foreach($suggestions as $sug)
+            <li>
+              🚗 <a href="{{ route('user.cars.show', $sug->car_id) }}">
+                {{ $sug->brand->nama_merek ?? '-' }} {{ $sug->model }}
+              </a> — Rp {{ number_format($sug->harga_sewa_per_hari, 0, ',', '.') }}
+            </li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+  </div>
+>>>>>>> 4721d82cfb8a89e8640ff543dca15f3de4a0aac6
 
   @include('partials.bottom-navbar')
 @endsection

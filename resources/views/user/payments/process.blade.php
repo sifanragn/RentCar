@@ -71,20 +71,19 @@
     <h2>Pembayaran Sedang Diproses</h2>
 
     <table>
-  <tr><td>ID Pembayaran</td><td>: {{ $payment->payment_id }}</td></tr>
-  <tr><td>Nama Penyewa</td><td>: {{ $payment->rental->user->nama_lengkap ?? '-' }}</td></tr>
-  <tr><td>Email</td><td>: {{ $payment->rental->user->email ?? '-' }}</td></tr>
-  <tr><td>Metode Pembayaran</td><td>: {{ strtoupper($payment->metode) }}</td></tr>
-  <tr><td>Nama Mobil</td><td>: {{ $payment->rental->car->brand->nama_merek ?? '-' }} {{ $payment->rental->car->model ?? '-' }}</td></tr>
-  <tr><td>Tahun Mobil</td><td>: {{ $payment->rental->car->tahun ?? '-' }}</td></tr>
-  <tr><td>Harga Sewa</td><td>: Rp{{ number_format($payment->rental->car->harga_sewa_per_hari ?? 0, 0, ',', '.') }} / Hari</td></tr>
-  <tr><td>Kapasitas</td><td>: {{ $payment->rental->car->capacity->jumlah_orang ?? '-' }} Orang</td></tr>
-  <tr><td>Durasi</td><td>: {{ $payment->rental->durasi_hari }} Hari</td></tr>
-  <tr><td>Pake Sopir</td><td>: {{ $payment->rental->driver === 'ya' ? 'Ya (+Rp150.000/hari)' : 'Tidak' }}</td></tr>
-  <tr><td>Dari - Sampai</td><td>: {{ $payment->rental->tanggal_mulai }} s.d {{ $payment->rental->tanggal_selesai }}</td></tr>
-  <tr><td>Total Bayar</td><td>: <b>Rp{{ number_format($payment->total_bayar, 0, ',', '.') }}</b></td></tr>
-</table>
-
+      <tr><td>ID Pembayaran</td><td>: {{ $payment->payment_id }}</td></tr>
+      <tr><td>Nama Penyewa</td><td>: {{ $payment->rental->user->nama_lengkap ?? '-' }}</td></tr>
+      <tr><td>Email</td><td>: {{ $payment->rental->user->email ?? '-' }}</td></tr>
+      <tr><td>Metode Pembayaran</td><td>: {{ strtoupper($payment->metode) }}</td></tr>
+      <tr><td>Nama Mobil</td><td>: {{ $payment->rental->car->brand->nama_merek ?? '-' }} {{ $payment->rental->car->model ?? '-' }}</td></tr>
+      <tr><td>Tahun Mobil</td><td>: {{ $payment->rental->car->tahun ?? '-' }}</td></tr>
+      <tr><td>Harga Sewa</td><td>: Rp{{ number_format($payment->rental->car->harga_sewa_per_hari ?? 0, 0, ',', '.') }} / Hari</td></tr>
+      <tr><td>Kapasitas</td><td>: {{ $payment->rental->car->capacity->jumlah_orang ?? '-' }} Orang</td></tr>
+      <tr><td>Durasi</td><td>: {{ $payment->rental->durasi_hari }} Hari</td></tr>
+      <tr><td>Pake Sopir</td><td>: {{ $payment->rental->driver === 'ya' ? 'Ya (+Rp150.000/hari)' : 'Tidak' }}</td></tr>
+      <tr><td>Dari - Sampai</td><td>: {{ $payment->rental->tanggal_mulai }} s.d {{ $payment->rental->tanggal_selesai }}</td></tr>
+      <tr><td>Total Bayar</td><td>: <b>Rp{{ number_format($payment->total_bayar, 0, ',', '.') }}</b></td></tr>
+    </table>
 
     {{-- ✅ Countdown Info --}}
     <div class="highlight">
@@ -110,7 +109,7 @@
       </div>
     @endif
 
-    {{-- ✅ Tombol --}}
+    {{-- ✅ Tombol Batalkan --}}
     <form action="{{ route('user.payments.cancelSoft', $payment->payment_id) }}" method="POST" id="cancelForm">
       @csrf
       <button type="submit" class="btn btn-danger">Batalkan Pembayaran</button>
@@ -128,6 +127,7 @@
   @endphp
 
   <script>
+    // =================== COUNTDOWN ===================
     let remaining = {{ $remaining }};
     const el = document.getElementById('countdown');
     const expiredBox = document.getElementById('expiredBox');
@@ -150,10 +150,9 @@
       remaining--;
       setTimeout(tick, 1000);
     }
-
     tick();
 
-    // Auto refresh tiap 1 menit buat update status expired
+    // =================== AUTO EXPIRE CHECK ===================
     setInterval(()=>{
       fetch("{{ route('user.payments.checkExpired') }}")
         .then(res => res.json())
@@ -162,7 +161,24 @@
             window.location.reload();
           }
         });
-    }, 60000);
+    }, 60000); // tiap 1 menit
+
+    // =================== AUTO STATUS CHECK ===================
+    const paymentId = "{{ $payment->payment_id }}";
+    setInterval(() => {
+      fetch(`/user/payments/check-status/${paymentId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            alert('✅ Pembayaran berhasil! Anda akan diarahkan ke halaman sukses.');
+            window.location.href = `/user/payments/show/${paymentId}`;
+          } else if (data.status === 'failed') {
+            alert('❌ Pembayaran gagal atau dibatalkan.');
+            window.location.href = `/user/payments/index`;
+          }
+        })
+        .catch(err => console.error('Error cek status:', err));
+    }, 10000); // tiap 10 detik
   </script>
 </body>
 </html>

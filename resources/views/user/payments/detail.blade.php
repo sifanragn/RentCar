@@ -96,10 +96,14 @@
   <div class="container">
     <h2>Pembayaran</h2>
 
-    <h3>1. Metode Pembayaran</h3>
+    {{-- ========================== STEP 1: METODE PEMBAYARAN ========================== --}}
+    <h3>1. Pilih Metode Pembayaran</h3>
     <div class="methods" id="methods">
       <div class="m active" data-method="qris">
         <img src="{{ asset('img/qris.png') }}" class="metode-img" alt="QRIS">
+      </div>
+      <div class="m" data-method="bca">
+        <img src="{{ asset('img/bca.png') }}" class="metode-img" alt="BCA">
       </div>
       <div class="m" data-method="bri">
         <img src="{{ asset('img/bri.png') }}" class="metode-img" alt="BRI">
@@ -112,6 +116,7 @@
       </div>
     </div>
 
+    {{-- ========================== STEP 2: INFORMASI PENYEWA ========================== --}}
     <h3>2. Informasi Penyewa</h3>
     <table>
       <tr>
@@ -124,6 +129,7 @@
       </tr>
     </table>
 
+    {{-- ========================== STEP 3: DETAIL SEWAAN ========================== --}}
     <h3>3. Detail Pesanan</h3>
     <table>
       <tr>
@@ -136,7 +142,7 @@
       </tr>
       <tr>
         <td>Harga Sewa</td>
-        <td>: Rp{{ number_format($rental->car->harga_sewa_per_hari ?? 0,0,',','.') }} / Hari</td>
+        <td>: Rp{{ number_format($rental->car->harga_sewa_per_hari ?? 0, 0, ',', '.') }} / Hari</td>
       </tr>
       <tr>
         <td>Kapasitas</td>
@@ -164,27 +170,35 @@
       </tr>
     </table>
 
-    {{-- Form Bayar --}}
+    {{-- ========================== STEP 4: TOMBOL PEMBAYARAN ========================== --}}
     <form action="{{ route('user.payments.start', $rental->rental_id) }}" method="POST" id="startForm">
       @csrf
       <input type="hidden" name="metode" id="metode" value="qris">
-      <button type="submit" class="btn">Bayar</button>
+      <button type="submit" class="btn" id="payBtn">Lanjut ke Pembayaran Duitku</button>
     </form>
 
-    {{-- Kembali ke dashboard mobil --}}
+    {{-- ========================== STEP 5: KEMBALI ========================== --}}
     <a href="{{ route('user.cars.index') }}" class="btn-kembali">← Kembali</a>
   </div>
 
   <script>
-    let selected = 'qris';
     const metodeInput = document.getElementById('metode');
-    document.getElementById('methods').addEventListener('click', e => {
+    const methods = document.getElementById('methods');
+    const payBtn = document.getElementById('payBtn');
+
+    // Ganti metode pembayaran aktif
+    methods.addEventListener('click', e => {
       const m = e.target.closest('.m');
       if (!m) return;
       document.querySelectorAll('.m').forEach(x => x.classList.remove('active'));
       m.classList.add('active');
-      selected = m.dataset.method;
-      metodeInput.value = selected;
+      metodeInput.value = m.dataset.method;
+    });
+
+    // Saat klik Bayar
+    document.getElementById('startForm').addEventListener('submit', () => {
+      payBtn.disabled = true;
+      payBtn.innerText = 'Menghubungkan ke Duitku...';
     });
   </script>
 </body>

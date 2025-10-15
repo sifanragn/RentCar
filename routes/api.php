@@ -18,3 +18,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/cars/{id}', [CarController::class, 'show']);
 });
 
+use App\Http\Controllers\Api\PaymentGatewayController;
+
+Route::post('/payment/create', [PaymentGatewayController::class, 'createPayment']);
+Route::post('/payment/callback', [PaymentGatewayController::class, 'callback']);
+use App\Http\Controllers\Api\DuitkuCallbackController;
+
+Route::post('/payment/callback', [DuitkuCallbackController::class, 'handleCallback']);
+
