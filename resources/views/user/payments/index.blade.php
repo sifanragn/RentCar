@@ -4,7 +4,7 @@
 
 @section('styles')
 <style>
-  /* ✅ Container utama (tidak ada border radius) */
+  /* ===== Container utama ===== */
   .container {
     max-width: 900px;
     margin: auto;
@@ -12,7 +12,7 @@
     margin-right: -10px;
   }
 
-  /* ✅ Card pembungkus daftar pembayaran */
+  /* ===== Card ===== */
   .card-daftar {
     background: #fff;
     border-radius: 16px;
@@ -29,6 +29,37 @@
     font-size: 25px;
     font-weight: 600;
   }
+
+  /* 🔎 Filter Box */
+  .filter-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .filter-box label { font-weight: 600; margin-right: 6px; }
+  .filter-box input, .filter-box select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+  }
+  .filter-box input:focus, .filter-box select:focus { border-color: #0d6efd; }
+  .filter-box button {
+    background: #0d6efd;
+    border: none;
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .filter-box button:hover { background: #0b5ed7; }
 
   /* 🌟 Payment List */
   .payment-list {
@@ -54,24 +85,14 @@
     box-shadow: 0 5px 15px rgba(0,0,0,0.12);
   }
 
-  .card-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+  .card-left { display: flex; align-items: center; gap: 14px; }
   .icon-box {
-    width: 46px;
-    height: 46px;
+    width: 46px; height: 46px;
     border-radius: 12px;
     background: #eef2ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
   }
-  .icon-box img {
-    width: 26px;
-    height: 26px;
-  }
+  .icon-box img { width: 26px; height: 26px; }
 
   .car-info { display: flex; flex-direction: column; }
   .car-name { font-weight: 600; color: #222; font-size: 15px; }
@@ -101,8 +122,19 @@
     font-size: 13px;
     display: inline-block;
     transition: .2s;
+    cursor: pointer;
   }
   .btn:hover { background: #0b5ed7; }
+  .btn-danger { background: #dc3545; }
+  .btn-danger:hover { background: #b02a37; }
+
+  .back-link {
+    color:#000; text-decoration:none;
+    font-weight:250; font-size:15px;
+    margin-left: -150px;
+    margin-bottom: 10px;
+  }
+  .back-link:hover { text-decoration:underline; }
 
   /* 🔹 Modal */
   .modal-overlay {
@@ -123,6 +155,7 @@
     box-shadow: 0 6px 18px rgba(0,0,0,.2);
     position: relative;
     animation: fadeIn .3s ease;
+    text-align: center;
   }
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
@@ -141,59 +174,17 @@
   }
   .close-btn:hover { color: #000; }
 
-  .receipt-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #222;
-    text-align: center;
-  }
-  .receipt-status {
-    font-weight: 600;
-    font-size: 15px;
-    margin: 8px 0;
-    text-align: center;
-  }
+  .receipt-title { font-size: 20px; font-weight: 600; margin-bottom: 6px; color: #222; }
+  .receipt-status { font-weight: 600; font-size: 15px; margin: 8px 0; }
   .receipt-status.success { color: #28a745; }
   .receipt-status.failed  { color: #dc3545; }
   .receipt-status.pending { color: #ffc107; }
-
-  .receipt-subtitle {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 12px;
-    text-align: center;
-  }
-
-  .receipt-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 8px;
-    font-size: 14px;
-  }
-  .receipt-table th, .receipt-table td {
-    padding: 8px 6px;
-    text-align: left;
-    vertical-align: top;
-  }
-  .receipt-table th {
-    width: 45%;
-    color: #333;
-  }
-  .receipt-table td {
-    color: #555;
-  }
-  .receipt-table tr:nth-child(odd) {
-    background: #f9f9f9;
-  }
-
-  .back-link {
-    color:#000; text-decoration:none;
-    font-weight:250; font-size:15px;
-    margin-left: -150px;
-    margin-bottom: 10px;
-  }
-  .back-link:hover { text-decoration:underline; }
+  .receipt-subtitle { color: #666; font-size: 14px; margin-bottom: 12px; }
+  .receipt-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+  .receipt-table th, .receipt-table td { padding: 8px 6px; text-align: left; vertical-align: top; }
+  .receipt-table th { width: 45%; color: #333; }
+  .receipt-table td { color: #555; }
+  .receipt-table tr:nth-child(odd) { background: #f9f9f9; }
 
   /* 🔹 Responsive */
   @media (max-width:700px) {
@@ -204,118 +195,189 @@
 @endsection
 
 @section('content')
-  <a href="{{ route('user.dashboard') }}" class="back-link">← Kembali ke Dashboard</a>
-  <div class="card-daftar">
-    <h2>Daftar Pembayaran</h2>
+<a href="{{ route('user.dashboard') }}" class="back-link">← Kembali ke Dashboard</a>
 
-    @if(session('warning'))
-      <div style="background:#fff3cd;padding:10px;border-radius:8px;margin-bottom:12px;">
-        {{ session('warning') }}
-      </div>
-    @endif
+<div class="card-daftar">
+  <h2>Daftar Pembayaran</h2>
 
-    @if($payments->isEmpty())
-      <p>Belum ada pembayaran.</p>
-    @else
-      <div class="payment-list">
-        @foreach($payments as $p)
-          @php
-            $exp = now()->diffInSeconds(\Carbon\Carbon::parse($p->created_at)->addMinutes(30), false);
-          @endphp
+  <!-- 🔍 FILTER -->
+  <form method="GET" class="filter-box">
+    <div>
+      <label>No. Transaksi:</label>
+      <input type="text" name="no_transaksi" value="{{ request('no_transaksi') }}" placeholder="Contoh: INV0007">
+    </div>
+    <div>
+      <label>Tanggal:</label>
+      <input type="date" name="tanggal" value="{{ request('tanggal') }}">
+    </div>
+    <div>
+      <label>Status:</label>
+      <select name="status">
+        <option value="">Semua</option>
+        <option value="pending" {{ request('status')=='pending'?'selected':'' }}>Pending</option>
+        <option value="success" {{ request('status')=='success'?'selected':'' }}>Lunas</option>
+        <option value="failed" {{ request('status')=='failed'?'selected':'' }}>Dibatalkan</option>
+      </select>
+    </div>
+    <div>
+      <button type="submit">🔎 Cari</button>
+    </div>
+  </form>
 
-          <div class="payment-card">
-            <div class="card-left">
-              <div class="icon-box">
-                <img src="{{ asset('images/wallet.png') }}" alt="icon">
-              </div>
-              <div class="car-info">
-                <div class="car-name">{{ $p->rental->car->brand->nama_merek ?? '-' }} {{ $p->rental->car->model ?? '-' }}</div>
-                <div class="car-meta">
-                  {{ $p->payment_type === 'main' ? 'Kuitansi Utama' : ($p->payment_type === 'charge' ? 'Kuitansi Tambahan' : 'Kuitansi Akhir') }}
-                  • {{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y H:i') }}
-                </div>
-              </div>
+  @if(session('warning'))
+    <div style="background:#fff3cd;padding:10px;border-radius:8px;margin-bottom:12px;">
+      {{ session('warning') }}
+    </div>
+  @endif
+
+  @if($payments->isEmpty())
+    <p>Belum ada pembayaran.</p>
+  @else
+    <div class="payment-list">
+      @foreach($payments as $p)
+        @php
+          $exp = now()->diffInSeconds(\Carbon\Carbon::parse($p->created_at)->addMinutes(30), false);
+        @endphp
+
+        <div class="payment-card" data-payment-id="{{ $p->payment_id }}">
+          <div class="card-left">
+            <div class="icon-box">
+              <img src="{{ asset('images/wallet.png') }}" alt="icon">
             </div>
-
-            <div class="card-right">
-              <div class="price">Rp{{ number_format($p->total_bayar, 0, ',', '.') }}</div>
-              <div class="status {{ strtolower($p->status_pembayaran) }}">
-                @if($p->status_pembayaran === 'pending')
-                  Menunggu (<span class="cd" data-s="{{ max(0,$exp) }}">--:--</span>)
-                @elseif($p->status_pembayaran === 'success')
-                  Lunas
-                @else
-                  Dibatalkan
-                @endif
+            <div class="car-info">
+              <div class="car-name">{{ $p->rental->car->brand->nama_merek ?? '-' }} {{ $p->rental->car->model ?? '-' }}</div>
+              <div class="car-meta">
+                {{ $p->payment_type === 'main' ? 'Kuitansi Utama' : ($p->payment_type === 'charge' ? 'Kuitansi Tambahan' : 'Kuitansi Akhir') }}
+                • {{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y H:i') }}
               </div>
-
-              @if($p->status_pembayaran === 'pending')
-                <a class="btn" href="{{ route('user.payments.continue', $p->payment_id) }}">Bayar</a>
-              @else
-                <button class="btn" onclick="openReceipt({{ $p->payment_id }})">Lihat {{ $p->status_pembayaran === 'success' ? 'Kuitansi' : 'Info' }}</button>
-              @endif
             </div>
           </div>
-        @endforeach
-      </div>
-    @endif
-  </div>
 
-  <!-- 🧾 Modal -->
-  <div id="receiptModal" class="modal-overlay">
-    <div class="modal-box">
-      <button class="close-btn" onclick="closeModal()">×</button>
-      <div id="receiptContent"><p>Memuat data...</p></div>
+          <div class="card-right">
+            <div class="price">Rp{{ number_format($p->total_bayar, 0, ',', '.') }}</div>
+            <div class="status {{ strtolower($p->status_pembayaran) }}">
+              @if($p->status_pembayaran === 'pending')
+                Menunggu (<span class="cd" data-s="{{ max(0,$exp) }}">--:--</span>)
+              @elseif($p->status_pembayaran === 'success')
+                Lunas
+              @else
+                Dibatalkan
+              @endif
+            </div>
+
+            @if($p->status_pembayaran === 'pending')
+              <a class="btn" href="{{ route('user.payments.continue', $p->payment_id) }}">Bayar</a>
+              @if($p->payment_type !== 'charge')
+                <form action="{{ route('user.payments.cancelSoft', $p->payment_id) }}" method="POST" onsubmit="return confirm('Batalkan pembayaran ini?')">
+                  @csrf
+                  <button type="submit" class="btn btn-danger">Batalkan</button>
+                </form>
+              @endif
+            @else
+              <button class="btn" onclick="openReceipt({{ $p->payment_id }})">
+                {{ $p->status_pembayaran === 'success' ? 'Lihat Kuitansi' : 'Lihat Info' }}
+              </button>
+            @endif
+          </div>
+        </div>
+      @endforeach
     </div>
+  @endif
+</div>
+
+<!-- 🧾 Modal -->
+<div id="receiptModal" class="modal-overlay">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal()">×</button>
+    <div id="receiptContent"><p>Memuat data...</p></div>
   </div>
+</div>
 
-  @include('partials.bottom-navbar')
+@include('partials.bottom-navbar')
 
-  <script>
-  /* Countdown */
-  const toMMSS = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-  document.querySelectorAll('.cd').forEach(el=>{
-    let s = +el.dataset.s || 0;
-    if (s <= 0) { el.textContent = '00:00'; return; }
-    const tick = () => { el.textContent = toMMSS(s); if (s-- > 0) setTimeout(tick, 1000); };
-    tick();
+<script>
+/* ---------------- Countdown ---------------- */
+const toMMSS = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+document.querySelectorAll('.cd').forEach(el=>{
+  let s = +el.dataset.s || 0;
+  const row = el.closest('.payment-card');
+  if (s <= 0) { el.textContent = '00:00'; return; }
+  const tick = () => { el.textContent = toMMSS(s); if(s-->0) setTimeout(tick,1000); };
+  tick();
+});
+
+/* ---------------- Modal Receipt ---------------- */
+function openReceipt(id){
+  const modal = document.getElementById('receiptModal');
+  const box = document.getElementById('receiptContent');
+  modal.style.display='flex';
+  box.innerHTML='<p>⏳ Memuat data...</p>';
+
+  fetch(`{{ url('/user/payments') }}/${id}/json`)
+  .then(r=>r.json())
+  .then(p=>{
+    if(!p || !p.payment_id){ box.innerHTML='<p>Data tidak ditemukan.</p>'; return; }
+    const cls = p.status_pembayaran.toLowerCase();
+    const text = p.status_pembayaran==='success'?'✅ Pembayaran Berhasil':
+                 p.status_pembayaran==='failed'?'❌ Pembayaran Gagal':'⏳ Pembayaran Pending';
+
+    let extraRows = '';
+    if(p.payment_type==='charge'){
+      const statusPengembalian = p.rental?.invoice?.status_pengembalian?.replace(/_/g,' ') ?? '-';
+      const catatan = p.rental?.invoice?.catatan ?? '-';
+      extraRows = `
+        <tr><th>Status Pengembalian</th><td>${statusPengembalian}</td></tr>
+        <tr><th>Deskripsi</th><td>${catatan}</td></tr>
+      `;
+    }
+
+    box.innerHTML = `
+      <h3 class="receipt-title">${p.payment_type==='charge'?'Kuitansi Tambahan':'Kuitansi Pembayaran'}</h3>
+      <div class="receipt-status ${cls}">${text}</div>
+      <div class="receipt-subtitle">#${p.payment_id} • ${p.gateway||'Duitku'}</div>
+      <table class="receipt-table">
+        <tr><th>Mobil</th><td>${p.rental?.car?.brand?.nama_merek ?? '-'} ${p.rental?.car?.model ?? ''}</td></tr>
+        <tr><th>🕓 Tanggal Sewa</th><td>${p.rental?.tanggal_mulai_fmt ?? '-'} → ${p.rental?.tanggal_selesai_fmt ?? '-'}</td></tr>
+        <tr><th>Metode Pengambilan</th><td>${
+          p.rental?.metode_pickup==='ambil_sendiri'?'Ambil Sendiri ke Kantor':(p.rental?.metode_pickup==='pickup_alamat'?'Antar ke Alamat Penyewa':'-')
+        }</td></tr>
+        ${extraRows}
+        <tr><th>Metode</th><td>${p.metode?.toUpperCase() ?? '-'}</td></tr>
+        <tr><th>Total</th><td><strong>Rp${Number(p.total_bayar).toLocaleString('id-ID')}</strong></td></tr>
+        <tr><th>Tanggal Bayar</th><td>${p.tanggal_bayar_fmt ?? '-'}</td></tr>
+        <tr><th>Status</th><td>${p.status_pembayaran}</td></tr>
+      </table>
+      ${p.status_pembayaran==='success'
+        ? `<button onclick="downloadPDF(${p.payment_id})" class="btn" style="margin-top:10px;">⬇️ Download PDF</button>`
+        : (p.status_pembayaran==='pending'
+            ? `<a href="${p.payment_token}" target="_blank" class="btn" style="margin-top:10px;">Lanjutkan Pembayaran</a>`
+            : `<button onclick="closeModal()" class="btn" style="margin-top:10px;">Tutup</button>`)}
+    `;
   });
+}
 
-  /* Modal */
-  function openReceipt(id){
-    const modal = document.getElementById('receiptModal');
-    const box = document.getElementById('receiptContent');
-    modal.style.display = 'flex';
-    box.innerHTML = '<p>⏳ Memuat data...</p>';
+function closeModal(){ document.getElementById('receiptModal').style.display='none'; }
 
-    fetch(`{{ url('/user/payments') }}/${id}/json`)
-    .then(r=>r.json())
-    .then(p=>{
-      if(!p || !p.payment_id){ box.innerHTML='<p>Data tidak ditemukan.</p>'; return; }
-      const cls = p.status_pembayaran.toLowerCase();
-      const text = p.status_pembayaran==='success'?'✅ Pembayaran Berhasil':
-                   p.status_pembayaran==='failed'?'❌ Pembayaran Gagal':'⏳ Pembayaran Pending';
-      box.innerHTML = `
-        <h3 class="receipt-title">${p.payment_type==='charge'?'Kuitansi Tambahan':'Kuitansi Pembayaran'}</h3>
-        <div class="receipt-status ${cls}">${text}</div>
-        <div class="receipt-subtitle">#${p.payment_id} • ${p.gateway||'Duitku'}</div>
-        <table class="receipt-table">
-          <tr><th>Mobil</th><td>${p.rental?.car?.brand?.nama_merek ?? '-'} ${p.rental?.car?.model ?? ''}</td></tr>
-          <tr><th>🕓 Tanggal Sewa</th><td>${p.rental?.tanggal_mulai_fmt ?? '-'} → ${p.rental?.tanggal_selesai_fmt ?? '-'}</td></tr>
-          <tr><th>Metode</th><td>${p.metode?.toUpperCase() ?? '-'}</td></tr>
-          <tr><th>Total</th><td><strong>Rp${Number(p.total_bayar).toLocaleString('id-ID')}</strong></td></tr>
-          <tr><th>Tanggal Bayar</th><td>${p.tanggal_bayar_fmt ?? '-'}</td></tr>
-          <tr><th>Status</th><td>${p.status_pembayaran}</td></tr>
-        </table>`;
-    });
-  }
+function downloadPDF(id){
+  fetch(`/user/payments/${id}/download`)
+    .then(async res=>{
+      if(!res.ok){ const err=await res.json().catch(()=>({})); throw new Error(err.error||'Gagal mengunduh PDF.'); }
+      return res.blob();
+    })
+    .then(blob=>{
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      a.download=`Kuitansi_${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    })
+    .catch(e=>alert('❌ '+e.message));
+}
 
-  function closeModal(){ document.getElementById('receiptModal').style.display='none'; }
-
-  // Tutup modal jika klik di luar box
-  window.onclick = e => {
-    const modal = document.getElementById('receiptModal');
-    if(e.target === modal) modal.style.display = 'none';
-  };
-  </script>
+// Tutup modal jika klik di luar box
+window.onclick = e=>{ if(e.target===document.getElementById('receiptModal')) closeModal(); };
+</script>
 @endsection

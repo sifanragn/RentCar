@@ -1,7 +1,9 @@
 @extends('partials.container')
 
-@section('title', 'Hubungi Kami')
-@section('page_title', 'Hubungi Kami')
+    .contact-section {
+      text-align: center;
+      padding: 40px 20px;
+    }
 
 @section('styles')
 <style>
@@ -27,11 +29,17 @@
     color: #111;
   }
 
-  .contact-section p.sub {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 35px;
-  }
+    .info-card::before,
+    .info-card::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, #111, #444);
+      opacity: 0.4;
+    }
+    .info-card::before { top: -20px; left: -30px; }
+    .info-card::after { bottom: -20px; right: -30px; }
 
   /* ========== KARTU INFORMASI ========== */
   .info-card {
@@ -67,30 +75,38 @@
     right: -30px;
   }
 
-  .info-card h2 {
-    margin: 0 0 15px;
-    font-size: 18px;
-    color: #fff;
-  }
+    .info-item {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+    }
 
-  .info-card p {
-    font-size: 13px;
-    line-height: 1.6;
-    color: #ddd;
-    margin-bottom: 20px;
-  }
+    .info-item i {
+      font-size: 16px;
+      margin-right: 10px;
+      color: #0d6efd;
+    }
 
-  .info-item {
-    display: flex;
-    align-items: center;
-    margin: 8px 0;
-  }
+    .socials {
+      margin: 35px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
 
-  .info-item i {
-    font-size: 16px;
-    margin-right: 10px;
-    color: #0d6efd;
-  }
+    .social-btn {
+      width: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 0;
+      border-radius: 10px;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
   /* ========== SOSIAL MEDIA BUTTONS ========== */
   .socials {
@@ -101,28 +117,17 @@
     gap: 15px;
   }
 
-  .social-btn {
-    width: 250px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 0;
-    border-radius: 10px;
-    font-weight: 600;
-    color: white;
-    text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
+    .social-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    }
 
-  .social-btn i {
-    margin-right: 8px;
-    font-size: 18px;
-  }
+    .wa { background: linear-gradient(90deg, #25D366, #128C7E); }
+    .ig { background: linear-gradient(90deg, #f09433, #dc2743, #bc1888); }
+    .fb { background: linear-gradient(90deg, #1877f2, #145dbf); }
 
-  .social-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
-  }
+    .footer-logo { margin-top: 40px; }
+    .footer-logo img { width: 120px; opacity: 0.9; }
 
   .wa {
     background: linear-gradient(90deg, #25D366, #128C7E);
@@ -234,9 +239,9 @@
       silakan hubungi kami melalui:
     </p>
 
-    <div class="info-item"><i class="fa fa-envelope"></i> rentalcarid@gmail.com</div>
-    <div class="info-item"><i class="fa fa-phone"></i> +62 823 0001 0991</div>
-    <div class="info-item"><i class="fa fa-map-marker"></i> Jl. Cigar Tengah, Abdurrahman</div>
+    <div class="footer-logo">
+      <img src="{{ asset('img/logo_rental.png') }}" alt="Rental Logo">
+    </div>
   </div>
 
   {{-- ===== SOSIAL MEDIA ===== --}}

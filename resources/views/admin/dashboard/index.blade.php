@@ -1,74 +1,87 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - RentCar</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f8fa;
-            margin: 0;
-            padding: 0;
-        }
-        .dashboard-container {
-            max-width: 800px;
-            margin: 50px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 30px;
-        }
-        h2 {
-            margin-bottom: 10px;
-            color: #333;
-        }
-        p {
-            color: #555;
-        }
-        .btn-container {
-            margin-top: 25px;
-            display: flex;
-            gap: 15px;
-        }
-        a.btn, button.logout-btn {
-            display: inline-block;
-            text-decoration: none;
-            background: #2c3e50;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 6px;
-            transition: background 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-        a.btn:hover, button.logout-btn:hover {
-            background: #1a242f;
-        }
-        .logout-btn {
-            background: #e74c3c;
-        }
-        .logout-btn:hover {
-            background: #c0392b;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin - RentCar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('css/admin-dashboard.css') }}">
 </head>
 <body>
-    <div class="dashboard-container">
-        <h2>Selamat datang, {{ session('admin_name') }}</h2>
-        <p><strong>Role:</strong> {{ ucfirst(session('admin_role')) }}</p>
+  <header class="topbar">
+    <div class="container">
+      <h1>RentCar Admin</h1>
 
-        <div class="btn-container">
-            @if(session('admin_role') === 'superadmin')
-                <a href="{{ route('admin.manage.index') }}" class="btn">Kelola Admin</a>
-            @endif
-            <a href="{{ route('cars.index') }}" class="btn">Kelola Mobil</a>
+      <div class="right-controls">
+        <div class="toggle-wrapper">
+          <label class="switch">
+            <input type="checkbox" id="modeToggle">
+            <span class="slider"></span>
+          </label>
+          <span class="mode-text">Dark Mode</span>
         </div>
 
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="margin-top:30px;">
-            @csrf
-            <button type="submit" class="logout-btn">Logout</button>
+        <form action="{{ route('logout') }}" method="POST">
+          @csrf
+          <button type="submit" class="btn-logout">Logout</button>
         </form>
+      </div>
     </div>
+  </header>
+
+  <div class="dashboard-container">
+  <div class="dashboard-header">
+    <h2>Dashboard Admin</h2>
+    <p>Kelola seluruh sistem dan data admin dari satu tempat.</p>
+  </div>
+
+  <div class="menu-grid">
+    <a href="#" class="menu-item">
+      <img src="{{ asset('img/icons/car.png') }}" class="menu-icon" alt="">
+      <div class="menu-text">
+        <h3>Kelola Mobil</h3>
+        <p>Tambah, ubah, dan hapus data mobil.</p>
+      </div>
+    </a>
+
+    <a href="#" class="menu-item">
+      <img src="{{ asset('img/icons/rent.png') }}" class="menu-icon" alt="">
+      <div class="menu-text">
+        <h3>Data Penyewaan</h3>
+        <p>Kelola seluruh transaksi penyewaan.</p>
+      </div>
+    </a>
+
+    <a href="#" class="menu-item">
+      <img src="{{ asset('img/icons/invoice.png') }}" class="menu-icon" alt="">
+      <div class="menu-text">
+        <h3>Invoice</h3>
+        <p>Lihat dan kelola tagihan pelanggan.</p>
+      </div>
+    </a>
+
+    <a href="#" class="menu-item">
+      <img src="{{ asset('img/icons/users.png') }}" class="menu-icon" alt="">
+      <div class="menu-text">
+        <h3>Data User</h3>
+        <p>Manajemen akun pelanggan & admin.</p>
+      </div>
+    </a>
+  </div>
+</div>
+
+<footer>© 2025 RentCar Admin — All Rights Reserved</footer>
+
+
+  <script>
+    const toggle = document.getElementById("modeToggle");
+    const body = document.body;
+    const modeText = document.querySelector(".mode-text");
+
+    toggle.addEventListener("change", () => {
+      body.classList.toggle("light-mode");
+      modeText.textContent = body.classList.contains("light-mode") ? "Light Mode" : "Dark Mode";
+    });
+  </script>
 </body>
 </html>

@@ -54,7 +54,6 @@ if ($user && Hash::check($request->password, $user->password)) {
 return redirect()->route('user.home');
 }
 
-
         // 3️⃣ Kalau keduanya gagal
         \Log::warning('❌ Login gagal', ['email' => $request->email]);
 
@@ -62,6 +61,14 @@ return redirect()->route('user.home');
             'login_error' => 'Email atau password salah, atau akun tidak aktif.',
         ]);
     }
+
+   public function __construct()
+{
+    $this->middleware(\App\Http\Middleware\PreventBackHistory::class)
+         ->only(['index', 'logout']);
+}
+
+
 
     public function logout(Request $request)
     {

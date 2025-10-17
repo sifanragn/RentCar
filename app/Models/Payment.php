@@ -80,26 +80,36 @@ class Payment extends Model
     |--------------------------------------------------------------------------
     */
     protected static function booted()
-    {
-        static::updating(function ($payment) {
-            if ($payment->isDirty('status_pembayaran')) {
+{
+    static::creating(function ($payment) {
+        // Hanya generate untuk pembayaran utama
+        if ($payment->payment_type === 'main' && empty($payment->no_transaksi)) {
+            $lastNumber = Payment::whereNotNull('no_transaksi')
+                ->where('payment_type', 'main')
+                ->orderByDesc('payment_id')
+                ->value('no_transaksi');
 
-                // 🚫 Blok update otomatis untuk charge
-                if (
-                    $payment->payment_type === 'charge' &&
-                    in_array($payment->status_pembayaran, ['failed', 'cancelled', 'dibatalkan']) &&
-                    !request()->is('admin/*')
-                ) {
-                    Log::warning("🚫 DIBLOK: Payment charge #{$payment->payment_id} dicegah (bukan admin)");
-                    $payment->status_pembayaran = $payment->getOriginal('status_pembayaran');
-                    return false;
-                }
-
-                // ✅ Catat perubahan biasa
-                $old = $payment->getOriginal('status_pembayaran');
-                $new = $payment->status_pembayaran;
-                Log::info("⚠️ Payment #{$payment->payment_id} berubah dari '{$old}' ke '{$new}'");
+            // Ambil angka terakhir dan tambahkan 1
+            $nextNumber = 1;
+            if ($lastNumber && preg_match('/INV(\d+)/', $lastNumber, $m)) {
+                $nextNumber = intval($m[1]) + 1;
             }
-        });
-    }
+
+            // Format INV0001
+            $payment->no_transaksi = 'INV' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        }
+
+        // Kalau ini charge, ambil no_transaksi dari payment utama
+        if ($payment->payment_type === 'charge' && empty($payment->no_transaksi)) {
+            $main = Payment::where('rental_id', $payment->rental_id)
+                ->where('payment_type', 'main')
+                ->first();
+            if ($main) {
+                $payment->no_transaksi = $main->no_transaksi;
+            }
+        }
+    });
 }
+
+}
+

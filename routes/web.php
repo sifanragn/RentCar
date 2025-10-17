@@ -16,9 +16,10 @@ use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\RentalController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\UserVerifikasiController;
+use App\Http\Controllers\User\ContactController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\AdminPaymentController;
-use App\Http\Controllers\User\ContactController;
+use App\Http\Middleware\PreventBackHistory;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,9 +45,8 @@ Route::get('/check-auth', function () {
         : '❌ Belum login';
 });
 
-
 // ==================== AUTH (LOGIN / REGISTER / LOGOUT) ==================== //
-Route::middleware('guest')->group(function () {
+Route::middleware(['guest', PreventBackHistory::class])->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'authenticate'])->name('login.submit');
 
@@ -54,8 +54,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 });
 
+// Logout
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
-
 
 // Halaman home publik
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -74,9 +74,8 @@ Route::get('/profile', function () {
     return view('user.profile.guest');
 })->name('user.profile.guest');
 
-
-Route::prefix('user')->middleware(['auth'])->name('user.')->group(function () {
-
+// ==================== USER AREA ==================== //
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -111,6 +110,8 @@ Route::prefix('user')->middleware(['auth'])->name('user.')->group(function () {
     Route::get('/payments/check-expired', [PaymentController::class, 'checkExpired'])->name('payments.checkExpired');
     Route::get('/payments/check-status/{payment_id}', [PaymentController::class, 'checkStatus'])->name('payments.checkStatus');
     Route::get('/payments/continue/{payment_id}', [PaymentController::class, 'continuePayment'])->name('payments.continue');
+    Route::get('/payments/status-list', [PaymentController::class, 'statusList'])->name('payments.statusList');
+    Route::get('/payments/{payment_id}/download', [PaymentController::class, 'downloadReceipt'])->name('payments.download');
 
     // Ongkir
     Route::post('/pickup/distance', [\App\Http\Controllers\User\PickupController::class, 'distance'])
@@ -123,18 +124,18 @@ Route::prefix('user')->middleware(['auth'])->name('user.')->group(function () {
 
 // ==================== ADMIN AREA ==================== //
 Route::prefix('admin')->middleware('admin.session')->group(function () {
-    Route::post('/invoices/{invoice}/retry-payment', [App\Http\Controllers\Admin\InvoiceController::class, 'retryPayment'])
-        ->name('admin.invoices.retryPayment');
-
+    // Invoices
     Route::get('/invoices', [InvoiceController::class, 'index'])->name('admin.invoices.index');
     Route::get('/invoices/{rental_id}/create', [InvoiceController::class, 'create'])->name('admin.invoices.create');
     Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('admin.invoices.store');
     Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('admin.invoices.show');
-    Route::post('/admin/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
-    
+    Route::post('/invoices/{invoice}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('admin.invoices.retryPayment');
+    Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])->name('admin.invoices.updateStatus');
+    Route::post('/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])->name('admin.payments.manualUpdate');
+    Route::post('/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
+
     // Dashboard
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
-        ->name('admin.dashboard.index');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard.index');
 
     // 👤 Kelola Admin
     Route::get('/kelola-admin', [ManageAdminController::class, 'index'])->name('admin.manage.index');
@@ -147,10 +148,8 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     // 🚘 CRUD Mobil (Admin)
     Route::get('cars/brands', [CarAdminController::class, 'brandIndex'])->name('cars.brands');
     Route::post('cars/brands', [CarAdminController::class, 'brandStore'])->name('cars.brands.store');
-
     Route::get('cars/models', [CarAdminController::class, 'modelIndex'])->name('cars.models');
     Route::post('cars/models', [CarAdminController::class, 'modelStore'])->name('cars.models.store');
-
     Route::get('api/models/{brand_id}', [CarAdminController::class, 'getModelsByBrand']);
     Route::resource('cars', CarAdminController::class);
 
@@ -164,12 +163,10 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('admin.rentals.show');
     Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('admin.rentals.updateStatus');
 
-    Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])
-        ->name('admin.payments.refresh');
+    // Pembayaran (Admin)
+    Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])->name('admin.payments.refresh');
 
     // 📩 Pesan Kontak dari User
-    Route::get('/kontak', [\App\Http\Controllers\Admin\ContactAdminController::class, 'index'])
-        ->name('admin.kontak.index');
-    Route::post('/kontak/{id}/reply', [\App\Http\Controllers\Admin\ContactAdminController::class, 'reply'])
-        ->name('admin.kontak.reply');
+    Route::get('/kontak', [\App\Http\Controllers\Admin\ContactAdminController::class, 'index'])->name('admin.kontak.index');
+    Route::post('/kontak/{id}/reply', [\App\Http\Controllers\Admin\ContactAdminController::class, 'reply'])->name('admin.kontak.reply');
 });
