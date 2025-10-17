@@ -20,6 +20,7 @@
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     margin-left: -10px;
     margin-right: -10px;
+    margin-bottom: 10px;
   }
 
   h2 {
@@ -30,36 +31,70 @@
     font-weight: 600;
   }
 
-  /* 🔎 Filter Box */
-  .filter-box {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    background: #f8f9fa;
-    padding: 10px 15px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    align-items: center;
+/* 🔎 Filter Box Horizontal Sejajar */
+  /* ===== Card ===== */
+  .card-filter {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    margin-bottom: 15px;
   }
-  .filter-box label { font-weight: 600; margin-right: 6px; }
-  .filter-box input, .filter-box select {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    outline: none;
-    font-size: 14px;
-  }
-  .filter-box input:focus, .filter-box select:focus { border-color: #0d6efd; }
-  .filter-box button {
-    background: #0d6efd;
-    border: none;
-    color: #fff;
-    padding: 7px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .filter-box button:hover { background: #0b5ed7; }
+
+.filter-box {
+  display: flex;
+  flex-wrap: wrap;      /* biar kalau sempit bisa wrap */
+  gap: 12px;            
+  background: #f8f9fa;
+  padding: 9px 13px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.filter-box > div {
+  display: flex;
+  flex-direction: row;   /* label & input sejajar */
+  align-items: center;
+  gap: 6px;              /* jarak label & input */
+  font-size: 14px;
+}
+
+.filter-box label {
+  font-weight: 600;
+  min-width: 100px;
+}
+
+.filter-box input,
+.filter-box select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 14px;
+  min-width: 140px;      /* supaya ukuran input konsisten */
+}
+
+.filter-box input:focus,
+.filter-box select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
+}
+
+.filter-box button {
+  background: #22c55e;
+  border: none;
+  color: #fff;
+  padding: 6px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.filter-box button:hover {
+  background: #16a34a;
+}
 
   /* 🌟 Payment List */
   .payment-list {
@@ -71,7 +106,7 @@
   .payment-card {
     background: white;
     border-radius: 16px;
-    padding: 18px 20px;
+    padding: 18px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -87,11 +122,12 @@
 
   .card-left { display: flex; align-items: center; gap: 14px; }
   .icon-box {
-    width: 46px; height: 46px;
-    border-radius: 12px;
+    width: 30px; height: 30px;
+    border-radius: 100px;
     background: #eef2ff;
     display: flex; align-items: center; justify-content: center;
   }
+  
   .icon-box img { width: 26px; height: 26px; }
 
   .car-info { display: flex; flex-direction: column; }
@@ -113,18 +149,36 @@
   .success { background: #d4edda; color: #155724; }
   .failed  { background: #f8d7da; color: #721c24; }
 
-  .btn {
-    background: #0d6efd;
-    color: #fff;
-    padding: 7px 12px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 13px;
-    display: inline-block;
-    transition: .2s;
-    cursor: pointer;
-  }
-  .btn:hover { background: #0b5ed7; }
+.btn {
+  background: #0d6efd;
+  color: #fff;
+  padding: 7px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 13px;
+  display: inline-block;
+  text-align: center;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+/* tombol kecil untuk “Lihat Info” */
+.btn-info {
+  min-width: 80px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* tombol normal untuk “Lihat Kuitansi” */
+.btn-kuitansi {
+  min-width: 105px;
+  padding: 5px 10px;
+}
+
+.btn:hover {
+  background: #0b5ed7;
+}
+
   .btn-danger { background: #dc3545; }
   .btn-danger:hover { background: #b02a37; }
 
@@ -132,7 +186,7 @@
     color:#000; text-decoration:none;
     font-weight:250; font-size:15px;
     margin-left: -150px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
   }
   .back-link:hover { text-decoration:underline; }
 
@@ -188,19 +242,50 @@
 
   /* 🔹 Responsive */
   @media (max-width:700px) {
-    .payment-card { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .card-right { text-align: left; width: 100%; }
+  .payment-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
+
+  .card-right {
+    text-align: left;
+    width: 100%;
+  }
+
+  /* Atur ulang filter box */
+  .filter-box {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .filter-box > div {
+    width: 100%;
+  }
+
+  .filter-box input,
+  .filter-box select,
+  .filter-box button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .filter-box button {
+    margin-top: 5px;
+  }
+}
+
 </style>
 @endsection
 
 @section('content')
 <a href="{{ route('user.dashboard') }}" class="back-link">← Kembali ke Dashboard</a>
 
-<div class="card-daftar">
-  <h2>Daftar Pembayaran</h2>
-
   <!-- 🔍 FILTER -->
+  <div class="card-filter">
   <form method="GET" class="filter-box">
     <div>
       <label>No. Transaksi:</label>
@@ -220,9 +305,13 @@
       </select>
     </div>
     <div>
-      <button type="submit">🔎 Cari</button>
+      <button type="submit">Cari</button>
     </div>
   </form>
+</div>
+
+<div class="card-daftar">
+  <h2>Daftar Pembayaran</h2>
 
   @if(session('warning'))
     <div style="background:#fff3cd;padding:10px;border-radius:8px;margin-bottom:12px;">
@@ -274,9 +363,11 @@
                 </form>
               @endif
             @else
-              <button class="btn" onclick="openReceipt({{ $p->payment_id }})">
-                {{ $p->status_pembayaran === 'success' ? 'Lihat Kuitansi' : 'Lihat Info' }}
-              </button>
+<button 
+  class="btn {{ $p->status_pembayaran === 'success' ? 'btn-kuitansi' : 'btn-info' }}" 
+  onclick="openReceipt({{ $p->payment_id }})">
+  {{ $p->status_pembayaran === 'success' ? 'Lihat Kuitansi' : 'Lihat Info' }}
+</button>
             @endif
           </div>
         </div>
@@ -337,7 +428,7 @@ function openReceipt(id){
       <div class="receipt-subtitle">#${p.payment_id} • ${p.gateway||'Duitku'}</div>
       <table class="receipt-table">
         <tr><th>Mobil</th><td>${p.rental?.car?.brand?.nama_merek ?? '-'} ${p.rental?.car?.model ?? ''}</td></tr>
-        <tr><th>🕓 Tanggal Sewa</th><td>${p.rental?.tanggal_mulai_fmt ?? '-'} → ${p.rental?.tanggal_selesai_fmt ?? '-'}</td></tr>
+        <tr><th>Tanggal Sewa</th><td>${p.rental?.tanggal_mulai_fmt ?? '-'} → ${p.rental?.tanggal_selesai_fmt ?? '-'}</td></tr>
         <tr><th>Metode Pengambilan</th><td>${
           p.rental?.metode_pickup==='ambil_sendiri'?'Ambil Sendiri ke Kantor':(p.rental?.metode_pickup==='pickup_alamat'?'Antar ke Alamat Penyewa':'-')
         }</td></tr>
@@ -351,15 +442,16 @@ function openReceipt(id){
         ? `<button onclick="downloadPDF(${p.payment_id})" class="btn" style="margin-top:10px;">⬇️ Download PDF</button>`
         : (p.status_pembayaran==='pending'
             ? `<a href="${p.payment_token}" target="_blank" class="btn" style="margin-top:10px;">Lanjutkan Pembayaran</a>`
-            : `<button onclick="closeModal()" class="btn" style="margin-top:10px;">Tutup</button>`)}
+            : ``)} <!-- 🔹 tombol “Tutup” dihapus -->
     `;
   });
 }
 
+
 function closeModal(){ document.getElementById('receiptModal').style.display='none'; }
 
 function downloadPDF(id){
-  fetch(`/user/payments/${id}/download`)
+fetch(`/user/payments/${id}/download`)
     .then(async res=>{
       if(!res.ok){ const err=await res.json().catch(()=>({})); throw new Error(err.error||'Gagal mengunduh PDF.'); }
       return res.blob();

@@ -262,9 +262,22 @@ window.addEventListener('load', function() {
   const alamatUser = document.getElementById('alamatUser');
   const cekOngkirBtn = document.getElementById('cekOngkirBtn');
   const hasilOngkir = document.getElementById('hasilOngkir');
+  const mulai = document.getElementById('tanggal_mulai');
+  const selesai = document.getElementById('tanggal_selesai');
 
   const hasDocuments = {{ $hasDocuments ? 'true' : 'false' }};
   const isVerified   = {{ $isVerified ? 'true' : 'false' }};
+
+  // 🔹 Batasi tanggal sebelum hari ini
+  const now = new Date();
+  const localNow = now.toISOString().slice(0, 16); // Format yyyy-MM-ddTHH:mm
+  mulai.min = localNow;
+  selesai.min = localNow;
+
+  // Kalau tanggal mulai berubah, tanggal selesai minimal harus >= tanggal mulai
+  mulai.addEventListener('change', function () {
+    selesai.min = mulai.value;
+  });
 
   // 🔹 Fungsi tampil/sembunyikan lokasi & alamat
   function togglePickup() {
@@ -309,7 +322,7 @@ window.addEventListener('load', function() {
     }
   });
 
-  // 🔹 Validasi waktu
+  // 🔹 Validasi jam sewa (hanya 08:00–22:00)
   function validateTimeRange(input) {
     if (!input.value) return;
     const hour = new Date(input.value).getHours();
@@ -319,8 +332,8 @@ window.addEventListener('load', function() {
     }
   }
 
-  document.getElementById('tanggal_mulai').addEventListener('change', e => validateTimeRange(e.target));
-  document.getElementById('tanggal_selesai').addEventListener('change', e => validateTimeRange(e.target));
+  mulai.addEventListener('change', e => validateTimeRange(e.target));
+  selesai.addEventListener('change', e => validateTimeRange(e.target));
 
   // 🔹 Submit form
   form.addEventListener('submit', function(e) {
@@ -335,9 +348,9 @@ window.addEventListener('load', function() {
       return popup.style.display = 'flex';
     }
 
-    const mulai = document.getElementById('tanggal_mulai').value;
-    const selesai = document.getElementById('tanggal_selesai').value;
-    if (new Date(mulai) >= new Date(selesai)) {
+    const mulaiVal = mulai.value;
+    const selesaiVal = selesai.value;
+    if (new Date(mulaiVal) >= new Date(selesaiVal)) {
       return alert('Tanggal selesai harus lebih besar dari tanggal mulai.');
     }
 

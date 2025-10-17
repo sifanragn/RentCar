@@ -140,9 +140,10 @@
     <span>Hubungi Kami</span>
   </a>
 
-  {{-- Profile --}}
-  <a class="nav-item {{ request()->is('profile') ? 'active' : '' }}" href="{{ route('user.profile.index') }}">
-    <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z"/></svg>
-    <span>Profile</span>
-  </a>
+{{-- 
+<a class="nav-item {{ request()->is('profile') ? 'active' : '' }}" href="{{ route('user.profile') }}">
+  <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z"/></svg>
+  <span>Profile</span>
+</a>
+--}}
 </nav>

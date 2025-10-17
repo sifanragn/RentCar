@@ -5,53 +5,59 @@
   <title>Kuitansi Pembayaran</title>
   <style>
     body {
-      font-family: 'Poppins', DejaVu Sans, sans-serif;
-      background: #e8edf5;
+      font-family: 'DejaVu Sans', 'Poppins', sans-serif;
+      background: #f4f7fb;
       margin: 0;
-      padding: 0;
+      padding: 30px 0;
       color: #333;
+      font-size: 14px;
     }
 
     .invoice-box {
       max-width: 800px;
-      margin: 40px auto;
+      margin: auto;
       background: #fff;
-      border-radius: 14px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 1px solid #e0e6ed;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      color: #fff;
+      text-align: center;
+      padding: 30px;
       position: relative;
     }
 
-    /* HEADER */
-    .header {
-      background: linear-gradient(135deg, #1976d2, #42a5f5);
-      padding: 35px 40px;
-      color: #fff;
-      position: relative;
-      text-align: center;
-    }
     .header h1 {
       margin: 0;
       font-size: 22px;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
     }
+
     .header small {
+      display: block;
       font-size: 13px;
       opacity: 0.9;
+      margin-top: 6px;
     }
+
     .header::after {
       content: '';
       position: absolute;
-      bottom: -30px;
+      bottom: -18px;
       left: 0;
       width: 100%;
-      height: 50px;
-      background: linear-gradient(to bottom, rgba(25,118,210,0.15), transparent);
+      height: 36px;
+      background: linear-gradient(to bottom, rgba(25,118,210,0.1), transparent);
       border-radius: 50% 50% 0 0;
     }
 
-    /* STATUS STAMP */
+    /* ===== STAMP ===== */
     .stamp {
       position: absolute;
       top: 110px;
@@ -59,15 +65,15 @@
       transform: rotate(-12deg);
       color: #28a745;
       border: 3px solid #28a745;
-      font-size: 38px;
+      font-size: 34px;
       font-weight: bold;
-      padding: 10px 24px;
+      padding: 8px 22px;
       border-radius: 10px;
       opacity: 0.25;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
     }
 
-    /* INFO AREA */
+    /* ===== CONTENT ===== */
     .content {
       padding: 40px;
       position: relative;
@@ -75,16 +81,17 @@
     }
 
     .content p {
-      margin: 6px 0;
+      margin: 8px 0;
     }
 
+    /* ===== LABEL ===== */
     .status-label {
       display: inline-block;
-      padding: 4px 9px;
+      padding: 5px 10px;
       border-radius: 8px;
       font-size: 12px;
       font-weight: 600;
-      margin-left: 6px;
+      margin-left: 8px;
     }
     .success { background: #d4edda; color: #155724; }
     .failed { background: #f8d7da; color: #721c24; }
@@ -93,46 +100,54 @@
     .badge-type {
       background: #e3f2fd;
       color: #0d6efd;
-      padding: 4px 10px;
+      padding: 5px 10px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 600;
-      margin-top: 8px;
+      margin-top: 10px;
       display: inline-block;
     }
 
-    /* TABLE */
+    /* ===== TABLE ===== */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 14px;
+      margin-top: 20px;
       font-size: 14px;
     }
+
     th, td {
       padding: 10px 12px;
       border-bottom: 1px solid #eee;
       vertical-align: top;
     }
+
     th {
-      background: #f9fafc;
       width: 35%;
       font-weight: 600;
       color: #111;
+      background: #f9fafc;
       text-align: left;
     }
-    tr:nth-child(even) td { background: #fcfdff; }
 
+    tr:nth-child(even) td {
+      background: #fcfdff;
+    }
+
+    /* ===== SIGNATURE ===== */
     .signature {
-      margin: 50px 0 10px;
+      margin-top: 50px;
       text-align: right;
       font-size: 13px;
     }
+
     .signature strong {
       display: block;
       margin-top: 40px;
       text-decoration: underline;
     }
 
+    /* ===== FOOTER ===== */
     .footer {
       text-align: center;
       padding: 16px;
@@ -142,12 +157,12 @@
       border-top: 2px solid #dee2e6;
     }
 
-    /* Background mobil */
+    /* ===== BACKGROUND MOBIL ===== */
     .car-bg {
       position: absolute;
-      bottom: 20px;
+      bottom: 25px;
       right: 30px;
-      width: 200px;
+      width: 190px;
       opacity: 0.08;
       z-index: 0;
     }
@@ -236,7 +251,7 @@
       </table>
 
       <div class="signature">
-        Hormat Kami,<br>
+        Hormat kami,<br>
         <strong>Admin RentCar</strong>
       </div>
     </div>

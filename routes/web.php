@@ -89,9 +89,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 
     // Profile
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    //Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    //Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    //Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
     // Rental
     Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
@@ -111,7 +111,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/payments/check-status/{payment_id}', [PaymentController::class, 'checkStatus'])->name('payments.checkStatus');
     Route::get('/payments/continue/{payment_id}', [PaymentController::class, 'continuePayment'])->name('payments.continue');
     Route::get('/payments/status-list', [PaymentController::class, 'statusList'])->name('payments.statusList');
-    Route::get('/payments/{payment_id}/download', [PaymentController::class, 'downloadReceipt'])->name('payments.download');
+    Route::get('/payments/{id}/download', [PaymentController::class, 'downloadReceipt'])->name('payments.download');
 
     // Ongkir
     Route::post('/pickup/distance', [\App\Http\Controllers\User\PickupController::class, 'distance'])
@@ -167,6 +167,6 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])->name('admin.payments.refresh');
 
     // 📩 Pesan Kontak dari User
-    Route::get('/kontak', [\App\Http\Controllers\Admin\ContactAdminController::class, 'index'])->name('admin.kontak.index');
-    Route::post('/kontak/{id}/reply', [\App\Http\Controllers\Admin\ContactAdminController::class, 'reply'])->name('admin.kontak.reply');
+// Route::get('/kontak', [\App\Http\Controllers\Admin\ContactAdminController::class, 'index'])->name('admin.kontak.index');
+// Route::post('/kontak/{id}/reply', [\App\Http\Controllers\Admin\ContactAdminController::class, 'reply'])->name('admin.kontak.reply');
 });
