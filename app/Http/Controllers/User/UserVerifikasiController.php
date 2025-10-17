@@ -5,16 +5,18 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserVerifikasiController extends Controller
 {
     public function index(Request $request)
     {
-        // Tangkap halaman asal user, default ke home
-        $redirectTo = $request->input('redirect_to') ?? url()->previous();
-        return view('user.verifikasi.index', compact('redirectTo'));
+        $user = Auth::user();
+        $redirectTo = $request->input('redirect_to') ?? route('user.profile.index');
+        return view('user.verifikasi.index', compact('user', 'redirectTo'));
     }
-public function store(Request $request)
+
+    public function store(Request $request)
 {
     $user = Auth::user();
 
@@ -33,11 +35,11 @@ public function store(Request $request)
         $user->foto_kk = $kkPath;
     }
 
-    // Update status verifikasi supaya notif berubah
-    $user->status_verifikasi = 'menunggu';  // atau 'menunggu_konfirmasi' sesuai yang kamu pakai
+    $user->status_verifikasi = 'menunggu';
     $user->save();
 
-    return redirect($request->redirect_to)->with('success', 'Dokumen berhasil diupload, tunggu konfirmasi admin.');
+    // setelah upload langsung ke halaman edit profil
+    return redirect()->route('user.profile.edit')
+        ->with('success', 'Dokumen berhasil diupload, tunggu konfirmasi admin.');
 }
-
 }

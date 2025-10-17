@@ -1,0 +1,103 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  color: #000;
+  margin: 0;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.profile-header img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #000;
+}
+
+.profile-header h4 {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.username {
+  color: #777;
+  font-size: 14px;
+}
+
+/* Menu List */
+.menu-section {
+  background: #fafafa;
+  border-radius: 16px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .08);
+  margin-top: 25px;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.menu-item:hover {
+  background: #f3f3f3;
+}
+
+.menu-item span {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.menu-item small {
+  color: #888;
+  font-size: 13px;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+/* Footer & Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #777;
+  font-size: 13px;
+}
+
+.bottom-nav .nav-item.active {
+  color: #000;
+  font-weight: 600;
+}
+
+.bottom-nav .center {
+  transform: translateY(-8px);
+}
+
+footer img {
+  margin-top: 30px;
+}

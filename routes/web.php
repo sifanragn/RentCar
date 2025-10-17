@@ -1,25 +1,32 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\PreventBackHistory;
+
+// ===== AUTH CONTROLLERS =====
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Admin\ManageAdminController;
+
+// ===== ADMIN CONTROLLERS =====
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\ManageAdminController;
 use App\Http\Controllers\Admin\CarAdminController;
 use App\Http\Controllers\Admin\UserVerificationController;
 use App\Http\Controllers\Admin\RentalAdminController;
-use App\Http\Controllers\User\CarController;
-use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\Admin\AdminPaymentController;
+
+// ===== USER CONTROLLERS =====
 use App\Http\Controllers\User\HomeController;
+use App\Http\Controllers\User\CarController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\RentalController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\UserVerifikasiController;
 use App\Http\Controllers\User\ContactController;
-use App\Http\Controllers\Admin\InvoiceController;
-use App\Http\Controllers\Admin\AdminPaymentController;
-use App\Http\Middleware\PreventBackHistory;
+use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\PickupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,15 +42,11 @@ Route::get('/test-log', function () {
     return 'Cek terminal/log kamu 😉';
 });
 
-Route::get('/test-view', function () {
-    return view('admin.merek.index', ['brands' => []]);
-});
-
-Route::get('/check-auth', function () {
-    return auth()->check()
-        ? '✅ Login sebagai: ' . auth()->user()->email
-        : '❌ Belum login';
-});
+Route::get('/test-view', fn() => view('admin.merek.index', ['brands' => []]));
+Route::get('/check-auth', fn() => auth()->check()
+    ? '✅ Login sebagai: ' . auth()->user()->email
+    : '❌ Belum login'
+);
 
 // ==================== AUTH (LOGIN / REGISTER / LOGOUT) ==================== //
 Route::middleware(['guest', PreventBackHistory::class])->group(function () {
@@ -57,24 +60,16 @@ Route::middleware(['guest', PreventBackHistory::class])->group(function () {
 // Logout
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
-// Halaman home publik
+// ==================== PUBLIC (TANPA LOGIN) ==================== //
+Route::get('/', fn() => redirect()->route('home'));
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-// Root / redirect ke home
-Route::get('/', function () {
-    return redirect()->route('home');
-});
-
-// ==================== PUBLIK ==================== //
 Route::get('/cars', [CarController::class, 'index'])->name('user.cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('user.cars.show');
 
 // 👥 Guest profile (belum login)
-Route::get('/profile', function () {
-    return view('user.profile.guest');
-})->name('user.profile.guest');
+Route::get('/profile', fn() => view('user.profile.guest'))->name('user.profile.guest');
 
-// ==================== USER AREA ==================== //
+// ==================== USER AREA (LOGIN WAJIB) ==================== //
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
@@ -89,18 +84,20 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 
     // Profile
-    //Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    //Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    //Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/hapus/{tipe}', [ProfileController::class, 'hapusVerifikasi'])->name('profile.hapusVerifikasi');
+    Route::post('/profile/verify-password', [ProfileController::class, 'verifyPassword'])->name('profile.verifyPassword');
 
     // Rental
     Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
     Route::get('/rentals/create/{car_id}', [RentalController::class, 'create'])->name('rentals.create');
     Route::post('/rentals/store/{car_id}', [RentalController::class, 'store'])->name('rentals.store');
     Route::post('/rentals/cancel-latest', [RentalController::class, 'cancelLatest'])->name('rentals.cancelLatest');
+    Route::get('/rentals/{id}', [RentalController::class, 'show'])->name('rentals.show');
 
     // Pembayaran
-    Route::get('/payments/{id}/json', [PaymentController::class, 'json'])->name('payments.json');
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/detail-rental/{rental_id}', [PaymentController::class, 'detailRental'])->name('payments.detailRental');
     Route::post('/payments/start/{rental_id}', [PaymentController::class, 'startProcess'])->name('payments.start');
@@ -112,10 +109,10 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/payments/continue/{payment_id}', [PaymentController::class, 'continuePayment'])->name('payments.continue');
     Route::get('/payments/status-list', [PaymentController::class, 'statusList'])->name('payments.statusList');
     Route::get('/payments/{id}/download', [PaymentController::class, 'downloadReceipt'])->name('payments.download');
+    Route::get('/payments/{id}/json', [PaymentController::class, 'json'])->name('payments.json');
 
-    // Ongkir
-    Route::post('/pickup/distance', [\App\Http\Controllers\User\PickupController::class, 'distance'])
-        ->name('pickup.distance');
+    // Ongkir / Pickup Distance
+    Route::post('/pickup/distance', [PickupController::class, 'distance'])->name('pickup.distance');
 
     // Hubungi Kami
     Route::get('/kontak', [ContactController::class, 'index'])->name('kontak.index');
@@ -123,29 +120,19 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 });
 
 // ==================== ADMIN AREA ==================== //
-Route::prefix('admin')->middleware('admin.session')->group(function () {
-    // Invoices
-    Route::get('/invoices', [InvoiceController::class, 'index'])->name('admin.invoices.index');
-    Route::get('/invoices/{rental_id}/create', [InvoiceController::class, 'create'])->name('admin.invoices.create');
-    Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('admin.invoices.store');
-    Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('admin.invoices.show');
-    Route::post('/invoices/{invoice}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('admin.invoices.retryPayment');
-    Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])->name('admin.invoices.updateStatus');
-    Route::post('/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])->name('admin.payments.manualUpdate');
-    Route::post('/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
-
+Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(function () {
     // Dashboard
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard.index');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard.index');
 
-    // 👤 Kelola Admin
-    Route::get('/kelola-admin', [ManageAdminController::class, 'index'])->name('admin.manage.index');
-    Route::get('/kelola-admin/create', [ManageAdminController::class, 'create'])->name('admin.manage.create');
-    Route::post('/kelola-admin', [ManageAdminController::class, 'store'])->name('admin.manage.store');
-    Route::get('/kelola-admin/{id}/edit', [ManageAdminController::class, 'edit'])->name('admin.manage.edit');
-    Route::post('/kelola-admin/{id}', [ManageAdminController::class, 'update'])->name('admin.manage.update');
-    Route::post('/kelola-admin/{id}/deactivate', [ManageAdminController::class, 'deactivate'])->name('admin.manage.deactivate');
+    // Kelola Admin
+    Route::get('/kelola-admin', [ManageAdminController::class, 'index'])->name('manage.index');
+    Route::get('/kelola-admin/create', [ManageAdminController::class, 'create'])->name('manage.create');
+    Route::post('/kelola-admin', [ManageAdminController::class, 'store'])->name('manage.store');
+    Route::get('/kelola-admin/{id}/edit', [ManageAdminController::class, 'edit'])->name('manage.edit');
+    Route::post('/kelola-admin/{id}', [ManageAdminController::class, 'update'])->name('manage.update');
+    Route::post('/kelola-admin/{id}/deactivate', [ManageAdminController::class, 'deactivate'])->name('manage.deactivate');
 
-    // 🚘 CRUD Mobil (Admin)
+    // Mobil
     Route::get('cars/brands', [CarAdminController::class, 'brandIndex'])->name('cars.brands');
     Route::post('cars/brands', [CarAdminController::class, 'brandStore'])->name('cars.brands.store');
     Route::get('cars/models', [CarAdminController::class, 'modelIndex'])->name('cars.models');
@@ -153,20 +140,26 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::get('api/models/{brand_id}', [CarAdminController::class, 'getModelsByBrand']);
     Route::resource('cars', CarAdminController::class);
 
-    // 👥 Verifikasi User (Admin)
-    Route::get('/users', [UserVerificationController::class, 'index'])->name('admin.users.index');
-    Route::get('/users/{id}', [UserVerificationController::class, 'show'])->name('admin.users.show');
-    Route::post('/users/{id}/verify', [UserVerificationController::class, 'verify'])->name('admin.users.verify');
+    // Verifikasi User
+    Route::get('/users', [UserVerificationController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}', [UserVerificationController::class, 'show'])->name('users.show');
+    Route::post('/users/{id}/verify', [UserVerificationController::class, 'verify'])->name('users.verify');
 
-    // 📦 Penyewaan (Admin)
-    Route::get('/rentals', [RentalAdminController::class, 'index'])->name('admin.rentals.index');
-    Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('admin.rentals.show');
-    Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('admin.rentals.updateStatus');
+    // Penyewaan
+    Route::get('/rentals', [RentalAdminController::class, 'index'])->name('rentals.index');
+    Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('rentals.show');
+    Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('rentals.updateStatus');
+
+    // Invoices
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('/invoices/{rental_id}/create', [InvoiceController::class, 'create'])->name('invoices.create');
+    Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('invoices.store');
+    Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('invoices.show');
+    Route::post('/invoices/{invoice}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('invoices.retryPayment');
+    Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
+    Route::post('/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])->name('payments.manualUpdate');
+    Route::post('/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
 
     // Pembayaran (Admin)
-    Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])->name('admin.payments.refresh');
-
-    // 📩 Pesan Kontak dari User
-// Route::get('/kontak', [\App\Http\Controllers\Admin\ContactAdminController::class, 'index'])->name('admin.kontak.index');
-// Route::post('/kontak/{id}/reply', [\App\Http\Controllers\Admin\ContactAdminController::class, 'reply'])->name('admin.kontak.reply');
+    Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])->name('payments.refresh');
 });
