@@ -214,17 +214,27 @@ class InvoiceController extends Controller
      * 🔍 Detail invoice + auto refresh status pembayaran jika masih pending
      */
     public function show($invoice_id)
-    {
-        $invoice = Invoice::with(['rental.car.brand', 'rental.user', 'admin', 'rental.payment'])
-            ->findOrFail($invoice_id);
+{
+    $invoice = Invoice::with([
+        'rental.car.brand',
+        'rental.user',
+        'admin',
+        'rental.payments', // ✅ pakai plural, bukan rental.payment
+    ])->findOrFail($invoice_id);
 
-        if ($invoice->rental->payment) {
-            $this->refreshPaymentStatus($invoice->rental->payment);
-            $invoice->refresh();
+    // 🔄 Auto-refresh payment yang pending (utama & charge)
+    foreach ($invoice->rental->payments as $payment) {
+        if ($payment->status_pembayaran === 'pending') {
+            $this->refreshPaymentStatus($payment);
         }
-
-        return view('admin.invoices.show', compact('invoice'));
     }
+
+    // 🔁 Refresh data invoice biar up to date
+    $invoice->refresh();
+
+    return view('admin.invoices.show', compact('invoice'));
+}
+
 
     /**
      * 🔧 Util: Buat pembayaran di Duitku
@@ -323,31 +333,44 @@ class InvoiceController extends Controller
 
     DB::beginTransaction();
     try {
-        // 1️⃣ Update status invoice
+        // Update status invoice
         $invoice->update(['status_invoice' => 'cancel']);
 
-        // 2️⃣ Update status rental (jika ada)
+        // Update status rental (jika ada)
         if ($invoice->rental) {
-            $invoice->rental->update(['status_rental' => 'dibatalkan']);
-
-            // 3️⃣ Update semua payment terkait rental ini
             foreach ($invoice->rental->payments as $payment) {
-                if ($payment->status_pembayaran === 'pending') {
+                // Batalkan hanya payment charge yang masih pending
+                if ($payment->payment_type === 'charge' && $payment->status_pembayaran === 'pending') {
                     $payment->update([
                         'status_pembayaran' => 'failed',
                         'callback_status'   => 'cancelled',
                     ]);
                 }
             }
+
+            // Jangan ubah payment main yang sudah sukses
+            $invoice->rental->update(['status_rental' => 'selesai']);
         }
 
         DB::commit();
-        return back()->with('success', '❌ Invoice berhasil dibatalkan, status user juga diperbarui.');
+        return back()->with('success', '✅ Invoice dibatalkan dan pembayaran denda ikut dibatalkan.');
     } catch (\Throwable $e) {
         DB::rollBack();
         \Log::error('❌ Gagal batalkan invoice: ' . $e->getMessage());
         return back()->with('error', 'Gagal membatalkan invoice: ' . $e->getMessage());
     }
 }
+ public function manualUpdate(Request $request, $id)
+{
+    $request->validate([
+        'status_pembayaran' => 'required|in:pending,success,failed',
+    ]);
+
+    $payment = Payment::findOrFail($id);
+    $payment->update(['status_pembayaran' => $request->status_pembayaran]);
+
+    return back()->with('success', 'Status pembayaran berhasil diperbarui secara manual.');
+}
+
 
 }

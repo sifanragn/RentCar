@@ -69,11 +69,17 @@ class Rental extends Model
         return $this->hasOne(\App\Models\Payment::class, 'rental_id', 'rental_id')
                     ->latestOfMany('payment_id');
     }
+public function invoice()
+{
+    return $this->hasOne(\App\Models\Invoice::class, 'rental_id', 'rental_id');
+}
 
-    public function invoice()
-    {
-        return $this->hasOne(\App\Models\Invoice::class, 'rental_id');
-    }
+public function invoices()
+{
+    return $this->hasMany(\App\Models\Invoice::class, 'rental_id', 'rental_id');
+}
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -147,4 +153,10 @@ class Rental extends Model
     {
         return $this->formatIndonesiaTime($this->tanggal_pengembalian);
     }
+
+    public function mainPayment()
+{
+    return $this->hasOne(Payment::class, 'rental_id')->where('payment_type', 'main');
+}
+
 }

@@ -61,6 +61,14 @@ class LoginController extends Controller
         ]);
     }
 
+   public function __construct()
+{
+    $this->middleware(\App\Http\Middleware\PreventBackHistory::class)
+         ->only(['index', 'logout']);
+}
+
+
+
     public function logout(Request $request)
     {
         Auth::logout();

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,17 +10,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
 
-class PaymentController extends Controller
+class PaymentGatewayController extends Controller
 {
     /**
-     * ✅ STEP 1: User baru selesai isi form sewa → pilih metode pembayaran
+     * ✅ STEP 1: User baru selesai isi form sewa → masuk ke DETAIL (pilih metode).
      */
     public function detailRental($rental_id)
     {
         $rental = Rental::with(['car.brand', 'car.capacity', 'user'])->findOrFail($rental_id);
         if ($rental->user_id !== auth()->id()) abort(403);
 
-        // kalau sudah ada pembayaran pending, arahkan langsung ke proses
         $pending = Payment::where('rental_id', $rental->rental_id)
             ->where('status_pembayaran', 'pending')
             ->latest()
@@ -34,7 +33,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * ▶️ STEP 2: Kirim request ke Duitku & simpan payment pending
+     * ▶️ STEP 2: User klik “Bayar” di DETAIL → kirim ke Duitku & buat Payment.
      */
     public function startProcess(Request $request, $rental_id)
     {
@@ -45,36 +44,31 @@ class PaymentController extends Controller
         $rental = Rental::with(['car.brand', 'user'])->findOrFail($rental_id);
         if ($rental->user_id !== auth()->id()) abort(403);
 
-        // Hindari double pending
+        // Cegah double pending
         $existingPending = Payment::where('rental_id', $rental->rental_id)
             ->where('status_pembayaran', 'pending')
             ->first();
+
         if ($existingPending) {
             return redirect()->route('user.payments.process', $existingPending->payment_id);
         }
 
-        // === DUITKU CONFIG ===
-        $merchantCode = 'DS25394'; // kode sandbox kamu
-        $apiKey = '06a924ce717ea70f6522e5c51241ccc6'; // sandbox API key kamu
+        // === Setup Duitku ===
+        $merchantCode = 'DS25394'; // contoh sandbox
+        $apiKey = ''; // ubah sesuai key sandbox kamu
         $merchantOrderId = 'INV-' . time();
-        $amount = (int) $rental->total_biaya;
-        $timestamp = round(microtime(true) * 1000); // dalam milidetik
+        $amount = $rental->total_biaya;
 
-        // mapping metode ke kode Duitku
         $mapMetode = [
             'qris' => 'QRIS',
-            'bca' => 'BC',     // BCA VA
-            'bri' => 'BR',     // BRI VA
-            'bni' => 'N2',     // BNI VA
-            'mandiri' => 'M2', // Mandiri VA
+            'bca' => 'VC',
+            'bri' => 'B1',
+            'bni' => 'I1',
+            'mandiri' => 'M1',
         ];
+        $paymentMethod = $mapMetode[$request->metode];
+        $signature = md5($merchantCode . $merchantOrderId . $amount . $apiKey);
 
-        $paymentMethod = $mapMetode[$request->metode] ?? 'QRIS';
-
-        // ✅ Signature: merchantCode + merchantOrderId + paymentAmount + apiKey + timestamp
-        $signature = md5($merchantCode . $merchantOrderId . $amount . $apiKey . $timestamp);
-
-        // === Payload ke Duitku ===
         $payload = [
             "merchantCode" => $merchantCode,
             "paymentAmount" => $amount,
@@ -87,45 +81,39 @@ class PaymentController extends Controller
             "callbackUrl" => "https://amiyah-mouselike-stably.ngrok-free.dev/api/payment/callback",
             "returnUrl" => route('user.payments.index'),
             "signature" => $signature,
-            "timestamp" => $timestamp,
             "expiryPeriod" => 30
         ];
 
-        // === Kirim ke Duitku API ===
         $response = Http::post('https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry', $payload);
         $result = $response->json();
 
-        // 🧩 Cek hasil Duitku
         if (!isset($result['paymentUrl'])) {
-            \Log::error('Duitku error response', ['result' => $result]);
             return back()->with('error', 'Gagal membuat transaksi: ' . ($result['Message'] ?? 'unknown'));
         }
 
-        // === Simpan ke database ===
-        DB::transaction(function () use ($rental, $result, $paymentMethod, $merchantOrderId, &$payment) {
+        // Simpan ke DB
+        DB::transaction(function () use ($rental, $request, $result, $paymentMethod, $merchantOrderId, &$payment) {
             $payment = Payment::create([
-        'rental_id'         => $rental->rental_id,
-        'gateway'           => 'Duitku',
-        'metode'            => $request->metode,
-        'payment_type'      => 'main',
-        'total_bayar'       => $rental->total_biaya,
-        'status_pembayaran' => 'pending',
-        'gateway_reference' => 'MAN-' . mt_rand(100000, 999999),
-        'payment_token'     => 'PAY-' . strtoupper(uniqid()),
-        'callback_status'   => 'waiting',
-        'tanggal_bayar'     => now(),
-        'expired_at'        => now()->addMinutes(30), // ⏱ tambah baris ini
-    ]);
+                'rental_id' => $rental->rental_id,
+                'gateway' => 'Duitku',
+                'metode' => $paymentMethod,
+                'total_bayar' => $rental->total_biaya,
+                'status_pembayaran' => 'pending',
+                'gateway_reference' => $merchantOrderId,
+                'payment_token' => $result['reference'] ?? null,
+                'callback_status' => 'waiting',
+                'tanggal_bayar' => now(),
+            ]);
 
             $rental->update(['status_rental' => 'menunggu_pembayaran']);
         });
 
-        // ✅ Redirect user ke halaman pembayaran Duitku
-        return redirect()->away($result['paymentUrl']);
+        // Redirect ke halaman Duitku
+        return redirect($result['paymentUrl']);
     }
 
     /**
-     * 🧾 STEP 3: Halaman PROCESS — countdown & status
+     * 🧾 STEP 3: Halaman PROCESS — countdown & status.
      */
     public function process($payment_id)
     {

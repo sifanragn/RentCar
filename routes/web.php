@@ -17,6 +17,8 @@ use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\User\ContactController;
+use App\Http\Middleware\PreventBackHistory;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,32 +33,16 @@ Route::get('/', function () {
 })->name('landingpage');
 
 // ==================== DEBUG / TEST ==================== //
-Route::get('/test-log', function () {
-    \Log::error('🚨 Laravel log test berhasil!');
-    return 'Cek terminal/log kamu 😉';
-});
-
-Route::get('/test-view', function () {
-    return view('admin.merek.index', ['brands' => []]);
-});
-
-Route::get('/check-auth', function () {
-    return auth()->check()
-    ? '✅ Login sebagai: ' . auth()->user()->email
-    : '❌ Belum login';
-});
 
 
 // ==================== AUTH (LOGIN / REGISTER / LOGOUT) ==================== //
-Route::middleware('guest')->group(function () {
+Route::middleware(['guest', PreventBackHistory::class])->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'authenticate'])->name('login.submit');
 
     Route::get('/register', [RegisterController::class, 'index'])->name('register');
     Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 });
-
-Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Dashboard
@@ -87,6 +73,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/payments/check-expired', [PaymentController::class, 'checkExpired'])->name('payments.checkExpired');
     Route::get('/payments/check-status/{payment_id}', [PaymentController::class, 'checkStatus'])->name('payments.checkStatus');
     Route::get('/payments/continue/{payment_id}', [PaymentController::class, 'continuePayment'])->name('payments.continue');
+    Route::get('/payments/status-list', [PaymentController::class, 'statusList'])->name('payments.statusList');
+
+    
 
     //ONGKIR
     Route::post('/pickup/distance', [\App\Http\Controllers\User\PickupController::class, 'distance'])
@@ -95,6 +84,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // 📞 Halaman Hubungi Kami
     Route::get('/kontak', [\App\Http\Controllers\User\ContactController::class, 'index'])->name('kontak.index');
     Route::post('/kontak', [\App\Http\Controllers\User\ContactController::class, 'store'])->name('kontak.store');
+
+    Route::get('/payments/{payment_id}/download', [\App\Http\Controllers\User\PaymentController::class, 'downloadReceipt'])
+    ->name('payments.download');
 
 });
 
@@ -107,6 +99,7 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('admin.invoices.store');
     Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('admin.invoices.show');
     Route::post('/admin/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
+    
     
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])
@@ -142,11 +135,10 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
 
 Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])
     ->name('admin.payments.refresh');
-
-    // 📩 Pesan Kontak dari User
-Route::get('/kontak', [\App\Http\Controllers\Admin\ContactAdminController::class, 'index'])
-    ->name('admin.kontak.index');
-Route::post('/kontak/{id}/reply', [\App\Http\Controllers\Admin\ContactAdminController::class, 'reply'])
-    ->name('admin.kontak.reply');
+    Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])
+    ->name('admin.invoices.updateStatus');
+    Route::post('/admin/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])
+    ->name('admin.payments.manualUpdate');
 
 });
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
