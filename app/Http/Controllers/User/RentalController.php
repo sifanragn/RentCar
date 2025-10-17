@@ -156,11 +156,8 @@ class RentalController extends Controller
 }
 
     /**
-<<<<<<< HEAD
      * 🔍 Detail penyewaan
-=======
      * 🔍 Detail penyewaan user
->>>>>>> 4721d82cfb8a89e8640ff543dca15f3de4a0aac6
      */
     public function show($id)
     {

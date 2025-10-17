@@ -60,11 +60,20 @@ class CarController extends Controller
     /**
      * 🚘 Tampilkan detail satu mobil
      */
-    public function show($id)
-    {
-        $car = Car::with(['brand', 'capacity'])->findOrFail($id);
-        return view('user.car.show', compact('car'));
-    }
+public function show($id)
+{
+    $car = Car::with(['brand', 'capacity'])->findOrFail($id);
+
+    // 🔹 Cek apakah mobil sedang disewa / menunggu pembayaran / dsb
+    $rental = Rental::where('car_id', $car->car_id)
+        ->whereIn('status_rental', ['verifikasi_diperlukan', 'menunggu', 'menunggu_pembayaran', 'berjalan'])
+        ->latest()
+        ->first();
+
+    $isUnavailable = !!$rental; // true kalau sedang disewa
+
+    return view('user.car.show', compact('car', 'isUnavailable', 'rental'));
+}
     
 }
 

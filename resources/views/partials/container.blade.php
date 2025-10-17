@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
   <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -37,11 +39,13 @@
       background: #fff;
       padding: 2rem 1.5rem;
       box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-      overflow: hidden;
-      min-height: 100vh; /* ✅ Tambahan penting */
+overflow-y: auto;
+overflow-x: hidden;      min-height: 100vh; /* ✅ Tambahan penting */
       display: flex;
       flex-direction: column;
       align-items: center;
+        padding-bottom: 80px;
+
     }
 
     @media (max-width: 480px) {

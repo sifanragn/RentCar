@@ -65,66 +65,61 @@ Route::get('/', function () {
     return redirect()->route('home');
 });
 
-// Publik
-Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
-Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
+// ==================== PUBLIK ==================== //
 Route::get('/cars', [CarController::class, 'index'])->name('user.cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('user.cars.show');
 
+// 👥 Guest profile (belum login)
+Route::get('/profile', function () {
+    return view('user.profile.guest');
+})->name('user.profile.guest');
 
-// ==================== USER AREA ==================== //
-Route::prefix('user')->middleware(['auth'])->group(function () {
+
+Route::prefix('user')->middleware(['auth'])->name('user.')->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', [UserDashboardController::class, 'index'])
-        ->name('user.dashboard');
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-    Route::get('/verifikasi', [UserVerifikasiController::class, 'index'])
-        ->name('user.verifikasi.index');
+    // Verifikasi
+    Route::get('/verifikasi', [UserVerifikasiController::class, 'index'])->name('verifikasi.index');
+    Route::post('/verifikasi', [UserVerifikasiController::class, 'store'])->name('verifikasi.store');
 
-    // Submit upload dokumen
-    Route::post('/verifikasi', [UserVerifikasiController::class, 'store'])
-        ->name('user.verifikasi.store');
+    // Mobil
+    Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
+    Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 
-    Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
-        // Dashboard
-        Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
-        // Mobil
-        Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
-        Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
+    // Rental
+    Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
+    Route::get('/rentals/create/{car_id}', [RentalController::class, 'create'])->name('rentals.create');
+    Route::post('/rentals/store/{car_id}', [RentalController::class, 'store'])->name('rentals.store');
+    Route::post('/rentals/cancel-latest', [RentalController::class, 'cancelLatest'])->name('rentals.cancelLatest');
 
-        // Profil
-        Route::get('/profile', [UserController::class, 'profile'])->name('profile');
-        Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+    // Pembayaran
+    Route::get('/payments/{id}/json', [PaymentController::class, 'json'])->name('payments.json');
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/detail-rental/{rental_id}', [PaymentController::class, 'detailRental'])->name('payments.detailRental');
+    Route::post('/payments/start/{rental_id}', [PaymentController::class, 'startProcess'])->name('payments.start');
+    Route::get('/payments/process/{payment_id}', [PaymentController::class, 'process'])->name('payments.process');
+    Route::post('/payments/cancel-soft/{payment_id}', [PaymentController::class, 'cancelSoft'])->name('payments.cancelSoft');
+    Route::get('/payments/show/{payment_id}', [PaymentController::class, 'show'])->name('payments.show');
+    Route::get('/payments/check-expired', [PaymentController::class, 'checkExpired'])->name('payments.checkExpired');
+    Route::get('/payments/check-status/{payment_id}', [PaymentController::class, 'checkStatus'])->name('payments.checkStatus');
+    Route::get('/payments/continue/{payment_id}', [PaymentController::class, 'continuePayment'])->name('payments.continue');
 
-        // Rental
-        Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
-        Route::get('/rentals/create/{car_id}', [RentalController::class, 'create'])->name('rentals.create');
-        Route::post('/rentals/store/{car_id}', [RentalController::class, 'store'])->name('rentals.store');
-        Route::post('/rentals/cancel-latest', [RentalController::class, 'cancelLatest'])->name('rentals.cancelLatest');
+    // Ongkir
+    Route::post('/pickup/distance', [\App\Http\Controllers\User\PickupController::class, 'distance'])
+        ->name('pickup.distance');
 
-        // 💳 Pembayaran
-        Route::get('/payments/{id}/json', [PaymentController::class, 'json'])->name('payments.json');
-        Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-        Route::get('/payments/detail-rental/{rental_id}', [PaymentController::class, 'detailRental'])->name('payments.detailRental');
-        Route::post('/payments/start/{rental_id}', [PaymentController::class, 'startProcess'])->name('payments.start');
-        Route::get('/payments/process/{payment_id}', [PaymentController::class, 'process'])->name('payments.process');
-        Route::post('/payments/cancel-soft/{payment_id}', [PaymentController::class, 'cancelSoft'])->name('payments.cancelSoft');
-        Route::get('/payments/show/{payment_id}', [PaymentController::class, 'show'])->name('payments.show');
-        Route::get('/payments/check-expired', [PaymentController::class, 'checkExpired'])->name('payments.checkExpired');
-        Route::get('/payments/check-status/{payment_id}', [PaymentController::class, 'checkStatus'])->name('payments.checkStatus');
-        Route::get('/payments/continue/{payment_id}', [PaymentController::class, 'continuePayment'])->name('payments.continue');
-
-        // ONGKIR
-        Route::post('/pickup/distance', [\App\Http\Controllers\User\PickupController::class, 'distance'])
-            ->name('pickup.distance');
-
-        // 📞 Halaman Hubungi Kami
-        Route::get('/kontak', [\App\Http\Controllers\User\ContactController::class, 'index'])->name('kontak.index');
-        Route::post('/kontak', [\App\Http\Controllers\User\ContactController::class, 'store'])->name('kontak.store');
-    });
-}); // 🔹 Penutup dari Route::prefix('user')
+    // Hubungi Kami
+    Route::get('/kontak', [ContactController::class, 'index'])->name('kontak.index');
+    Route::post('/kontak', [ContactController::class, 'store'])->name('kontak.store');
+});
 
 // ==================== ADMIN AREA ==================== //
 Route::prefix('admin')->middleware('admin.session')->group(function () {

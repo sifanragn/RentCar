@@ -1,10 +1,11 @@
-@extends('layouts.app')
+@extends('partials.container')
 
 @section('title', 'Hubungi Kami')
 @section('page_title', 'Hubungi Kami')
 
-@section('content')
+@section('styles')
 <style>
+  /* ========== GLOBAL ========== */
   body {
     font-family: 'Poppins', sans-serif;
     background: #fff;
@@ -12,15 +13,17 @@
     padding: 0;
   }
 
+  /* ========== SECTION: HUBUNGI KAMI ========== */
   .contact-section {
     text-align: center;
-    padding: 40px 20px;
+    padding: 40px 10px;
   }
 
   .contact-section h1 {
     font-size: 26px;
     font-weight: 700;
     margin-bottom: 8px;
+    margin-top: -25px;
     color: #111;
   }
 
@@ -30,9 +33,10 @@
     margin-bottom: 35px;
   }
 
+  /* ========== KARTU INFORMASI ========== */
   .info-card {
     background: #000;
-    color: white;
+    color: #fff;
     border-radius: 20px;
     padding: 30px;
     max-width: 420px;
@@ -47,12 +51,21 @@
     content: '';
     position: absolute;
     border-radius: 50%;
-    width: 80px; height: 80px;
+    width: 80px;
+    height: 80px;
     background: linear-gradient(135deg, #111, #444);
     opacity: 0.4;
   }
-  .info-card::before { top: -20px; left: -30px; }
-  .info-card::after { bottom: -20px; right: -30px; }
+
+  .info-card::before {
+    top: -20px;
+    left: -30px;
+  }
+
+  .info-card::after {
+    bottom: -20px;
+    right: -30px;
+  }
 
   .info-card h2 {
     margin: 0 0 15px;
@@ -79,6 +92,7 @@
     color: #0d6efd;
   }
 
+  /* ========== SOSIAL MEDIA BUTTONS ========== */
   .socials {
     margin: 35px 0;
     display: flex;
@@ -110,63 +124,163 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.25);
   }
 
-  .wa { background: linear-gradient(90deg, #25D366, #128C7E); }
-  .ig { background: linear-gradient(90deg, #f09433, #dc2743, #bc1888); }
-  .fb { background: linear-gradient(90deg, #1877f2, #145dbf); }
+  .wa {
+    background: linear-gradient(90deg, #25D366, #128C7E);
+  }
 
-  .footer-logo { margin-top: 40px; }
-  .footer-logo img { width: 120px; opacity: 0.9; }
+  .ig {
+    background: linear-gradient(90deg, #f09433, #dc2743, #bc1888);
+  }
 
+  .fb {
+    background: linear-gradient(90deg, #1877f2, #145dbf);
+  }
+
+  /* ========== FORM KONTAK ========== */
+  form.contact-form {
+    max-width: 500px;
+    margin: 40px auto;
+    text-align: left;
+  }
+
+  form.contact-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #111;
+  }
+
+  form.contact-form input,
+  form.contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+  }
+
+  form.contact-form button {
+    background: #0d6efd;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s ease;
+  }
+
+  form.contact-form button:hover {
+    background: #0b5ed7;
+  }
+
+  /* ========== LOGO FOOTER ========== */
+  .footer-logo {
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+
+  .footer-logo img {
+    width: 120px;
+    opacity: 0.9;
+  }
+
+  /* ========== RESPONSIVE ========== */
   @media (max-width: 480px) {
-    .info-card { width: 90%; padding: 25px; }
+    .info-card {
+      width: 90%;
+      padding: 25px;
+    }
+
+    .social-btn {
+      width: 220px;
+    }
+
+    .contact-section h1 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+
+    body, .contact-section p, .info-card p {
+      font-size: 12px;
+    }
+
+    form.contact-form {
+      width: 90%;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .social-btn {
+      width: 90%;
+    }
   }
 </style>
+@endsection
 
+@section('content')
 <div class="contact-section">
+
+  {{-- ===== JUDUL & SUBTEKS ===== --}}
   <h1>Hubungi Kami</h1>
   <p class="sub">Punya Pertanyaan Atau Kendala? Silakan Hubungi Kami!</p>
 
+  {{-- ===== INFORMASI KONTAK ===== --}}
   <div class="info-card">
     <h2>Kontak Informasi</h2>
-    <p>Kami siap membantu Anda. Jika ada pertanyaan atau membutuhkan informasi lebih lanjut, silakan hubungi kami melalui:</p>
+    <p>
+      Kami siap membantu Anda. Jika ada pertanyaan atau membutuhkan informasi lebih lanjut,
+      silakan hubungi kami melalui:
+    </p>
 
     <div class="info-item"><i class="fa fa-envelope"></i> rentalcarid@gmail.com</div>
     <div class="info-item"><i class="fa fa-phone"></i> +62 823 0001 0991</div>
     <div class="info-item"><i class="fa fa-map-marker"></i> Jl. Cigar Tengah, Abdurrahman</div>
   </div>
 
+  {{-- ===== SOSIAL MEDIA ===== --}}
   <div class="socials">
-    <a href="https://wa.me/6282300010991" class="social-btn wa" target="_blank"><i class="fa fa-whatsapp"></i> WhatsApp</a>
-    <a href="https://instagram.com/" class="social-btn ig" target="_blank"><i class="fa fa-instagram"></i> Instagram</a>
-    <a href="https://facebook.com/" class="social-btn fb" target="_blank"><i class="fa fa-facebook"></i> Facebook</a>
+    <a href="https://wa.me/6282300010991" class="social-btn wa" target="_blank">
+      <i class="fa fa-whatsapp"></i> WhatsApp
+    </a>
+    <a href="https://instagram.com/" class="social-btn ig" target="_blank">
+      <i class="fa fa-instagram"></i> Instagram
+    </a>
+    <a href="https://facebook.com/" class="social-btn fb" target="_blank">
+      <i class="fa fa-facebook"></i> Facebook
+    </a>
   </div>
+
+  {{-- ===== FLASH MESSAGE ===== --}}
   @if(session('success'))
-  <div style="background:#d1e7dd;color:#0f5132;padding:10px;border-radius:6px;margin-bottom:10px;">
-    {{ session('success') }}
-  </div>
-@endif
+    <div style="background:#d1e7dd; color:#0f5132; padding:10px; border-radius:6px; margin-bottom:10px;">
+      {{ session('success') }}
+    </div>
+  @endif
 
-<form action="{{ route('user.kontak.store') }}" method="POST" style="max-width:500px;margin:40px auto;text-align:left;">
-  @csrf
-  <label>Subjek (Opsional)</label>
-  <input type="text" name="subject" placeholder="Contoh: Kendala Pembayaran"
-         style="width:100%;padding:10px;margin-top:5px;border-radius:8px;border:1px solid #ccc;margin-bottom:15px;">
+  {{-- ===== FORM KONTAK ===== --}}
+  <form action="{{ route('user.kontak.store') }}" method="POST" class="contact-form">
+    @csrf
 
-  <label>Pesan Anda</label>
-  <textarea name="message" required rows="4" placeholder="Tuliskan pesan Anda..."
-         style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;margin-top:5px;"></textarea>
+    <label>Subjek (Opsional)</label>
+    <input type="text" name="subject" placeholder="Contoh: Kendala Pembayaran">
 
-  <button type="submit"
-          style="margin-top:15px;background:#0d6efd;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">
-    Kirim Pesan
-  </button>
-</form>
+    <label>Pesan Anda</label>
+    <textarea name="message" required rows="4" placeholder="Tuliskan pesan Anda..."></textarea>
 
+    <button type="submit">Kirim Pesan</button>
+  </form>
 
+  {{-- ===== LOGO FOOTER ===== --}}
   <div class="footer-logo">
-    <img src="{{ asset('img/logo_rental.png') }}" alt="Rental Logo">
+    <img src="{{ asset('images/logo.png') }}" alt="Rental Logo">
   </div>
+
 </div>
 
+{{-- FontAwesome --}}
 <script src="https://kit.fontawesome.com/a2e8f1f6f0.js" crossorigin="anonymous"></script>
 @endsection
+
+@include('partials.bottom-navbar')

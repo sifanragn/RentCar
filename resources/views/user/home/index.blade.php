@@ -386,29 +386,30 @@
   </div>
 
   <div class="card-container">
-    @foreach($popularCars as $car)
-    <a href="{{ route('user.cars.index', ['brand_id' => $car->brand_id]) }}" style="text-decoration: none; color: inherit;">
-      <div class="card">
-        <img src="{{ asset('images/dmobil1.png') }}" alt="Mobil" class="car-image">
-        <div class="card-content">
-          <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
-          <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
-          <p class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</p>
-          <div class="info-tags">
-            <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
-            <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
-            <div class="tag">{{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
-            <div class="tag">{{ $car->liter_tangki ?? 0 }} Liter</div>
-            <div class="tag">{{ ucfirst($car->lokasi ?? '-') }}</div>
-            <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
-            <div class="tag">{{ \Carbon\Carbon::parse($car->tanggal_mulai)->format('j M') }} - {{ \Carbon\Carbon::parse($car->tanggal_selesai)->format('j M Y') }}</div>
-          </div>
-        </div>
-        <div class="fav-btn">
-          <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
-        </div>
+@foreach($popularCars as $car)
+<a href="{{ route('user.cars.index') }}" style="text-decoration: none; color: inherit;">
+  <div class="card">
+        <img src="{{ asset('storage/' . $car->foto) }}" alt="{{ $car->nama }}" class="car-image">
+    <div class="card-content">
+      <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
+      <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
+      <p class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</p>
+      <div class="info-tags">
+        <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
+        <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
+        <div class="tag">{{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
+        <div class="tag">{{ $car->liter_tangki ?? 0 }} Liter</div>
+        <div class="tag">{{ ucfirst($car->lokasi ?? '-') }}</div>
+        <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
+        <div class="tag">{{ \Carbon\Carbon::parse($car->tanggal_mulai)->format('j M') }} - {{ \Carbon\Carbon::parse($car->tanggal_selesai)->format('j M Y') }}</div>
       </div>
-    @endforeach
+    </div>
+    <div class="fav-btn">
+      <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
+    </div>
+  </div>
+</a>
+@endforeach
   </div>
 </div>
 

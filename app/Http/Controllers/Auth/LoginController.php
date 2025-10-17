@@ -51,7 +51,7 @@ if ($user && Hash::check($request->password, $user->password)) {
     \Log::info('✅ User login berhasil', ['email' => $user->email]);
 
     // ⬇️ ubah ini
-return redirect()->route('user.dashboard');
+return redirect()->route('user.home');
 }
 
 
