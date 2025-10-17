@@ -175,7 +175,7 @@
   @if($status === 'belum_upload')
     <div class="alert warning">
       ⚠️ Anda belum mengunggah KTP dan KK.  
-      <a href="{{ route('user.profile') }}" style="color:#0d6efd;font-weight:600;">Klik di sini untuk unggah dokumen.</a>
+      <a href="{{ route('user.verifikasi.index') }}" style="color:#0d6efd;font-weight:600;">Klik di sini untuk unggah dokumen.</a>
     </div>
   @elseif($status === 'menunggu')
     <div class="alert info">

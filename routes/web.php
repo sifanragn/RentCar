@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\User\ContactController;
 use App\Http\Middleware\PreventBackHistory;
+use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\UserVerifikasiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +63,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/rentals/create/{car_id}', [RentalController::class, 'create'])->name('rentals.create');
     Route::post('/rentals/store/{car_id}', [RentalController::class, 'store'])->name('rentals.store');
     Route::post('/rentals/cancel-latest', [RentalController::class, 'cancelLatest'])->name('rentals.cancelLatest');
+    Route::get('/rentals/{id}', [RentalController::class, 'show'])->name('rentals.show');
+
+
 
     // 💳 Pembayaran
     Route::get('/payments/{id}/json', [PaymentController::class, 'json'])->name('payments.json');
@@ -75,7 +80,12 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/payments/continue/{payment_id}', [PaymentController::class, 'continuePayment'])->name('payments.continue');
     Route::get('/payments/status-list', [PaymentController::class, 'statusList'])->name('payments.statusList');
 
-    
+    Route::get('/profile',        [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit',   [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update',[ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/hapus/{tipe}', [ProfileController::class, 'hapusVerifikasi'])->name('profile.hapusVerifikasi');
+    Route::post('/profile/verify-password', [ProfileController::class, 'verifyPassword'])->name('profile.verifyPassword');
+
 
     //ONGKIR
     Route::post('/pickup/distance', [\App\Http\Controllers\User\PickupController::class, 'distance'])
@@ -88,7 +98,10 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/payments/{payment_id}/download', [\App\Http\Controllers\User\PaymentController::class, 'downloadReceipt'])
     ->name('payments.download');
 
+    Route::get('/verifikasi', [UserVerifikasiController::class, 'index'])->name('verifikasi.index');
+    Route::post('/verifikasi/store', [UserVerifikasiController::class, 'store'])->name('verifikasi.store');
 });
+
 
 // ==================== ADMIN AREA ==================== //
 Route::prefix('admin')->middleware('admin.session')->group(function () {
@@ -139,6 +152,7 @@ Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh']
     ->name('admin.invoices.updateStatus');
     Route::post('/admin/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])
     ->name('admin.payments.manualUpdate');
+
 
 });
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
