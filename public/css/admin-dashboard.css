@@ -1,5 +1,5 @@
 /* ===============================
-   NEOHEX ADMIN DASHBOARD THEME – 2 PER BARIS (DARK & LIGHT)
+   NEOHEX ADMIN DASHBOARD THEME
    =============================== */
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
@@ -139,7 +139,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   justify-items: center;
 }
 
-/* === MENU ITEM (ICON KIRI - TEXT KANAN) === */
+/* === MENU ITEM === */
 .menu-item {
   display: flex;
   align-items: center;
@@ -161,8 +161,6 @@ input:checked + .slider:before { transform: translateX(20px); }
   box-shadow: 0 10px 25px rgba(0,123,255,0.25);
   border-color: rgba(35,200,255,0.25);
 }
-
-/* === ICON === */
 .menu-icon {
   width: 95px;
   height: 95px;
@@ -174,8 +172,6 @@ input:checked + .slider:before { transform: translateX(20px); }
   transform: scale(1.1);
   filter: drop-shadow(0 0 30px rgba(35,200,255,0.45));
 }
-
-/* === TEXT AREA === */
 .menu-text h3 {
   font-size: 20px;
   font-weight: 600;
@@ -237,6 +233,119 @@ body.light-mode footer {
   border-top: 1px solid #e0e0e0;
 }
 
+/* === TABLE === */
+.neo-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.03);
+}
+.neo-table th, .neo-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  text-align: left;
+}
+.neo-table th {
+  background: rgba(255,255,255,0.05);
+  font-weight: 600;
+  color: #e8f1ff;
+}
+.neo-table tr:hover {
+  background: rgba(35,200,255,0.05);
+}
+.car-thumb {
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+
+/* === ACTION BUTTONS === */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.action-buttons a {
+  text-decoration: none;
+  font-weight: 600;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 14px;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+.action-buttons a:hover { transform: translateY(-2px); }
+.btn-blue { background: var(--blue); }
+.btn-green { background: #27ae60; }
+.btn-purple { background: var(--purple); }
+
+.table-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+.table-btn.blue { background: var(--blue); }
+.table-btn.green { background: #16a085; }
+.table-btn.red { background: var(--danger); }
+.table-btn:hover { opacity: 0.9; }
+
+.inline-form { display: inline; }
+
+/* === FORM ELEMENTS === */
+.neo-input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-dark);
+  margin-bottom: 15px;
+  transition: 0.3s;
+}
+.neo-input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(35,200,255,0.2);
+}
+button[type="submit"] {
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+button[type="submit"]:hover { transform: translateY(-2px); }
+
+/* === LIGHT MODE TABLE & FORM === */
+body.light-mode .neo-table {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+}
+body.light-mode .neo-table th {
+  background: #f4f6ff;
+  color: #333;
+}
+body.light-mode .neo-table td {
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+body.light-mode .neo-table tr:hover {
+  background: #f9fbff;
+}
+body.light-mode .neo-input, body.light-mode select, body.light-mode textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
 /* === ANIMATION === */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
@@ -249,3 +358,315 @@ body.light-mode footer {
   .menu-item { max-width: 100%; }
   .menu-icon { width: 80px; height: 80px; }
 }
+
+/* === SIDEBAR COLLAPSE === */
+.btn-toggle-sidebar {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-size: 22px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.left-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar.collapsed {
+  width: 70px;
+  transition: width 0.3s ease;
+}
+.sidebar.collapsed h2 {
+  opacity: 0;
+  pointer-events: none;
+}
+.sidebar.collapsed nav a {
+  justify-content: center;
+  padding: 10px 0;
+}
+.sidebar.collapsed nav a span {
+  display: none;
+}
+.sidebar nav a i {
+  font-size: 20px;
+}
+.main-content {
+  transition: margin-left 0.3s ease;
+}
+.main-content.expanded {
+  margin-left: 70px;
+}
+
+/* responsive small screens */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -230px;
+    transition: all 0.3s ease;
+  }
+  .sidebar.show {
+    left: 0;
+  }
+  .main-content {
+    margin-left: 0;
+  }
+  #sidebarToggle {
+    display: block;
+  }
+}
+
+/* ===============================
+   GALERI MOBIL (SCROLL HORIZONTAL)
+   =============================== */
+.car-gallery-section {
+  margin-top: 60px;
+  padding: 30px 40px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+body.light-mode .car-gallery-section {
+  background: #ffffff;
+  border: 1px solid #e6e9f0;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.gallery-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #23c8ff;
+  margin-bottom: 6px;
+}
+
+body.light-mode .gallery-title {
+  color: #0d6efd;
+}
+
+.gallery-subtitle {
+  color: #9ca3af;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+body.light-mode .gallery-subtitle {
+  color: #6b7280;
+}
+
+/* Scroll Container */
+.car-scroll-container {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+}
+.car-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Card Mobil */
+.car-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 260px;
+  height: 160px;
+  border-radius: 16px;
+  overflow: hidden;
+  scroll-snap-align: start;
+  cursor: pointer;
+  transition: transform 0.35s ease, box-shadow 0.3s ease;
+}
+.car-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+.car-card:hover img {
+  transform: scale(1.08);
+  filter: brightness(0.5);
+}
+.car-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Overlay info */
+.car-info {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+}
+.car-card:hover .car-info {
+  opacity: 1;
+}
+.car-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.car-info p {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+/* Light Mode Overlay */
+body.light-mode .car-info {
+  background: rgba(255,255,255,0.85);
+  color: #1f2937;
+}
+
+/* ==========================
+   GALERI MOBIL SHOWCASE
+   ========================== */
+.car-gallery-showcase {
+  margin-top: 20px;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.gallery-title {
+  color: #23c8ff;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+body.light-mode .gallery-title {
+  color: #0d6efd;
+}
+
+.gallery-subtitle {
+  color: #aaa;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.car-scroll-wrapper {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.car-scroll-track {
+  display: flex;
+  gap: 20px;
+  animation: scrollCars 35s linear infinite;
+}
+
+@keyframes scrollCars {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.car-card {
+  flex: 0 0 auto;
+  width: 320px;
+  height: 240px; /* rasio 4:3 */
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+}
+
+.car-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.car-card:hover img {
+  transform: scale(1.1);
+}
+
+.car-card .car-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.75));
+  padding: 20px 12px 10px;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease;
+}
+
+.car-card:hover .car-info {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.car-info h3 {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 600;
+}
+.car-info p {
+  font-size: 13px;
+  margin: 2px 0 0;
+  opacity: 0.85;
+}
+
+/* Light Mode */
+body.light-mode .car-card .car-info {
+  background: linear-gradient(transparent, rgba(255,255,255,0.8));
+  color: #000;
+}
+
+.mobil-strip-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #12151d 0%, #0c0f15 100%);
+  padding: 50px 0;
+}
+
+.mobil-strip {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  animation: mobilScroll 40s linear infinite;
+}
+
+@keyframes mobilScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.mobil-png {
+  height: 180px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 10px rgba(0,0,0,0.4));
+  transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+.mobil-png:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 15px 20px rgba(35,200,255,0.6));
+  cursor: pointer;
+}
+
+/* pause animasi kalau dihover */
+.mobil-strip-container:hover .mobil-strip {
+  animation-play-state: paused;
+}
+
+/* Light mode */
+body.light-mode .mobil-strip-container {
+  background: linear-gradient(180deg, #f9fafb 0%, #eef1f5 100%);
+}
+

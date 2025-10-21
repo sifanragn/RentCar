@@ -20,6 +20,7 @@ use App\Http\Controllers\User\ContactController;
 use App\Http\Middleware\PreventBackHistory;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserVerifikasiController;
+use App\Http\Controllers\Admin\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -129,9 +130,14 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     // 🚘 CRUD Mobil (Admin)
     Route::get('cars/brands', [CarAdminController::class, 'brandIndex'])->name('cars.brands');
     Route::post('cars/brands', [CarAdminController::class, 'brandStore'])->name('cars.brands.store');
+Route::delete('cars/brands/{id}', [CarAdminController::class, 'brandDestroy'])->name('cars.brands.destroy');
 
     Route::get('cars/models', [CarAdminController::class, 'modelIndex'])->name('cars.models');
     Route::post('cars/models', [CarAdminController::class, 'modelStore'])->name('cars.models.store');
+
+
+
+
 
     Route::get('api/models/{brand_id}', [CarAdminController::class, 'getModelsByBrand']);
     Route::resource('cars', CarAdminController::class);
@@ -145,6 +151,7 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::get('/rentals', [RentalAdminController::class, 'index'])->name('admin.rentals.index');
     Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('admin.rentals.show');
     Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('admin.rentals.updateStatus');
+    
 
 Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])
     ->name('admin.payments.refresh');
@@ -152,6 +159,10 @@ Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh']
     ->name('admin.invoices.updateStatus');
     Route::post('/admin/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])
     ->name('admin.payments.manualUpdate');
+
+    Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('admin.laporan.index');
+Route::get('/laporan/cetak', [App\Http\Controllers\Admin\LaporanController::class, 'cetak'])->name('admin.laporan.cetak');
+
 
 
 });

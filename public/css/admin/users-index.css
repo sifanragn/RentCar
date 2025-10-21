@@ -1,0 +1,165 @@
+/* ===============================
+   VERIFIKASI PENGGUNA (ADMIN)
+=============================== */
+
+.admin-content-wrapper {
+  padding: 24px;
+  color: #e5e7eb;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #23c8ff;
+  margin-bottom: 6px;
+}
+
+.page-header p {
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+/* Alert success */
+.alert-success {
+  background: linear-gradient(135deg, #0d6efd, #23c8ff);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(35,200,255,0.3);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Table wrapper */
+.table-wrapper {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px);
+  overflow-x: auto;
+}
+
+body.light-mode .table-wrapper {
+  background: #fff;
+  border-color: #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Table */
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.user-table th,
+.user-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  text-align: left;
+}
+
+.user-table th {
+  background: rgba(255,255,255,0.08);
+  color: #23c8ff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-table tr:hover {
+  background: rgba(35,200,255,0.05);
+}
+
+body.light-mode .user-table th {
+  background: #eef5ff;
+  color: #0d6efd;
+}
+
+body.light-mode .user-table td {
+  color: #1f2937;
+}
+
+body.light-mode .user-table tr:hover {
+  background: #f3f8ff;
+}
+
+/* Status badges */
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+
+.status.disetujui {
+  background: rgba(46,213,115,0.15);
+  color: #2ed573;
+  border: 1px solid rgba(46,213,115,0.4);
+}
+
+.status.menunggu {
+  background: rgba(255,211,102,0.15);
+  color: #ffd866;
+  border: 1px solid rgba(255,211,102,0.4);
+}
+
+.status.ditolak {
+  background: rgba(255,100,100,0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(255,100,100,0.4);
+}
+
+/* Tombol detail */
+.btn-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #23c8ff, #007bff);
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+.btn-view:hover {
+  background: linear-gradient(135deg, #1da8e0, #006de2);
+  transform: translateY(-2px);
+}
+
+/* Empty text */
+.empty-text {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 20px 0;
+}
+body.light-mode .empty-text {
+  color: #6b7280;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-table td:first-child,
+.user-table th:first-child {
+  width: 70px;
+  text-align: center;
+  color: #9ca3af;
+  font-weight: 500;
+}
+body.light-mode .user-table td:first-child {
+  color: #555;
+}

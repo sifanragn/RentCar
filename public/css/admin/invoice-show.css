@@ -1,0 +1,189 @@
+/* =====================================
+   DETAIL INVOICE (ADMIN)
+===================================== */
+
+.admin-content-wrapper {
+  padding: 32px 40px;
+  color: #e5e7eb;
+}
+
+/* ===== Card ===== */
+.invoice-card {
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 30px 36px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.4s ease;
+}
+
+.invoice-card .header h2 {
+  color: #23c8ff;
+  font-weight: 600;
+  font-size: 22px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.invoice-card h2 span {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* ===== Section ===== */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 28px;
+  color: #23c8ff;
+  border-bottom: 2px solid rgba(35,200,255,0.25);
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+/* ===== Grid ===== */
+.grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  row-gap: 10px;
+  margin-top: 12px;
+}
+
+.label {
+  font-weight: 600;
+  color: #ccc;
+}
+
+.value {
+  color: #f1f1f1;
+}
+
+/* ===== Status ===== */
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.status.pending { background: rgba(255,211,102,0.15); color: #ffd866; border: 1px solid rgba(255,211,102,0.3); }
+.status.success, .status.selesai { background: rgba(46,213,115,0.15); color: #2ed573; border: 1px solid rgba(46,213,115,0.3); }
+.status.failed, .status.cancel { background: rgba(255,100,100,0.15); color: #ff6b6b; border: 1px solid rgba(255,100,100,0.3); }
+.status.waiting { background: rgba(255,255,255,0.08); color: #aaa; border: 1px solid rgba(255,255,255,0.15); }
+
+/* ===== Alerts ===== */
+.alert {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 500;
+  margin-bottom: 18px;
+}
+.alert-success { background: rgba(46,213,115,0.15); color: #2ed573; }
+.alert-error { background: rgba(255,100,100,0.15); color: #ff6b6b; }
+.alert-info { background: rgba(255,211,102,0.15); color: #ffd866; }
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-block;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-warning { background: linear-gradient(135deg, #ffc107, #ffb300); color: #111; }
+.btn-danger { background: linear-gradient(135deg, #ff4d4d, #cc0000); color: #fff; }
+
+.btn:hover { transform: translateY(-1px); opacity: 0.9; }
+
+/* ===== Back Button ===== */
+.back-wrapper {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.btn-back {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #007bff, #23c8ff);
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(35,200,255,0.25);
+}
+.btn-back:hover {
+  background: linear-gradient(135deg, #0dcaf0, #006ad1);
+  transform: translateY(-2px);
+}
+
+/* ===== Form ===== */
+.form-inline {
+  margin-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-inline label {
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.form-inline select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+}
+
+/* ===== Cancel Form ===== */
+.cancel-form {
+  margin-top: 20px;
+}
+
+/* ===== Link ===== */
+.link-blue {
+  color: #23c8ff;
+  text-decoration: none;
+  transition: 0.2s;
+}
+.link-blue:hover { text-decoration: underline; }
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Light Mode ===== */
+body.light-mode .invoice-card {
+  background: #fff;
+  color: #111;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+body.light-mode .section-title {
+  color: #0d6efd;
+  border-color: rgba(13,110,253,0.3);
+}
+
+body.light-mode .label { color: #333; }
+body.light-mode .value { color: #111; }
+
+body.light-mode .btn-back {
+  background: linear-gradient(135deg, #0d6efd, #23c8ff);
+}
+
+body.light-mode .form-inline select {
+  background: #f9fafb;
+  color: #111;
+  border-color: #ddd;
+}

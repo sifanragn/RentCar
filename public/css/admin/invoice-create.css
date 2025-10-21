@@ -1,0 +1,151 @@
+/* ===============================
+   CREATE INVOICE (ADMIN)
+=============================== */
+
+.admin-content-wrapper {
+  padding: 32px 40px;
+  color: #e5e7eb;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #23c8ff;
+  margin-bottom: 6px;
+}
+
+.page-header p {
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+/* ===== Card Form ===== */
+.form-card {
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 32px;
+  max-width: 720px;
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.4s ease;
+}
+
+body.light-mode .form-card {
+  background: #fff;
+  border-color: #e5e7eb;
+  color: #111;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+/* ===== Form Fields ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+label {
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 6px;
+}
+
+body.light-mode label { color: #333; }
+
+input, select, textarea {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: #e5e7eb;
+  transition: all 0.25s ease;
+  font-size: 14px;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #23c8ff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(35,200,255,0.25);
+}
+
+body.light-mode input,
+body.light-mode select,
+body.light-mode textarea {
+  background: #f9fafb;
+  color: #111;
+  border-color: #ddd;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.required {
+  color: #ff6b6b;
+}
+
+/* ===== Small Hint ===== */
+.hint {
+  display: block;
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 5px;
+}
+
+/* ===== Actions ===== */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #23c8ff, #007bff);
+  color: #fff;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background: linear-gradient(135deg, #0dcaf0, #006ad1);
+  transform: translateY(-1px);
+}
+
+.btn-cancel {
+  background: rgba(255,255,255,0.05);
+  color: #ccc;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: rgba(35,200,255,0.1);
+  color: #23c8ff;
+}
+
+body.light-mode .btn-cancel {
+  background: #f9fafb;
+  color: #111;
+  border-color: #ddd;
+}
+
+/* ===== Animasi ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

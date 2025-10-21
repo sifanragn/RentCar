@@ -1,0 +1,175 @@
+/* ==== SIDEBAR UTAMA ==== */
+.admin-sidebar {
+  width: 200px; /* ✅ dari 230px jadi 200px (pas garis merah) */
+  background: #141821;
+  color: #cfd3dc;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 12px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  transition: width 0.3s ease, left 0.3s ease;
+  overflow-x: hidden;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ==== HEADER SIDEBAR ==== */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sidebar-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #23c8ff;
+  transition: opacity 0.3s ease;
+}
+
+/* Tombol toggle (panah) */
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: #23c8ff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.sidebar-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* ==== LINK MENU ==== */
+.admin-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  padding-bottom: 35px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.admin-sidebar nav::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  color: #cfd3dc;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+  font-weight: 500;
+  font-size: 15px; /* ✅ tetap besar */
+}
+
+.admin-sidebar nav a:hover,
+.admin-sidebar nav a.active {
+  background: rgba(35, 200, 255, 0.1);
+  color: #fff;
+  transform: translateX(2px);
+}
+
+/* ==== MODE COLLAPSED (DESKTOP) ==== */
+.admin-sidebar.collapsed {
+  width: 75px;
+}
+
+.admin-sidebar.collapsed .sidebar-header h2,
+.admin-sidebar.collapsed nav a span {
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+}
+
+.admin-sidebar.collapsed .sidebar-toggle i {
+  transform: rotate(180deg);
+}
+
+.admin-sidebar.collapsed nav a {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.admin-sidebar.collapsed nav a i {
+  font-size: 18px;
+}
+
+/* ==== LIGHT MODE ==== */
+body.light-mode .admin-sidebar {
+  background: #fff;
+  color: #333;
+  border-right: 1px solid #ddd;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .admin-sidebar nav a {
+  color: #555;
+}
+
+body.light-mode .admin-sidebar nav a:hover,
+body.light-mode .admin-sidebar nav a.active {
+  background: #eef3ff;
+  color: #000;
+}
+
+/* ==== OVERLAY UNTUK MOBILE ==== */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 900;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ==== RESPONSIVE MODE (MOBILE <992px) ==== */
+@media (max-width: 992px) {
+  .admin-sidebar {
+    width: 200px; /* ✅ sesuai garis merah */
+    left: -200px; /* geser sesuai width baru */
+  }
+
+  .admin-sidebar.active {
+    left: 0;
+  }
+
+  .admin-main {
+    margin-left: 0 !important;
+  }
+}
+
+/* === TABLE WRAPPER RESPONSIVE === */
+.admin-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+@media (max-width: 768px) {
+  .admin-content {
+    padding: 20px;
+    overflow-x: auto;
+  }
+  .admin-content table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+

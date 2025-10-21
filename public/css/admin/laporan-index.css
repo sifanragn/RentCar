@@ -1,0 +1,136 @@
+/* ===============================
+   LAPORAN PENYEWAAN ADMIN
+=============================== */
+
+.admin-content-wrapper {
+  padding: 28px 40px;
+  color: #e5e7eb;
+}
+
+.page-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #23c8ff;
+  margin-bottom: 6px;
+}
+
+.page-header p {
+  color: #9ca3af;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+/* ===== Tombol Cetak ===== */
+.laporan-actions {
+  margin-bottom: 20px;
+}
+
+.btn-cetak {
+  background: linear-gradient(135deg, #007bff, #23c8ff);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(35,200,255,0.25);
+}
+
+.btn-cetak:hover {
+  background: linear-gradient(135deg, #0dcaf0, #006ad1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(35,200,255,0.35);
+}
+
+body.light-mode .btn-cetak {
+  background: linear-gradient(135deg, #0d6efd, #23c8ff);
+}
+
+/* ===== Table ===== */
+.table-wrapper {
+  background: rgba(255,255,255,0.03);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.laporan-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.laporan-table th,
+.laporan-table td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.laporan-table th {
+  background: rgba(35,200,255,0.12);
+  color: #23c8ff;
+  font-weight: 600;
+}
+
+.laporan-table tr:hover td {
+  background: rgba(35,200,255,0.06);
+}
+
+body.light-mode .laporan-table th {
+  background: #f1f5ff;
+  color: #0d6efd;
+}
+
+body.light-mode .laporan-table td {
+  color: #333;
+  border-bottom-color: #eee;
+}
+
+/* ===== Status Label ===== */
+.status {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.status.berjalan {
+  background: rgba(35,200,255,0.12);
+  color: #23c8ff;
+}
+.status.selesai {
+  background: rgba(46,213,115,0.15);
+  color: #2ed573;
+}
+.status.dibatalkan {
+  background: rgba(255,100,100,0.15);
+  color: #ff6b6b;
+}
+
+/* ===== Total Box ===== */
+.total-box {
+  margin-top: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 16px 22px;
+  font-size: 15px;
+  color: #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+body.light-mode .total-box {
+  background: #fff;
+  border-color: #eee;
+  color: #111;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}

@@ -1,0 +1,437 @@
+/* Fix warna teks input & dropdown di light mode */
+body.light-mode .form-group input,
+body.light-mode .selected-option span,
+body.light-mode .selected-option .placeholder {
+  color: #1f2937 !important;
+}
+
+body.light-mode .form-group input::placeholder {
+  color: #9ca3af !important;
+}
+
+body.light-mode .custom-select-brand {
+  color: #1f2937;
+}
+
+
+/* =============================
+   FORM ADMIN (MODEL / MEREK)
+   ============================= */
+.admin-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.car-form {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+body.light-mode .car-form {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+}
+
+.form-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #fff;
+}
+body.light-mode .form-title {
+  color: #1f2937;
+}
+
+/* Input & Select */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-group label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #9ca3af;
+}
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-size: 14px;
+}
+.form-group select option {
+  color: #000;
+}
+body.light-mode .form-group input,
+body.light-mode .form-group select {
+  background: #f9fafb;
+  color: #333;
+  border-color: #ddd;
+}
+
+/* Tombol */
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+.btn-submit {
+  background: #23c8ff;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+.btn-submit:hover {
+  background: #1da8e0;
+  transform: translateY(-2px);
+}
+.btn-cancel {
+  background: transparent;
+  color: #9ca3af;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+.btn-cancel:hover {
+  color: #fff;
+  border-color: #23c8ff;
+}
+
+/* =============================
+   TABEL MODEL MOBIL (fix light mode visibility)
+   ============================= */
+.model-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.model-table th,
+.model-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: #e5e7eb;
+}
+.model-table th {
+  background: rgba(255,255,255,0.08);
+  color: #23c8ff;
+  font-weight: 600;
+}
+.model-table tr:hover {
+  background: rgba(35,200,255,0.05);
+}
+
+/* Light mode */
+body.light-mode .model-table {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+body.light-mode .model-table th {
+  background: #eef5ff;
+  color: #0d6efd;
+}
+body.light-mode .model-table td {
+  color: #1f2937;
+}
+body.light-mode .model-table tr:hover {
+  background: #f3f8ff;
+}
+
+/* Empty text */
+.empty-text {
+  text-align: center;
+  font-style: italic;
+  color: #9ca3af;
+  margin-top: 12px;
+}
+body.light-mode .empty-text {
+  color: #6b7280;
+}
+
+/* =============================
+   CUSTOM DROPDOWN BRAND DENGAN LOGO
+   ============================= */
+.custom-select-brand {
+  position: relative;
+  width: 100%;
+  user-select: none;
+}
+
+.selected-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.selected-option:hover {
+  border-color: #23c8ff;
+}
+.selected-option img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  margin-right: 8px;
+}
+.selected-option .placeholder {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.options-list {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  right: 0;
+  background: #181c26;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  z-index: 100;
+  display: none;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.options-list.active {
+  display: block;
+}
+.options-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.options-list li:hover {
+  background: rgba(35,200,255,0.1);
+}
+.options-list img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+.options-list span {
+  font-size: 14px;
+  color: #f3f4f6;
+}
+
+body.light-mode .selected-option {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+}
+body.light-mode .options-list {
+  background: #fff;
+  border: 1px solid #ddd;
+}
+body.light-mode .options-list li span {
+  color: #333;
+}
+body.light-mode .options-list li:hover {
+  background: #eef5ff;
+}
+
+/* === FIX: Dropdown tidak bisa diklik === */
+/* === FIX: Dropdown bisa diklik dan muncul di atas elemen lain === */
+.custom-select-brand {
+  position: relative;
+  z-index: 50;
+}
+
+.options-list {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  background: #181c26;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  z-index: 9999;
+  display: none;
+  max-height: 240px;
+  overflow-y: auto;
+  animation: fadeIn 0.15s ease;
+}
+.options-list.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.light-mode .options-list {
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+.custom-select-brand img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: inline-block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: brightness(1.1);
+}
+.options-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===================================================
+   ✨ DAFTAR MODEL MOBIL – PREMIUM STYLE ✨
+   =================================================== */
+.car-table-section {
+  width: 100%;
+  max-width: 1050px;
+  margin: 40px auto;
+  padding: 32px 36px;
+  border-radius: 22px;
+  background: rgba(20, 24, 32, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 0 20px rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(18px);
+  transition: all 0.3s ease;
+}
+.car-table-section:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.5),
+    inset 0 0 25px rgba(35, 200, 255, 0.07);
+}
+
+.table-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #79cfff;
+  letter-spacing: 0.3px;
+  text-shadow: 0 0 10px rgba(35, 200, 255, 0.35);
+}
+
+/* 🌙 Dark mode table */
+.model-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
+  animation: fadeSlide 0.6s ease;
+}
+
+.model-table th {
+  background: linear-gradient(90deg, rgba(35,200,255,0.25), rgba(0,150,255,0.25));
+  color: #23c8ff;
+  padding: 14px 16px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.model-table td {
+  padding: 14px 16px;
+  color: #e7edf5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 15px;
+  vertical-align: middle;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.model-table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.03);
+}
+.model-table tr:hover {
+  background: rgba(35, 200, 255, 0.08);
+  transform: scale(1.01);
+}
+
+/* 🚗 Brand logo + text */
+.brand-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-cell img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  padding: 4px;
+  transition: transform 0.25s ease;
+}
+.brand-cell img:hover {
+  transform: scale(1.15);
+}
+
+/* ☀️ Light mode version */
+body.light-mode .car-table-section {
+  background: linear-gradient(145deg, #ffffff, #f5f8ff);
+  border: 1px solid #e0e7ff;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+}
+body.light-mode .table-title {
+  color: #0d6efd;
+  text-shadow: none;
+}
+body.light-mode .model-table {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+}
+body.light-mode .model-table th {
+  background: linear-gradient(90deg, #e8f1ff, #edf5ff);
+  color: #0d6efd;
+}
+body.light-mode .model-table td {
+  color: #1f2937;
+}
+body.light-mode .model-table tr:hover {
+  background: #eef6ff;
+}
+
+/* ✨ Animasi fade + slide */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

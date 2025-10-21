@@ -36,4 +36,9 @@ class Car extends Model
     {
         return $this->belongsTo(CarCapacity::class, 'capacity_id', 'capacity_id');
     }
+   public function photos()
+{
+    return $this->hasMany(CarPhoto::class, 'car_id');
+}
+
 }
