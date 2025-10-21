@@ -368,7 +368,6 @@
 <div class="section-container">
   <div class="section-header">
     <h2>Merek</h2>
-    <a href="#">See All</a>
   </div>
 
   <div class="brand-scroll">

@@ -1,103 +1,191 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Penyewaan Saya | RentCar</title>
-  <style>
-    body { font-family: 'Poppins', sans-serif; background:#f8f9fa; margin:0; padding:25px; }
-    h2 { text-align:center; color:#222; margin-bottom:25px; }
+@extends('partials.container')
 
-    .rentals-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 18px;
+@section('title', 'Riwayat Penyewaan')
+
+@section('styles')
+<style>
+h2 {
+  text-align: center;
+  color: #111;
+  font-weight: 600;
+  margin-bottom: 20px;
+  font-size: 24px;
+  margin-left: -10px;
+}
+
+/* ===== CONTAINER ===== */
+.rentals-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 22px;
+  width: 95%;
+  margin: 0 auto;
+  margin-bottom: 50px;
+}
+
+/* ===== CARD ===== */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: 0.25s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: -10px;
+  margin-right: 25px;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* ===== FOTO MOBIL ===== */
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}
+
+/* ===== STATUS RIBBON ===== */
+.status-ribbon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.status-ribbon.menunggu { background: #ffc107; }
+.status-ribbon.berjalan { background: #198754; }
+.status-ribbon.selesai { background: #198754; }
+.status-ribbon.dibatalkan { background: #dc3545; }
+
+/* ===== INFORMASI MOBIL ===== */
+.car-info {
+  padding: 16px 18px;
+}
+.car-info h4 {
+  margin: 0 0 6px 0;
+  color: #111;
+  font-size: 17px;
+  font-weight: 600;
+}
+.car-info p {
+  margin: 4px 0;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ===== STATUS BADGE ===== */
+.status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+.status.menunggu { background: #fff3cd; color: #856404; }
+.status.berjalan { background: #d1e7dd; color: #0f5132; }
+.status.selesai { background: #cfe2ff; color: #084298; }
+.status.dibatalkan { background: #f8d7da; color: #842029; }
+
+/* ===== BUTTON DETAIL ===== */
+.btn-detail {
+  text-decoration: none;
+  text-align: center;
+  background: #0d6efd;
+  color: #fff;
+  padding: 10px 0;
+  border-radius: 0 0 10px 10px;
+  font-size: 14.5px;
+  font-weight: 500;
+  transition: 0.25s;
+}
+.btn-detail:hover {
+  background: #0b5ed7;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty {
+  text-align: center;
+  color: #666;
+  font-size: 15px;
+  margin-top: 40px;
+}
+
+  .back-link {
+    color:#000; text-decoration:none;
+    font-weight:250; font-size:15px;
+    margin-left: -275px;
+    margin-bottom: 15px;
     }
 
-    .card {
-      background:white;
-      border-radius:14px;
-      padding:18px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.08);
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      transition:0.25s;
-    }
-    .card:hover { transform: translateY(-4px); }
+  .back-link:hover { text-decoration:underline; }
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  h2 { font-size: 20px; }
+  .card img { height: 160px; }
+}
+</style>
+@endsection
 
-    .car-info h4 {
-      margin:0;
-      color:#111;
-      font-size:18px;
-      font-weight:600;
-    }
-    .car-info p { margin:4px 0; color:#666; font-size:14px; }
-
-    .status {
-      display:inline-block;
-      padding:4px 10px;
-      border-radius:8px;
-      font-size:13px;
-      font-weight:500;
-      margin-top:8px;
-    }
-    .status.menunggu { background:#fff3cd; color:#856404; }
-    .status.berjalan { background:#d1e7dd; color:#0f5132; }
-    .status.selesai { background:#cfe2ff; color:#084298; }
-    .status.dibatalkan { background:#f8d7da; color:#842029; }
-
-    .btn-detail {
-      text-decoration:none;
-      text-align:center;
-      background:#0d6efd;
-      color:white;
-      padding:8px 0;
-      border-radius:8px;
-      font-size:14px;
-      font-weight:500;
-      margin-top:12px;
-      transition:background 0.25s;
-    }
-    .btn-detail:hover { background:#0b5ed7; }
-
-    .empty {
-      text-align:center;
-      color:#666;
-      font-size:15px;
-      margin-top:30px;
-    }
-  </style>
-</head>
-<body>
+@section('content')
+<a 
+  href="{{ request()->query('from') === 'profile' 
+      ? route('user.profile.index') 
+      : route('user.dashboard') }}" 
+  class="back-link"
+>
+  <i class="fa-solid fa-arrow-left"></i>
+</a>
 
   <h2>Riwayat Penyewaan Mobil</h2>
 
+  {{-- Flash Message --}}
   @if(session('success'))
-    <div style="background:#d1e7dd;color:#0f5132;padding:10px;margin-bottom:15px;border-radius:6px;">
+    <div style="background:#d1e7dd;color:#0f5132;padding:10px;margin-bottom:15px;border-radius:8px;text-align:center;">
       {{ session('success') }}
     </div>
   @endif
 
+  {{-- Kondisi Data Kosong --}}
   @if($rentals->isEmpty())
     <p class="empty">Belum ada penyewaan mobil yang tercatat.</p>
   @else
     <div class="rentals-container">
       @foreach($rentals as $rental)
         <div class="card">
-          <div class="car-info">
-            <h4>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model }}</h4>
-            <p><b>Tanggal Sewa:</b> {{ $rental->tanggal_mulai }}</p>
-            <p><b>Selesai:</b> {{ $rental->tanggal_selesai }}</p>
-            <p><b>Durasi:</b> {{ $rental->durasi_hari }} hari</p>
-            <p><b>Total:</b> Rp {{ number_format($rental->total_biaya,0,',','.') }}</p>
-            <span class="status {{ $rental->status_rental }}">{{ ucfirst($rental->status_rental) }}</span>
+
+          {{-- Status Ribbon --}}
+          <div class="status-ribbon {{ $rental->status_rental }}">
+            {{ ucfirst($rental->status_rental) }}
           </div>
-          <a href="{{ route('user.rentals.show', $rental->rental_id) }}" class="btn-detail">Lihat Detail</a>
+
+          <div class="car-info">
+            <h4>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '' }}</h4>
+            <p><b>Tanggal Sewa:</b> {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d M Y') }}</p>
+            <p><b>Selesai:</b> {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d M Y') }}</p>
+            <p><b>Durasi:</b> {{ $rental->durasi_hari }} hari</p>
+            <p><b>Total:</b> Rp {{ number_format($rental->total_biaya, 0, ',', '.') }}</p>
+          </div>
+
+          <a href="{{ route('user.rentals.show', $rental->rental_id) }}" class="btn-detail">
+            Lihat Detail
+          </a>
         </div>
       @endforeach
     </div>
   @endif
 
-</body>
-</html>
+  @include('partials.bottom-navbar')
+@endsection

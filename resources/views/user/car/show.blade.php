@@ -58,11 +58,11 @@
     transition:background-color 0.3s ease;
   }
   .btn-rent:hover { background-color:#444; }
-  .back-link {
-    color:#000; text-decoration:none;
-    font-weight:250; font-size:15px;
-  }
-  .back-link:hover { text-decoration:underline; }
+  
+.back-link svg {
+  vertical-align: middle;
+}
+
   .carousel { width:100%; margin-top:15px; }
   .carousel-inner { border-radius:16px; overflow:hidden; }
   .car-slide-img { width:100%; height:200px; object-fit:contain; }
@@ -79,7 +79,12 @@
 @section('content')
 <div class="detail-container">
   {{-- Link Kembali --}}
-  <a href="{{ route('user.cars.index') }}" class="back-link">← Kembali ke Daftar Mobil</a>
+<a href="{{ route('user.cars.index') }}" class="back-link" aria-label="Kembali">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+    <line x1="19" y1="12" x2="5" y2="12"/>
+    <polyline points="12 19 5 12 12 5"/>
+  </svg>
+</a>
 
   {{-- Gambar Mobil (Carousel) --}}
   <div id="carCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -131,37 +136,34 @@
     </div>
 
     {{-- Tombol Sewa dengan Logika Status --}}
-@php
-  $rental = \App\Models\Rental::where('car_id', $car->car_id)
-      ->whereIn('status_rental', ['verifikasi_diperlukan','menunggu','menunggu_pembayaran','berjalan'])
-      ->latest()
-      ->first();
-@endphp
+    @php
+      $rental = \App\Models\Rental::where('car_id', $car->car_id)
+          ->whereIn('status_rental', ['verifikasi_diperlukan','menunggu','menunggu_pembayaran','berjalan'])
+          ->latest()
+          ->first();
+    @endphp
 
-@if($car->status_mobil === 'tidak_tersedia')
-  @if($rental && $rental->status_rental === 'menunggu_pembayaran')
-    <div class="alert">
-      💰 Mobil ini sedang <b>menunggu pembayaran penyewa</b>.  
-      Silakan pilih mobil lain terlebih dahulu.
-    </div>
-  @else
-    <div class="alert">
-      🚫 Mobil ini sedang disewa oleh pengguna lain.  
-      Silakan pilih mobil lain.
-    </div>
-  @endif
-@else
-  @auth
-    <a href="{{ route('user.rentals.create', $car->car_id) }}" class="btn-rent">Sewa Sekarang</a>
-  @else
-    <a href="{{ route('login') }}" class="btn-rent"
-      onclick="return confirm('Kamu perlu login dulu untuk menyewa mobil. Mau login sekarang?')">
-      Sewa Sekarang
-    </a>
-  @endauth
-@endif
-
-
+    @if($car->status_mobil === 'tidak_tersedia')
+      @if($rental && $rental->status_rental === 'menunggu_pembayaran')
+        <div class="alert">
+          💰 Mobil ini sedang <b>menunggu pembayaran penyewa</b>.<br>
+          Silakan pilih mobil lain terlebih dahulu.
+        </div>
+      @else
+        <div class="alert">
+          🚫 Mobil ini sedang disewa oleh pengguna lain.<br>
+          Silakan pilih mobil lain.
+        </div>
+      @endif
+    @else
+      @auth
+        {{-- 🔹 Jika user sudah login --}}
+        <a href="{{ route('user.rentals.create', $car->car_id) }}" class="btn-rent">Sewa Sekarang</a>
+      @else
+        {{-- 🔹 Jika belum login, arahkan ke halaman guest --}}
+        <a href="{{ route('user.car.guest') }}" class="btn-rent">Sewa Sekarang</a>
+      @endauth
+    @endif
   </div>
 </div>
 

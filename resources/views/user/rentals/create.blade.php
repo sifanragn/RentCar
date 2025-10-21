@@ -126,7 +126,7 @@ button:hover {
   border: 1px solid #e0e0e0;
 }
 
-/* ===== Popup ===== */
+/* ===== Popup Menunggu ===== */
 #popup-menunggu {
   display: none;
   position: fixed;
@@ -165,6 +165,48 @@ button:hover {
   color: #333;
 }
 
+/* ===== Popup Alert ===== */
+#popup-alert {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+#popup-alert .popup-box {
+  background: #fff;
+  border-radius: 20px;
+  padding: 25px 20px;
+  width: 330px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  animation: fadeIn 0.3s ease;
+}
+#popup-alert h3 {
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 18px;
+}
+#popup-alert p {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 20px;
+}
+#popup-alert button {
+  background: #70D972;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: .2s;
+}
+#popup-alert button:hover { background:#5AC260; }
+
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
@@ -183,18 +225,20 @@ button:hover {
     $redirectBack = url()->previous();
   @endphp
 
-  {{-- Tombol Kembali --}}
-  <a href="{{ route('user.cars.show', $car->car_id) }}" class="back-link">← Kembali ke Detail Mobil</a>
+  {{-- Link Kembali --}}
+<a href="{{ route('user.cars.show') }}" class="back-link" aria-label="Kembali">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+    <line x1="19" y1="12" x2="5" y2="12"/>
+    <polyline points="12 19 5 12 12 5"/>
+  </svg>
+</a>
 
-  {{-- Card Form --}}
   <div class="card">
     <h2>Form Penyewaan Mobil</h2>
 
-    {{-- Info Mobil --}}
     <h3>{{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
     <p><strong>Harga per hari:</strong> Rp{{ number_format($car->harga_sewa_per_hari, 0, ',', '.') }}</p>
 
-    {{-- Form Penyewaan --}}
     <form id="rentalForm" action="{{ route('user.rentals.store', $car->car_id) }}" method="POST">
       @csrf
       <input type="hidden" name="redirect_back" value="{{ $redirectBack }}">
@@ -218,18 +262,16 @@ button:hover {
         <option value="pickup_alamat">Antar ke Alamat Saya</option>
       </select>
 
-      {{-- Lokasi Rental --}}
       <div id="lokasiRental" style="display:none; margin-top:10px;">
         <p>📍 Lokasi Rental Kami:</p>
         <p><strong>Jl. Melati No. 12, Bandung</strong></p>
         <a href="https://www.google.com/maps?q=-6.914744,107.609810" target="_blank" style="color:#0d6efd;">Lihat di Google Maps</a>
       </div>
 
-      {{-- Alamat User --}}
       <div id="alamatUser" style="display:none; margin-top:10px;">
         <label for="alamat">Alamat Anda</label>
         <textarea id="alamat" name="alamat" placeholder="Masukkan alamat lengkap Anda..." rows="3"></textarea>
-        <button type="button" id="cekOngkirBtn" style="margin-top:8px; height: 45px;">Cek Ongkir</button>
+        <button type="button" id="cekOngkirBtn" style="margin-top:8px; height:45px;">Cek Ongkir</button>
         <p id="hasilOngkir" style="margin-top:8px; color:#333;"></p>
       </div>
 
@@ -253,6 +295,15 @@ button:hover {
   </div>
 </div>
 
+{{-- Popup Alert --}}
+<div id="popup-alert">
+  <div class="popup-box">
+    <h3>Peringatan</h3>
+    <p id="alert-message"></p>
+    <button id="alert-ok">Oke</button>
+  </div>
+</div>
+
 <script>
 window.addEventListener('load', function() {
   const form = document.getElementById('rentalForm');
@@ -268,18 +319,28 @@ window.addEventListener('load', function() {
   const hasDocuments = {{ $hasDocuments ? 'true' : 'false' }};
   const isVerified   = {{ $isVerified ? 'true' : 'false' }};
 
-  // 🔹 Batasi tanggal sebelum hari ini
+  // ===== Modal Alert Function =====
+  function showAlert(message, redirectUrl = null) {
+    const popupAlert = document.getElementById('popup-alert');
+    const msg = document.getElementById('alert-message');
+    msg.innerHTML = message;
+    popupAlert.style.display = 'flex';
+    document.getElementById('alert-ok').onclick = () => {
+      popupAlert.style.display = 'none';
+      if (redirectUrl) window.location.href = redirectUrl;
+    };
+  }
+
+  // Batasi tanggal sebelum hari ini
   const now = new Date();
-  const localNow = now.toISOString().slice(0, 16); // Format yyyy-MM-ddTHH:mm
+  const localNow = now.toISOString().slice(0, 16);
   mulai.min = localNow;
   selesai.min = localNow;
 
-  // Kalau tanggal mulai berubah, tanggal selesai minimal harus >= tanggal mulai
   mulai.addEventListener('change', function () {
     selesai.min = mulai.value;
   });
 
-  // 🔹 Fungsi tampil/sembunyikan lokasi & alamat
   function togglePickup() {
     const val = metodePickup.value;
     if (val === 'ambil_sendiri') {
@@ -299,10 +360,10 @@ window.addEventListener('load', function() {
   togglePickup();
   metodePickup.addEventListener('change', togglePickup);
 
-  // 🔹 Cek ongkir
+  // Cek ongkir
   cekOngkirBtn.addEventListener('click', async () => {
     const alamat = document.getElementById('alamat').value.trim();
-    if (!alamat) return alert('Masukkan alamat Anda terlebih dahulu.');
+    if (!alamat) return showAlert('Masukkan alamat Anda terlebih dahulu.');
 
     hasilOngkir.textContent = 'Menghitung jarak...';
     try {
@@ -312,7 +373,6 @@ window.addEventListener('load', function() {
         body: JSON.stringify({ alamat }),
         credentials: 'same-origin'
       });
-
       const data = await res.json();
       hasilOngkir.innerHTML = data.success
         ? `📏 Jarak: <b>${data.distance_text}</b> — Ongkir: <b>Rp${data.ongkir.toLocaleString('id-ID')}</b>`
@@ -322,12 +382,12 @@ window.addEventListener('load', function() {
     }
   });
 
-  // 🔹 Validasi jam sewa (hanya 08:00–22:00)
+  // Validasi jam sewa
   function validateTimeRange(input) {
     if (!input.value) return;
     const hour = new Date(input.value).getHours();
     if (hour < 8 || hour > 22) {
-      alert('⚠️ Jam penyewaan hanya diperbolehkan antara 08:00 hingga 22:00 WIB.');
+      showAlert('⚠️ Jam penyewaan hanya diperbolehkan antara 08:00 hingga 22:00 WIB.');
       input.value = '';
     }
   }
@@ -335,13 +395,12 @@ window.addEventListener('load', function() {
   mulai.addEventListener('change', e => validateTimeRange(e.target));
   selesai.addEventListener('change', e => validateTimeRange(e.target));
 
-  // 🔹 Submit form
+  // Submit form
   form.addEventListener('submit', function(e) {
     e.preventDefault();
 
     if (!hasDocuments) {
-      alert('Silakan unggah KTP & KK terlebih dahulu.');
-      return window.location.href = "{{ route('user.verifikasi.index') }}";
+      return showAlert('Silakan unggah KTP & KK terlebih dahulu.', "{{ route('user.verifikasi.index') }}");
     }
 
     if (!isVerified) {
@@ -351,7 +410,7 @@ window.addEventListener('load', function() {
     const mulaiVal = mulai.value;
     const selesaiVal = selesai.value;
     if (new Date(mulaiVal) >= new Date(selesaiVal)) {
-      return alert('Tanggal selesai harus lebih besar dari tanggal mulai.');
+      return showAlert('Tanggal selesai harus lebih besar dari tanggal mulai.');
     }
 
     fetch(this.action, {
@@ -365,13 +424,13 @@ window.addEventListener('load', function() {
       if (data.success && data.redirect_url) {
         window.location.href = data.redirect_url;
       } else {
-        alert(data.message || 'Terjadi kesalahan.');
+        showAlert(data.message || 'Terjadi kesalahan.');
       }
     })
-    .catch(() => alert('Terjadi kesalahan koneksi.'));
+    .catch(() => showAlert('Terjadi kesalahan koneksi.'));
   });
 
-  // 🔹 Tutup popup
+  // Tutup popup verifikasi
   document.getElementById('close-popup').addEventListener('click', () => {
     popup.style.display = 'none';
   });

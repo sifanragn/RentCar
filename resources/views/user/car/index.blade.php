@@ -7,7 +7,7 @@
 .filter-wrapper {
   width: 100%;
   overflow-x: auto;
-  padding: 10px 0;
+  padding: 10px 12px; /* tambah padding horizontal */
   margin-top: -10px;
   -ms-overflow-style: none;
   scrollbar-width: none;

@@ -169,6 +169,14 @@
     opacity: 0.9;
   }
 
+    .back-link {
+    color:#000; text-decoration:none;
+    font-weight:250; font-size:15px;
+    margin-left: -275px;
+    }
+
+  .back-link:hover { text-decoration:underline; }
+
   /* ========== RESPONSIVE ========== */
   @media (max-width: 480px) {
     .info-card { width: 90%; padding: 25px; }
@@ -186,6 +194,15 @@
 @endsection
 
 @section('content')
+<a 
+  href="{{ request()->query('from') === 'profile' 
+      ? route('user.profile.index') 
+      : route('user.dashboard') }}" 
+  class="back-link"
+>
+  <i class="fa-solid fa-arrow-left"></i>
+</a>
+
 <div class="contact-section">
 
   {{-- ===== JUDUL & SUBTEKS ===== --}}
@@ -224,19 +241,6 @@
       {{ session('success') }}
     </div>
   @endif
-
-  {{-- ===== FORM KONTAK ===== --}}
-  <form action="{{ route('user.kontak.store') }}" method="POST" class="contact-form">
-    @csrf
-
-    <label>Subjek (Opsional)</label>
-    <input type="text" name="subject" placeholder="Contoh: Kendala Pembayaran">
-
-    <label>Pesan Anda</label>
-    <textarea name="message" required rows="4" placeholder="Tuliskan pesan Anda..."></textarea>
-
-    <button type="submit">Kirim Pesan</button>
-  </form>
 
   {{-- ===== LOGO FOOTER ===== --}}
   <div class="footer-logo">

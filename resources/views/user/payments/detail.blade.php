@@ -95,17 +95,22 @@
     background: #009E47;
   }
 
-  .back-link {
-    color:#000; text-decoration:none;
-    font-weight:250; font-size:15px;
-    margin-left: -125px;
-  }
-  .back-link:hover { text-decoration:underline; }
+.back-link svg {
+  vertical-align: middle;
+}
+
 </style>
 @endsection
 
 @section('content')
-  <a href="{{ route('user.cars.index') }}" class="back-link">← Kembali ke Daftar Mobil</a>
+  {{-- Link Kembali --}}
+<a href="{{ route('user.cars.index') }}" class="back-link" aria-label="Kembali">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+    <line x1="19" y1="12" x2="5" y2="12"/>
+    <polyline points="12 19 5 12 12 5"/>
+  </svg>
+</a>
+
 <div class="card-payment">
   <h2>Detail Pembayaran</h2>
 

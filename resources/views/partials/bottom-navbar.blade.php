@@ -114,9 +114,8 @@
 
   {{-- Transaksi --}}
 <a 
-  class="nav-item {{ request()->is('transaksi') ? 'active' : '' }}" 
-  href="{{ auth()->check() ? url('/user/payments') : route('login') }}"
-  @guest onclick="return confirm('Kamu harus login dulu untuk melihat transaksi. Login sekarang?')" @endguest
+  class="nav-item {{ request()->is('user/payments*') ? 'active' : '' }}" 
+  href="{{ auth()->check() ? route('user.payments.index') : route('user.payments.guest') }}"
 >
   <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
     <path d="M2 4h20c1.1 0 2 .9 2 2v3H0V6c0-1.1.9-2 2-2zm0 5h24v10c0 1.1-.9 2-2 2H2c-1.1 0-2-.9-2-2V9zm4 2v2h4v-2H6z"/>
@@ -140,10 +139,13 @@
     <span>Hubungi Kami</span>
   </a>
 
-{{-- 
-<a class="nav-item {{ request()->is('profile') ? 'active' : '' }}" href="{{ route('user.profile') }}">
-  <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z"/></svg>
+<a 
+  class="nav-item {{ request()->is('user/profile*') ? 'active' : '' }}" 
+  href="{{ auth()->check() ? route('user.profile.index') : route('user.profile.guest') }}"
+>
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z"/>
+  </svg>
   <span>Profile</span>
 </a>
---}}
 </nav>

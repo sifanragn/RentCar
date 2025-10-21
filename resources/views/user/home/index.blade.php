@@ -78,6 +78,28 @@
   filter: invert(100%);
 }
 
+/* ===== Carousel Indicators (Bulat) ===== */
+.carousel-indicators {
+  bottom: -30px; /* posisinya sedikit ke atas */
+}
+
+.carousel-indicators [data-bs-target] {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%; /* bulat penuh */
+  background-color: #D9D9D9; /* warna bulatan default */
+  opacity: 0.5;
+  border: none;
+  transition: all 0.3s ease;
+  margin: 0 4px; /* jarak antar titik */
+}
+
+.carousel-indicators .active {
+  opacity: 1;
+  background-color: #000; /* warna aktif (bisa diganti sesuai tema) */
+  transform: scale(1.25); /* sedikit membesar pas aktif */
+}
+
 /* Scroll container */
 .brand-scroll {
   display: flex;
@@ -344,6 +366,13 @@
 
 <!-- Carousel -->
 <div id="carCarousel" class="carousel slide" data-bs-ride="carousel">
+  <!-- 🔘 Indikator bulat di bawah -->
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+
   <div class="carousel-inner rounded-3 shadow-sm">
     <div class="carousel-item active">
       <img src="/images/slide1.png" class="d-block w-100" alt="Slide 1">
@@ -355,20 +384,13 @@
       <img src="/images/slide3.png" class="d-block w-100" alt="Slide 3">
     </div>
   </div>
-
-  <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon"></span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon"></span>
-  </button>
 </div>
+
 
 <!-- Bagian Merek -->
 <div class="section-container">
   <div class="section-header">
     <h2>Merek</h2>
-    <a href="#">See All</a>
   </div>
 
   <div class="brand-scroll">
@@ -382,34 +404,38 @@
 <div class="section-container">
   <div class="section-header">
     <h2>Paling Populer</h2>
-    <a href="#">See All</a>
+    <a href="{{ route('user.cars.index') }}">See All</a>
   </div>
 
   <div class="card-container">
-@foreach($popularCars as $car)
-<a href="{{ route('user.cars.index') }}" style="text-decoration: none; color: inherit;">
-  <div class="card">
+    @foreach($popularCars as $car)
+    {{-- Link ke detail mobil --}}
+    <a href="{{ route('user.cars.show', $car->car_id) }}" style="text-decoration: none; color: inherit;">
+      <div class="card">
         <img src="{{ asset('storage/' . $car->foto) }}" alt="{{ $car->nama }}" class="car-image">
-    <div class="card-content">
-      <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
-      <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
-      <p class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</p>
-      <div class="info-tags">
-        <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
-        <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
-        <div class="tag">{{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
-        <div class="tag">{{ $car->liter_tangki ?? 0 }} Liter</div>
-        <div class="tag">{{ ucfirst($car->lokasi ?? '-') }}</div>
-        <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
-        <div class="tag">{{ \Carbon\Carbon::parse($car->tanggal_mulai)->format('j M') }} - {{ \Carbon\Carbon::parse($car->tanggal_selesai)->format('j M Y') }}</div>
+        <div class="card-content">
+          <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
+          <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
+          <p class="price">Rp {{ number_format($car->harga_sewa_per_hari, 0, ',', '.') }}</p>
+          <div class="info-tags">
+            <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
+            <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
+            <div class="tag">{{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
+            <div class="tag">{{ $car->liter_tangki ?? 0 }} Liter</div>
+            <div class="tag">{{ ucfirst($car->lokasi ?? '-') }}</div>
+            <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
+            <div class="tag">
+              {{ \Carbon\Carbon::parse($car->tanggal_mulai)->format('j M') }} -
+              {{ \Carbon\Carbon::parse($car->tanggal_selesai)->format('j M Y') }}
+            </div>
+          </div>
+        </div>
+        <div class="fav-btn">
+          <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
+        </div>
       </div>
-    </div>
-    <div class="fav-btn">
-      <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
-    </div>
-  </div>
-</a>
-@endforeach
+    </a>
+    @endforeach
   </div>
 </div>
 

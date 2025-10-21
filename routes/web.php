@@ -65,9 +65,16 @@ Route::get('/', fn() => redirect()->route('home'));
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/cars', [CarController::class, 'index'])->name('user.cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('user.cars.show');
+// Hubungi Kami
+Route::get('/hubungi-kami', fn() => view('user.kontak.index'))->name('user.kontak.index');
+// Route untuk halaman guest (bisa diakses siapa aja)
+Route::get('/user/car/guest', function () {
+    return view('user.car.guest');
+})->name('user.car.guest');
 
-// 👥 Guest profile (belum login)
+// 👥 Guest profile dan Payments (belum login)
 Route::get('/profile', fn() => view('user.profile.guest'))->name('user.profile.guest');
+Route::get('/payments', fn() => view('user.payments.guest'))->name('user.payments.guest');
 
 // ==================== USER AREA (LOGIN WAJIB) ==================== //
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
@@ -89,7 +96,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/profile/hapus/{tipe}', [ProfileController::class, 'hapusVerifikasi'])->name('profile.hapusVerifikasi');
     Route::post('/profile/verify-password', [ProfileController::class, 'verifyPassword'])->name('profile.verifyPassword');
-
+    
     // Rental
     Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
     Route::get('/rentals/create/{car_id}', [RentalController::class, 'create'])->name('rentals.create');
@@ -113,10 +120,6 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 
     // Ongkir / Pickup Distance
     Route::post('/pickup/distance', [PickupController::class, 'distance'])->name('pickup.distance');
-
-    // Hubungi Kami
-    Route::get('/kontak', [ContactController::class, 'index'])->name('kontak.index');
-    Route::post('/kontak', [ContactController::class, 'store'])->name('kontak.store');
 });
 
 // ==================== ADMIN AREA ==================== //

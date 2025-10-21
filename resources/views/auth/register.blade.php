@@ -120,13 +120,13 @@
     background: #222;
   }
 
-.login-text {
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 70px; /* tambah ini supaya nggak tertutup navbar */
-  font-size: 1rem;
-  color: #333;
-}
+  .login-text {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 70px; /* supaya tidak ketutup navbar */
+    font-size: 1rem;
+    color: #333;
+  }
 
   .login-text a {
     color: #0077b6;
@@ -146,8 +146,43 @@
 
   <h1 class="title">Get Started Free!</h1>
   <p class="subtitle">Ayo Buat Akun Dan Cari Mobilmu</p>
-  
-<form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data">
+
+  {{-- 🔔 Notifikasi error atau sukses --}}
+  @if ($errors->any())
+    <div style="
+      background: #ffecec;
+      color: #a40000;
+      border: 1px solid #ffb3b3;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 1.2rem;
+      font-size: 14px;
+      text-align: left;
+    ">
+      <ul style="list-style:none; margin:0; padding:0;">
+        @foreach ($errors->all() as $error)
+          <li>⚠️ {{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
+
+  @if (session('success'))
+    <div style="
+      background: #e9ffe9;
+      color: #006400;
+      border: 1px solid #a3e6a3;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 1.2rem;
+      font-size: 14px;
+      text-align: center;
+    ">
+      ✅ {{ session('success') }}
+    </div>
+  @endif
+
+  <form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
     <div class="input-group">
@@ -181,6 +216,6 @@
       Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
     </p>
   </form>
-  @include('partials.bottom-navbar')
 
+  @include('partials.bottom-navbar')
 @endsection
