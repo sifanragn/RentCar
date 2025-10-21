@@ -11,39 +11,35 @@ class RentalAdminController extends Controller
     /**
      * 📋 Daftar semua penyewaan
      */
-    public function index()
+   public function index(Request $request)
 {
-    $rentals = Rental::with([
-        'user',
-        'car.brand',
-        'payments' => function ($q) {
-            // 🔹 Ambil hanya pembayaran utama (main)
-            $q->where('payment_type', 'main');
-        }
-    ])
-    ->where(function ($q) {
-        // ✅ Tampilkan semua transaksi yang punya pembayaran utama
-        $q->whereHas('payments', function ($p) {
-            $p->where('payment_type', 'main');
-        })
-        // ✅ Atau tampilkan kalau ada pembayaran sukses (apapun jenisnya)
-        ->orWhereHas('payments', function ($p) {
-            $p->where('status_pembayaran', 'success');
-        })
-        // ✅ Atau tampilkan kalau rental sudah selesai / dibatalkan / berjalan
-        ->orWhereIn('status_rental', ['selesai', 'dibatalkan', 'berjalan']);
-    })
-    ->orderByDesc('created_at')
-    ->get();
+    $query = Rental::with(['user', 'car.brand']);
 
-    // 🧩 Setelah data diambil, pasangkan hanya payment utama ke variabel tunggal
-    foreach ($rentals as $rental) {
-        $rental->payment = $rental->payments->first();
+    // 🔍 Filter berdasarkan nama penyewa
+    if ($request->filled('nama_penyewa')) {
+        $query->whereHas('user', function ($q) use ($request) {
+            $q->where('nama_lengkap', 'like', '%' . $request->nama_penyewa . '%');
+        });
     }
+
+    // 📅 Filter tanggal sewa
+    if ($request->filled('tanggal_mulai')) {
+        $query->whereDate('tanggal_mulai', '>=', $request->tanggal_mulai);
+    }
+
+    if ($request->filled('tanggal_selesai')) {
+        $query->whereDate('tanggal_selesai', '<=', $request->tanggal_selesai);
+    }
+
+    // 🟢 Filter status
+    if ($request->filled('status_rental')) {
+        $query->where('status_rental', $request->status_rental);
+    }
+
+    $rentals = $query->orderByDesc('created_at')->get();
 
     return view('admin.rentals.index', compact('rentals'));
 }
-
 
     /**
      * 📄 Detail transaksi

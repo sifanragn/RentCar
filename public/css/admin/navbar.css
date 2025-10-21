@@ -1,0 +1,130 @@
+/* ===============================
+   NEOHEX ADMIN NAVBAR (CARS PAGE)
+   =============================== */
+
+.cars-navbar {
+  position: fixed;
+  top: 0;
+  left: 200px;
+  width: calc(100% - 200px);
+  height: 65px;
+  background: #141821;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 6px 25px rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 55px 0 42px; /* 🔹 kanan sedikit dikurangi */
+  z-index: 900;
+  transition: all 0.3s ease;
+}
+
+/* Light mode */
+body.light-mode .cars-navbar {
+  background: rgba(255,255,255,0.95);
+  border-color: #ddd;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+/* === TITLE === */
+.cars-navbar .navbar-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #23c8ff, #007bff, #7b61ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-left: 15px;
+}
+
+/* === RIGHT SIDE === */
+.cars-navbar .navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-right: 55px; /* 🔹 dikurangi dari 80px → biar geser kiri dikit */
+}
+
+/* === TOGGLE WRAPPER === */
+.cars-navbar .toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #9ca4b8;
+  font-size: 14px;
+  font-weight: 500;
+}
+.cars-navbar .switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+.cars-navbar .switch input { display: none; }
+.cars-navbar .slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #444;
+  border-radius: 34px;
+  transition: 0.4s;
+}
+.cars-navbar .slider::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+.cars-navbar input:checked + .slider {
+  background: linear-gradient(90deg, #23c8ff, #7b61ff);
+}
+.cars-navbar input:checked + .slider::before {
+  transform: translateX(22px);
+}
+.cars-navbar .mode-text {
+  font-size: 14px;
+  color: #a79fff;
+  min-width: 80px;
+  text-align: left;
+}
+
+/* === LOGOUT BUTTON === */
+.cars-navbar .btn-logout {
+  background: linear-gradient(135deg, #23c8ff, #7b61ff);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(123,97,255,0.4);
+  transition: all 0.3s ease;
+}
+.cars-navbar .btn-logout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(35,200,255,0.5);
+  filter: brightness(1.1);
+}
+
+/* === COLLAPSED SIDEBAR === */
+.admin-wrapper.sidebar-collapsed .cars-navbar {
+  left: 75px;
+  width: calc(100% - 75px);
+  padding-left: 32px;
+  padding-right: 48px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 992px) {
+  .cars-navbar {
+    left: 0;
+    width: 100%;
+    padding: 0 22px;
+  }
+}

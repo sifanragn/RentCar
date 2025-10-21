@@ -1,102 +1,169 @@
-<h2>Daftar Mobil</h2>
+@extends('layouts.admin.app')
 
-<div style="margin-bottom: 15px;">
-    <a href="{{ route('cars.create') }}" 
-       style="background: #2c3e50; color: #fff; padding: 8px 14px; border-radius: 6px; text-decoration: none;">
-        + Tambah Mobil Baru
-    </a>
+@section('title', 'Daftar Mobil')
 
-    <a href="{{ route('cars.brands') }}" 
-       style="background: #27ae60; color: #fff; padding: 8px 14px; border-radius: 6px; text-decoration: none;">
-        + Tambah Merek Mobil
-    </a>
-
-    <a href="{{ route('cars.models') }}" 
-       style="background: #2980b9; color: #fff; padding: 8px 14px; border-radius: 6px; text-decoration: none;">
-        + Tambah Model Mobil
-    </a>
+@section('content')
+<div class="cars-header">
+  <h2>Daftar Mobil</h2>
+  <div class="car-actions">
+    <a href="{{ route('cars.create') }}" class="btn btn-primary">+ Tambah Mobil Baru</a>
+    <a href="{{ route('cars.brands') }}" class="btn btn-success">+ Tambah Merek</a>
+    <a href="{{ route('cars.models') }}" class="btn btn-blue">+ Tambah Model</a>
+  </div>
 </div>
 
 @if(session('success'))
-    <p style="color: green">{{ session('success') }}</p>
+  <div class="alert success">{{ session('success') }}</div>
 @endif
 
-<table border="1" cellpadding="6" cellspacing="0" width="100%">
-    <thead style="background:#f5f5f5;">
+<div class="cars-card">
+  <div class="table-wrapper">
+    <table class="car-table">
+      <thead>
         <tr>
-            <th>Merek</th>
-            <th>Model</th>
-            <th>Tahun</th>
-            <th>Warna</th>
-            <th>Transmisi</th>
-            <th>Kapasitas</th>
-            <th>Bahan Bakar</th>
-            <th>Harga / Hari</th>
-            <th>Status</th>
-            <th>Foto</th>
-            <th>Aksi</th>
+          <th>Foto</th>
+          <th>Merek</th>
+          <th>Model</th>
+          <th>Tahun</th>
+          <th>Aksi</th>
         </tr>
-    </thead>
-    <tbody>
+      </thead>
+      <tbody>
         @forelse($cars as $car)
         <tr>
-            {{-- Ambil merek dari relasi --}}
-            <td>{{ $car->brand->nama_merek ?? '-' }}</td>
-
-            {{-- Model disimpan langsung di tabel cars --}}
-            <td>{{ $car->model }}</td>
-
-            <td>{{ $car->tahun }}</td>
-            <td>{{ $car->warna }}</td>
-            <td>{{ ucfirst($car->tipe_transmisi) }}</td>
-
-            {{-- Kapasitas dari relasi car_capacities --}}
-            <td>
-                {{ $car->capacity && $car->capacity->jumlah_orang 
-                    ? $car->capacity->jumlah_orang . ' Orang' 
-                    : '-' }}
-            </td>
-
-            <td>{{ ucfirst($car->bahan_bakar) }}</td>
-            <td>Rp{{ number_format($car->harga_sewa_per_hari, 0, ',', '.') }}</td>
-            <td>{{ ucfirst($car->status) }}</td>
-
-            {{-- Foto mobil --}}
-            <td>
-                @if($car->foto)
-                    <img src="{{ asset('storage/' . $car->foto) }}" alt="Foto Mobil" width="100" style="border-radius: 6px;">
-                @else
-                    <small>Tidak ada</small>
-                @endif
-            </td>
-
-            {{-- Aksi edit, hapus, dan show --}}
-            <td>
-                <a href="{{ route('cars.show', $car->car_id) }}"
-                   style="color: #16a085; text-decoration:none; margin-right:8px;">
-                    Detail
-                </a>
-
-                <a href="{{ route('cars.edit', $car->car_id) }}"
-                   style="color: blue; text-decoration:none; margin-right:8px;">
-                    Edit
-                </a>
-
-                <form action="{{ route('cars.destroy', $car->car_id) }}" 
-                      method="POST" style="display:inline;">
-                    @csrf @method('DELETE')
-                    <button type="submit" 
-                            onclick="return confirm('Yakin hapus mobil ini?')"
-                            style="color:red; border:none; background:none; cursor:pointer;">
-                        Hapus
-                    </button>
-                </form>
-            </td>
+          <td>
+            @if($car->foto)
+              <img src="{{ asset('storage/' . $car->foto) }}" alt="Foto Mobil" class="car-img">
+            @else
+              <small>-</small>
+            @endif
+          </td>
+          <td>{{ $car->brand->nama_merek ?? '-' }}</td>
+          <td>{{ $car->model }}</td>
+          <td>{{ $car->tahun }}</td>
+          <td class="car-actions-td">
+            <button class="link detail" onclick='showCarDetail(@json($car))'>Detail</button>
+            <a href="{{ route('cars.edit', $car->car_id) }}" class="link edit">Edit</a>
+            <form action="{{ route('cars.destroy', $car->car_id) }}" method="POST" 
+                  class="inline" onsubmit="return confirm('Yakin hapus mobil ini?')">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="link delete">Hapus</button>
+            </form>
+          </td>
         </tr>
         @empty
         <tr>
-            <td colspan="11" style="text-align:center;">Belum ada mobil terdaftar.</td>
+          <td colspan="5" class="empty-text">Belum ada mobil terdaftar.</td>
         </tr>
         @endforelse
-    </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{{-- === MODAL DETAIL === --}}
+<div id="carDetailModal" class="modal">
+  <div class="modal-content">
+    {{-- FOTO HEADER & TITLE --}}
+    <div class="modal-photo" id="carPhotoArea">
+  <img id="carPhotoImg" src="/img/no-image.png" alt="Foto Mobil" class="car-detail-banner">
+  <div class="modal-header">
+    <h2><i class="bi bi-car-front-fill"></i> Detail Mobil</h2>
+  </div>
+</div>
+
+
+    {{-- BODY --}}
+    <div class="modal-body">
+      <div id="carDetailBody" class="modal-body-inner">
+        <p style="text-align:center;">Memuat data mobil...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@endsection
+
+@push('scripts')
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("✅ JS loaded sukses!");
+});
+
+function showCarDetail(car) {
+  console.log("🔍 Klik detail:", car);
+
+  const modal = document.getElementById('carDetailModal');
+  const body = document.getElementById('carDetailBody');
+  const photo = document.getElementById('carPhotoArea');
+
+  // Fallback foto utama
+  const fotoUtama = car.foto ? `/storage/${car.foto}` : '/img/no-image.png';
+
+  // === Header modal ===
+  photo.innerHTML = `
+    <div class="main-photo-area">
+      <img id="mainCarPhoto" src="${fotoUtama}" alt="Foto Mobil" class="car-detail-banner">
+    </div>
+    <button class="close" onclick="closeDetailModal()">&times;</button>
+    <div class="modal-header">
+      <h2><i class="bi bi-car-front-fill"></i> Detail Mobil</h2>
+    </div>
+  `;
+
+  // === Galeri foto tambahan ===
+  let galleryHTML = '';
+  if (car.photos && car.photos.length > 0) {
+    galleryHTML = `
+      <div class="photo-gallery">
+        ${car.photos.map(p => `
+          <img src="/storage/${p.path}" 
+               class="thumb-photo" 
+               onclick="changeMainPhoto('/storage/${p.path}', this)">
+        `).join('')}
+      </div>
+    `;
+  }
+
+  // === Isi detail mobil ===
+  const brand = car.brand?.nama_merek ?? '-';
+  const capacity = car.capacity?.jumlah_orang ?? '-';
+  const harga = new Intl.NumberFormat('id-ID').format(car.harga_sewa_per_hari);
+
+  body.innerHTML = `
+    ${galleryHTML}
+    <div class="car-detail-grid">
+      <div class="car-detail-item"><div class="car-detail-label">Merek</div><div class="car-detail-value">${brand}</div></div>
+      <div class="car-detail-item"><div class="car-detail-label">Model</div><div class="car-detail-value">${car.model}</div></div>
+      <div class="car-detail-item"><div class="car-detail-label">Tahun</div><div class="car-detail-value">${car.tahun}</div></div>
+      <div class="car-detail-item"><div class="car-detail-label">Warna</div><div class="car-detail-value">${car.warna}</div></div>
+      <div class="car-detail-item"><div class="car-detail-label">Transmisi</div><div class="car-detail-value">${car.tipe_transmisi}</div></div>
+      <div class="car-detail-item"><div class="car-detail-label">Kapasitas</div><div class="car-detail-value">${capacity} Orang</div></div>
+      <div class="car-detail-item"><div class="car-detail-label">Bahan Bakar</div><div class="car-detail-value">${car.bahan_bakar}</div></div>
+      <div class="car-detail-item"><div class="car-detail-label">Harga Sewa</div><div class="car-detail-value">Rp${harga}</div></div>
+      <div class="car-detail-item"><div class="car-detail-label">Status</div><div class="car-detail-value">${car.status}</div></div>
+      <div class="car-detail-item"><div class="car-detail-label">Lokasi</div><div class="car-detail-value">${car.lokasi}</div></div>
+      <div class="car-detail-item" style="grid-column: 1 / -1">
+        <div class="car-detail-label">Deskripsi</div>
+        <div class="car-detail-value">${car.deskripsi ?? '-'}</div>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('active');
+}
+
+function changeMainPhoto(src, el) {
+  document.getElementById('mainCarPhoto').src = src;
+  document.querySelectorAll('.thumb-photo').forEach(img => img.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function closeDetailModal() {
+  document.getElementById('carDetailModal').classList.remove('active');
+}
+</script>
+
+@endpush

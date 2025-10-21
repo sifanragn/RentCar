@@ -1,0 +1,529 @@
+/* ===================================
+   DAFTAR PENYEWAAN (ADMIN)
+   =================================== */
+
+.admin-content-wrapper {
+  padding: 24px;
+  color: #e5e7eb;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #23c8ff;
+  margin-bottom: 6px;
+}
+
+.page-header p {
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+/* ===== Table Wrapper ===== */
+.table-wrapper {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px);
+}
+
+body.light-mode .table-wrapper {
+  background: #fff;
+  border-color: #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ===== Table ===== */
+.rental-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.rental-table th,
+.rental-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  text-align: left;
+}
+
+.rental-table th {
+  background: rgba(255,255,255,0.08);
+  color: #23c8ff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.rental-table tr:hover {
+  background: rgba(35,200,255,0.05);
+}
+
+body.light-mode .rental-table th {
+  background: #eef5ff;
+  color: #0d6efd;
+}
+
+body.light-mode .rental-table td {
+  color: #1f2937;
+}
+
+body.light-mode .rental-table tr:hover {
+  background: #f3f8ff;
+}
+
+/* ===== Status Badge ===== */
+.status {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 13px;
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+}
+
+/* Warna status */
+.status.verifikasi_diperlukan {
+  background: rgba(255,234,138,0.15);
+  color: #ffda6b;
+  border: 1px solid rgba(255,234,138,0.4);
+}
+
+.status.menunggu {
+  background: rgba(255,211,102,0.15);
+  color: #ffd866;
+  border: 1px solid rgba(255,211,102,0.4);
+}
+
+.status.berjalan {
+  background: rgba(46,213,115,0.15);
+  color: #2ed573;
+  border: 1px solid rgba(46,213,115,0.4);
+}
+
+.status.selesai {
+  background: rgba(70,130,255,0.15);
+  color: #4682ff;
+  border: 1px solid rgba(70,130,255,0.4);
+}
+
+.status.dibatalkan {
+  background: rgba(255,100,100,0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(255,100,100,0.4);
+}
+
+/* ===== Tombol ===== */
+.btn-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #23c8ff, #007bff);
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.btn-view:hover {
+  background: linear-gradient(135deg, #1da8e0, #006de2);
+  transform: translateY(-2px);
+}
+
+body.light-mode .btn-view {
+  background: linear-gradient(135deg, #0d6efd, #23c8ff);
+}
+
+/* ===== Empty Text ===== */
+.empty-text {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 20px 0;
+}
+body.light-mode .empty-text {
+  color: #6b7280;
+}
+
+/* ===============================
+   FILTER FORM (RAPIH, BERBEDA, ELEGAN)
+=============================== */
+.filter-form {
+  background: linear-gradient(145deg, rgba(35,200,255,0.05), rgba(0,123,255,0.08));
+  border: 1px solid rgba(35,200,255,0.25);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin: 20px 0 26px;
+  overflow-x: auto;
+  white-space: nowrap;
+  box-shadow: 0 0 25px rgba(35,200,255,0.06);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* ✨ efek glow lembut */
+.filter-form::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  pointer-events: none;
+  box-shadow: 0 0 25px rgba(35,200,255,0.15);
+}
+
+/* Scrollbar halus */
+.filter-form::-webkit-scrollbar {
+  height: 6px;
+}
+.filter-form::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #23c8ff, #007bff);
+  border-radius: 6px;
+}
+.filter-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 💡 Hover biar lebih hidup */
+.filter-form:hover {
+  box-shadow: 0 0 25px rgba(35,200,255,0.18);
+  border-color: rgba(35,200,255,0.35);
+}
+
+/* 🔆 Mode terang */
+body.light-mode .filter-form {
+  background: linear-gradient(135deg, #eef8ff, #ffffff);
+  border-color: #bcdfff;
+  box-shadow: 0 6px 18px rgba(13,110,253,0.08);
+}
+body.light-mode .filter-form::before {
+  box-shadow: 0 0 20px rgba(13,110,253,0.12);
+}
+
+/* 🔹 Grid baris sejajar */
+.filter-grid {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 28px; /* jarak antar kolom */
+  min-width: max-content; /* biar ga turun */
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  flex-shrink: 0;
+}
+
+.filter-item label {
+  font-weight: 600;
+  color: #23c8ff;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+body.light-mode .filter-item label {
+  color: #0d6efd;
+}
+
+/* 🔸 Input & select */
+.filter-item input,
+.filter-item select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: #e5e7eb;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.filter-item input:focus,
+.filter-item select:focus {
+  border-color: #23c8ff;
+  box-shadow: 0 0 0 2px rgba(35,200,255,0.25);
+  outline: none;
+}
+
+body.light-mode .filter-item input,
+body.light-mode .filter-item select {
+  background: #f9fafb;
+  color: #111;
+  border-color: #ddd;
+}
+
+/* 🔹 Tombol di kanan */
+.filter-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btn-filter,
+.btn-reset {
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-filter {
+  background: linear-gradient(135deg, #23c8ff, #007bff);
+  color: #fff;
+  border: none;
+}
+
+.btn-filter:hover {
+  background: linear-gradient(135deg, #0dcaf0, #006ad1);
+}
+
+.btn-reset {
+  background: rgba(255,255,255,0.08);
+  color: #ccc;
+}
+
+.btn-reset:hover {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+/* ===== CUSTOM SELECT (WARNA PER STATUS) ===== */
+.custom-select {
+  position: relative;
+  min-width: 180px;
+  flex-shrink: 0;
+}
+
+.select-selected {
+  background: rgba(255,255,255,0.05);
+  color: #e5e7eb;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.select-selected:hover {
+  border-color: #23c8ff;
+  box-shadow: 0 0 0 2px rgba(35,200,255,0.25);
+}
+
+/* fix utama: dropdown muncul di luar */
+.select-options {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform: translate(var(--x), var(--y));
+  width: 180px;
+  background: rgba(20,25,35,0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  z-index: 9999;
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+  backdrop-filter: blur(10px);
+}
+
+.select-options li {
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.25s ease;
+  border-left: 4px solid transparent;
+}
+
+.select-options li:hover {
+  filter: brightness(1.15);
+  padding-left: 14px;
+}
+
+/* 🎨 Warna per status */
+.status-verifikasi { background: rgba(255,234,138,0.08); color: #ffda6b; border-left-color: #ffda6b; }
+.status-menunggu { background: rgba(255,211,102,0.08); color: #ffd766; border-left-color: #ffd766; }
+.status-berjalan { background: rgba(46,213,115,0.08); color: #2ed573; border-left-color: #2ed573; }
+.status-selesai { background: rgba(70,130,255,0.08); color: #4682ff; border-left-color: #4682ff; }
+.status-dibatalkan { background: rgba(255,100,100,0.08); color: #ff6b6b; border-left-color: #ff6b6b; }
+
+/* Light mode */
+body.light-mode .select-selected {
+  background: #f9fafb;
+  color: #111;
+  border-color: #ccc;
+}
+
+body.light-mode .select-options {
+  background: #fff;
+  border-color: #ddd;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+body.light-mode .select-options li:hover {
+  background: #f3f6ff;
+}
+
+/* show dropdown */
+.custom-select.active .select-options {
+  display: block;
+}
+
+/* ============================
+   🎨 FLATPICKR COMPACT FIX FINAL
+============================ */
+.flatpickr-calendar {
+  background: rgba(15, 20, 30, 0.96) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(35,200,255,0.25);
+  border-radius: 10px;
+  color: #e5e7eb !important;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+  font-family: 'Poppins', sans-serif;
+  transform: scale(0.85);
+  transform-origin: top left;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+/* Header bulan & tahun */
+.flatpickr-months {
+  background: rgba(35,200,255,0.12);
+  border-bottom: 1px solid rgba(35,200,255,0.25);
+  color: #23c8ff;
+  font-size: 13px;
+  height: 34px;
+}
+.flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+  color: #23c8ff !important;
+  font-weight: 600;
+  font-size: 13px !important;
+}
+
+/* Panah kiri-kanan */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  color: #23c8ff !important;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  transition: 0.25s ease;
+}
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  color: #00baff !important;
+  transform: scale(1.2);
+}
+
+/* Bar nama hari (Sun–Sat) */
+.flatpickr-weekdays {
+  background: rgba(35,200,255,0.05);
+  color: #7ed9ff !important;
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(35,200,255,0.15);
+}
+
+/* Grid hari */
+.flatpickr-days {
+  padding: 4px 6px !important;
+}
+.flatpickr-day {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 12px;
+  border-radius: 6px;
+  color: #d9e6ff !important;
+  transition: all 0.2s ease;
+}
+.flatpickr-day:hover {
+  background: rgba(35,200,255,0.15);
+  color: #23c8ff !important;
+}
+
+/* Hari terpilih */
+.flatpickr-day.selected {
+  background: linear-gradient(135deg, #23c8ff, #007bff) !important;
+  color: #fff !important;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(35,200,255,0.3);
+}
+
+/* Hari ini */
+.flatpickr-day.today {
+  border: 1px solid #23c8ff !important;
+  color: #23c8ff !important;
+}
+
+/* ============================
+   🌤 LIGHT MODE FIX
+============================ */
+body.light-mode .flatpickr-calendar {
+  background: #ffffff !important;
+  border: 1px solid #e1e5ef;
+  color: #111 !important;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+}
+body.light-mode .flatpickr-months {
+  background: #f6f9ff;
+  border-bottom: 1px solid #d7e2ff;
+  color: #0d6efd;
+}
+body.light-mode .flatpickr-monthDropdown-months,
+body.light-mode .flatpickr-current-month input.cur-year {
+  color: #0d6efd !important;
+}
+body.light-mode .flatpickr-weekdays {
+  background: #eef4ff;
+  color: #007bff !important;
+}
+body.light-mode .flatpickr-day {
+  color: #333 !important;
+}
+body.light-mode .flatpickr-day:hover {
+  background: rgba(13,110,253,0.1);
+  color: #0d6efd !important;
+}
+body.light-mode .flatpickr-day.selected {
+  background: linear-gradient(135deg, #0d6efd, #23c8ff) !important;
+  color: #fff !important;
+}
+body.light-mode .flatpickr-day.today {
+  border: 1px solid #0d6efd !important;
+  color: #0d6efd !important;
+}
+
+/* Placeholder biar keliatan */
+.flatpickr-input[readonly],
+.flatpickr-alt-input[readonly] {
+  background: rgba(255,255,255,0.05);
+  cursor: text !important;
+  text-align: left;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* 🌤 Light mode placeholder lebih kontras */
+body.light-mode .flatpickr-alt-input[readonly]::placeholder {
+  color: #666 !important;
+  opacity: 0.9 !important;
+}

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\UserVerificationController;
 use App\Http\Controllers\Admin\RentalAdminController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\AdminPaymentController;
+use App\Http\Controllers\Admin\LaporanController;
 
 // ===== USER CONTROLLERS =====
 use App\Http\Controllers\User\HomeController;
@@ -32,8 +33,6 @@ use App\Http\Controllers\User\PickupController;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-| Semua route frontend (user) dan backend (admin)
-|--------------------------------------------------------------------------
 */
 
 // ==================== DEBUG / TEST ==================== //
@@ -41,7 +40,6 @@ Route::get('/test-log', function () {
     \Log::error('🚨 Laravel log test berhasil!');
     return 'Cek terminal/log kamu 😉';
 });
-
 Route::get('/test-view', fn() => view('admin.merek.index', ['brands' => []]));
 Route::get('/check-auth', fn() => auth()->check()
     ? '✅ Login sebagai: ' . auth()->user()->email
@@ -65,14 +63,12 @@ Route::get('/', fn() => redirect()->route('home'));
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/cars', [CarController::class, 'index'])->name('user.cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('user.cars.show');
+
 // Hubungi Kami
 Route::get('/hubungi-kami', fn() => view('user.kontak.index'))->name('user.kontak.index');
-// Route untuk halaman guest (bisa diakses siapa aja)
-Route::get('/user/car/guest', function () {
-    return view('user.car.guest');
-})->name('user.car.guest');
 
-// 👥 Guest profile dan Payments (belum login)
+// Halaman guest
+Route::get('/user/car/guest', fn() => view('user.car.guest'))->name('user.car.guest');
 Route::get('/profile', fn() => view('user.profile.guest'))->name('user.profile.guest');
 Route::get('/payments', fn() => view('user.payments.guest'))->name('user.payments.guest');
 
@@ -96,7 +92,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/profile/hapus/{tipe}', [ProfileController::class, 'hapusVerifikasi'])->name('profile.hapusVerifikasi');
     Route::post('/profile/verify-password', [ProfileController::class, 'verifyPassword'])->name('profile.verifyPassword');
-    
+
     // Rental
     Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
     Route::get('/rentals/create/{car_id}', [RentalController::class, 'create'])->name('rentals.create');
@@ -138,6 +134,7 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
     // Mobil
     Route::get('cars/brands', [CarAdminController::class, 'brandIndex'])->name('cars.brands');
     Route::post('cars/brands', [CarAdminController::class, 'brandStore'])->name('cars.brands.store');
+    Route::delete('cars/brands/{id}', [CarAdminController::class, 'brandDestroy'])->name('cars.brands.destroy');
     Route::get('cars/models', [CarAdminController::class, 'modelIndex'])->name('cars.models');
     Route::post('cars/models', [CarAdminController::class, 'modelStore'])->name('cars.models.store');
     Route::get('api/models/{brand_id}', [CarAdminController::class, 'getModelsByBrand']);
@@ -165,4 +162,8 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
 
     // Pembayaran (Admin)
     Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])->name('payments.refresh');
+
+    // Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
 });

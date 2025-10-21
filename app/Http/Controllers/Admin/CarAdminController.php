@@ -7,19 +7,24 @@ use App\Models\Car;
 use App\Models\CarBrand;
 use App\Models\CarModel;
 use App\Models\CarCapacity;
+use App\Models\CarPhoto;   // ⬅️ Pindah ke sini
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+
 
 class CarAdminController extends Controller
 {
     // ====================== MOBIL ============================
 
     public function index()
-    {
-        // Ambil data mobil + relasi merek & kapasitas
-        $cars = Car::with(['brand', 'capacity'])->orderBy('created_at', 'desc')->get();
-        return view('admin.mobil.index', compact('cars'));
-    }
+{
+    $cars = Car::with(['brand', 'capacity', 'photos'])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('admin.mobil.index', compact('cars'));
+}
+
 
     public function create()
     {
@@ -28,51 +33,74 @@ class CarAdminController extends Controller
         return view('admin.mobil.create', compact('brands', 'capacities'));
     }
 
-    public function show($id)
-    {
-        $car = Car::with(['brand', 'capacity'])->findOrFail($id);
-        return view('admin.mobil.show', compact('car'));
+  public function show($id)
+{
+    $car = Car::with(['brand', 'capacity'])->findOrFail($id);
+
+    if (request()->ajax()) {
+        // hanya ubah cara return → jadi `response()->view`
+        // biar modal bisa baca HTML parsial dengan benar
+        return response()->view('admin.mobil.partials.show', compact('car'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'brand_id' => 'required|exists:car_brands,brand_id',
-            'model' => 'required|string|max:100',
-            'tahun' => 'required|integer|min:1900|max:' . date('Y'),
-            'warna' => 'required|string|max:50',
-            'tipe_transmisi' => 'required|in:manual,otomatis',
-            'capacity_id' => 'required|exists:car_capacities,capacity_id',
-            'bahan_bakar' => 'required|in:bensin,diesel,hybrid',
-            'harga_sewa_per_hari' => 'required|numeric|min:0',
-            'lokasi' => 'required|string|max:100',
-            'kilometer' => 'required|integer|min:0',
-            'liter_tangki' => 'required|integer|min:1',
-            'deskripsi' => 'nullable|string',
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+    // fallback tetap sama persis
+    return view('admin.mobil.show', compact('car'));
+}
 
-        $path = $request->file('foto')->store('cars', 'public');
+public function store(Request $request)
+{
+    $request->validate([
+        'brand_id' => 'required|exists:car_brands,brand_id',
+        'model' => 'required|string|max:100',
+        'tahun' => 'required|integer|min:1900|max:' . date('Y'),
+        'warna' => 'required|string|max:50',
+        'tipe_transmisi' => 'required|in:manual,otomatis',
+        'capacity_id' => 'required|exists:car_capacities,capacity_id',
+        'bahan_bakar' => 'required|in:bensin,diesel,hybrid',
+        'harga_sewa_per_hari' => 'required|numeric|min:0',
+        'lokasi' => 'required|string|max:100',
+        'kilometer' => 'required|integer|min:0',
+        'liter_tangki' => 'required|integer|min:1',
+        'deskripsi' => 'nullable|string',
+        'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        'gallery.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+    ]);
 
-        Car::create([
-            'brand_id' => $request->brand_id,
-            'model' => $request->model,
-            'tahun' => $request->tahun,
-            'warna' => $request->warna,
-            'tipe_transmisi' => $request->tipe_transmisi,
-            'capacity_id' => $request->capacity_id,
-            'bahan_bakar' => $request->bahan_bakar,
-            'harga_sewa_per_hari' => $request->harga_sewa_per_hari,
-            'status' => 'tersedia',
-            'lokasi' => $request->lokasi,
-            'kilometer' => $request->kilometer,
-            'liter_tangki' => $request->liter_tangki,
-            'deskripsi' => $request->deskripsi,
-            'foto' => $path,
-        ]);
+    // Simpan foto utama
+    $path = $request->file('foto')->store('cars', 'public');
 
-        return redirect()->route('cars.index')->with('success', 'Mobil berhasil ditambahkan.');
+    // Simpan data mobil
+    $car = Car::create([
+        'brand_id' => $request->brand_id,
+        'model' => $request->model,
+        'tahun' => $request->tahun,
+        'warna' => $request->warna,
+        'tipe_transmisi' => $request->tipe_transmisi,
+        'capacity_id' => $request->capacity_id,
+        'bahan_bakar' => $request->bahan_bakar,
+        'harga_sewa_per_hari' => $request->harga_sewa_per_hari,
+        'status' => 'tersedia',
+        'lokasi' => $request->lokasi,
+        'kilometer' => $request->kilometer,
+        'liter_tangki' => $request->liter_tangki,
+        'deskripsi' => $request->deskripsi,
+        'foto' => $path,
+    ]);
+
+    // Simpan foto tambahan (jika ada)
+    if ($request->hasFile('gallery')) {
+        foreach ($request->file('gallery') as $file) {
+            $galleryPath = $file->store('cars/gallery', 'public');
+            CarPhoto::create([
+                'car_id' => $car->car_id,
+                'path' => $galleryPath,
+            ]);
+        }
     }
+
+    return redirect()->route('cars.index')->with('success', 'Mobil dan foto tambahan berhasil ditambahkan.');
+}
+
 
     public function edit($id)
     {
@@ -130,17 +158,27 @@ class CarAdminController extends Controller
     }
 
     public function destroy($id)
-    {
-        $car = Car::findOrFail($id);
+{
+    $car = Car::with('photos')->findOrFail($id);
 
-        if ($car->foto && Storage::disk('public')->exists($car->foto)) {
-            Storage::disk('public')->delete($car->foto);
-        }
-
-        $car->delete();
-
-        return redirect()->route('cars.index')->with('success', 'Mobil berhasil dihapus.');
+    // Hapus foto utama
+    if ($car->foto && Storage::disk('public')->exists($car->foto)) {
+        Storage::disk('public')->delete($car->foto);
     }
+
+    // Hapus foto tambahan
+    foreach ($car->photos as $photo) {
+        if (Storage::disk('public')->exists($photo->path)) {
+            Storage::disk('public')->delete($photo->path);
+        }
+        $photo->delete();
+    }
+
+    $car->delete();
+
+    return redirect()->route('cars.index')->with('success', 'Mobil dan semua foto berhasil dihapus.');
+}
+
 
     // ====================== MEREK ============================
 
@@ -150,15 +188,71 @@ class CarAdminController extends Controller
         return view('admin.merek.index', compact('brands'));
     }
 
-    public function brandStore(Request $request)
-    {
-        $request->validate([
-            'nama_merek' => 'required|unique:car_brands,nama_merek'
-        ]);
+   public function brandStore(Request $request)
+{
+    $request->validate([
+        'nama_merek' => 'required'
+    ]);
 
-        CarBrand::create(['nama_merek' => $request->nama_merek]);
-        return redirect()->route('cars.brands')->with('success', 'Merek berhasil ditambahkan!');
+    $nama = strtolower(trim($request->nama_merek));
+
+    // Cegah duplikat manual (case insensitive)
+    if (CarBrand::whereRaw('LOWER(TRIM(nama_merek)) = ?', [$nama])->exists()) {
+        return redirect()->back()->with('success', 'Merek sudah ada!');
     }
+
+    $logoMap = [
+        'toyota' => 'toyota.png',
+        'honda' => 'honda.png',
+        'daihatsu' => 'daihatsu.png',
+        'suzuki' => 'suzuki.png',
+        'mitsubishi' => 'mitsubishi.png',
+        'nissan' => 'nissan.png',
+        'hyundai' => 'hyundai.png',
+        'mazda' => 'mazda.png',
+        'wuling' => 'wuling.png',
+        'porsche' => 'porsche.png',
+    ];
+
+    $logo = $logoMap[$nama] ?? 'default.png';
+
+    CarBrand::create([
+        'nama_merek' => ucfirst($nama),
+        'logo' => $logo, // ✅ sekarang disimpan ke DB
+    ]);
+
+    return redirect()->route('cars.brands')->with('success', 'Merek berhasil ditambahkan!');
+}
+
+
+public function brandDestroy($id)
+{
+    $brand = CarBrand::findOrFail($id);
+
+    // Optional: hapus semua mobil yang pakai merek ini
+    if ($brand->cars()->count()) {
+        foreach ($brand->cars as $car) {
+            // hapus foto mobil juga
+            if ($car->foto && Storage::disk('public')->exists($car->foto)) {
+                Storage::disk('public')->delete($car->foto);
+            }
+
+            foreach ($car->photos as $photo) {
+                if (Storage::disk('public')->exists($photo->path)) {
+                    Storage::disk('public')->delete($photo->path);
+                }
+                $photo->delete();
+            }
+
+            $car->delete();
+        }
+    }
+
+    $brand->delete();
+
+    return redirect()->route('cars.brands')->with('success', 'Merek dan semua mobil terkait berhasil dihapus!');
+}
+
 
     // ====================== MODEL ============================
 
