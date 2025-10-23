@@ -67,7 +67,7 @@
       letter-spacing: 3px;
     }
 
-    /* INFO AREA */
+    /* CONTENT */
     .content {
       padding: 40px;
       position: relative;
@@ -122,6 +122,7 @@
     }
     tr:nth-child(even) td { background: #fcfdff; }
 
+    /* SIGNATURE */
     .signature {
       margin: 50px 0 10px;
       text-align: right;
@@ -133,6 +134,7 @@
       text-decoration: underline;
     }
 
+    /* FOOTER */
     .footer {
       text-align: center;
       padding: 16px;
@@ -150,6 +152,23 @@
       width: 200px;
       opacity: 0.08;
       z-index: 0;
+    }
+
+    /* DRIVER BOX */
+    .driver-box {
+      background: #f6fbff;
+      border: 1px solid #cce5ff;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 14px;
+    }
+    .driver-box h4 {
+      margin: 0 0 6px;
+      color: #0d6efd;
+    }
+    .driver-box p {
+      margin: 3px 0;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -209,53 +228,90 @@
             @endif
           </td>
         </tr>
-
-        {{-- Tambahan khusus jika ini kuitansi tambahan (charge) --}}
-@if($payment->payment_type === 'charge' && $payment->rental->invoice)
-  @php
-    $invoice = $payment->rental->invoice;
-    // cari payment utama
-    $mainPayment = $payment->rental->payments()
-        ->where('payment_type', 'main')
-        ->where('status_pembayaran', 'success')
-        ->latest()
-        ->first();
-  @endphp
-
-  <tr>
-    <th>Status Pengembalian</th>
-    <td>{{ str_replace('_', ' ', $invoice->status_pengembalian ?? '-') }}</td>
-  </tr>
-  <tr>
-    <th>Catatan Pengembalian</th>
-    <td>{{ $invoice->catatan ?? '-' }}</td>
-  </tr>
-  <tr>
-    <th>Total dari Kuitansi Utama</th>
-    <td>
-      @if($mainPayment)
-        <strong>Rp{{ number_format($mainPayment->total_bayar, 0, ',', '.') }}</strong>
-      @else
-        <em>Belum ada pembayaran utama</em>
-      @endif
-    </td>
-  </tr>
-  <tr>
-    <th>Denda Tambahan</th>
-    <td><strong>Rp{{ number_format($invoice->denda_tambahan ?? 0, 0, ',', '.') }}</strong></td>
-  </tr>
-  <tr style="background:#f6fbff;">
-    <th>Total Akhir</th>
-    <td><strong>Rp{{ number_format(($invoice->total_akhir ?? $payment->total_bayar), 0, ',', '.') }}</strong></td>
-  </tr>
-@endif
-
         <tr>
           <th>Metode Pembayaran</th>
-          <td>{{ strtoupper($payment->metode) }}</td>
+          <td>
+            {{ strtoupper($payment->metode) }}
+            @if($payment->gateway)
+              <small style="display:block; opacity:0.8;">via {{ ucfirst($payment->gateway) }}</small>
+            @endif
+          </td>
         </tr>
+
         <tr>
-          <th>Total</th>
+          <th>Durasi</th>
+          <td>{{ $payment->rental->durasi_hari }} Hari</td>
+        </tr>
+
+        <tr>
+          <th>Driver</th>
+          <td>
+            @if($payment->rental->driver === 'ya' && $payment->rental->driverData)
+              Ya, dengan driver
+            @else
+              Tidak menggunakan driver
+            @endif
+          </td>
+        </tr>
+
+        {{-- 💁 Detail driver --}}
+        @if($payment->rental->driver === 'ya' && $payment->rental->driverData)
+          @php $driver = $payment->rental->driverData; @endphp
+          <tr>
+            <th>Data Driver</th>
+            <td>
+              <div class="driver-box">
+                <h4>{{ $driver->nama }}</h4>
+                <p><strong>Harga per Hari:</strong> Rp{{ number_format($driver->harga_per_hari, 0, ',', '.') }}</p>
+                <p><strong>Lokasi:</strong> {{ $driver->lokasi ?? '-' }}</p>
+                <p><strong>Pengalaman:</strong> {{ $driver->pengalaman ?? '-' }} tahun</p>
+                <p><strong>Status Verifikasi:</strong> {{ ucfirst($driver->status_verifikasi) }}</p>
+              </div>
+            </td>
+          </tr>
+        @endif
+
+        {{-- Tambahan jika charge --}}
+        @if($payment->payment_type === 'charge' && $payment->rental->invoice)
+          @php
+            $invoice = $payment->rental->invoice;
+            $mainPayment = $payment->rental->payments()
+                ->where('payment_type', 'main')
+                ->where('status_pembayaran', 'success')
+                ->latest()
+                ->first();
+          @endphp
+
+          <tr>
+            <th>Status Pengembalian</th>
+            <td>{{ str_replace('_', ' ', $invoice->status_pengembalian ?? '-') }}</td>
+          </tr>
+          <tr>
+            <th>Catatan Pengembalian</th>
+            <td>{{ $invoice->catatan ?? '-' }}</td>
+          </tr>
+          <tr>
+            <th>Total dari Kuitansi Utama</th>
+            <td>
+              @if($mainPayment)
+                <strong>Rp{{ number_format($mainPayment->total_bayar, 0, ',', '.') }}</strong>
+              @else
+                <em>Belum ada pembayaran utama</em>
+              @endif
+            </td>
+          </tr>
+          <tr>
+            <th>Denda Tambahan</th>
+            <td><strong>Rp{{ number_format($invoice->denda_tambahan ?? 0, 0, ',', '.') }}</strong></td>
+          </tr>
+          <tr style="background:#f6fbff;">
+            <th>Total Akhir</th>
+            <td><strong>Rp{{ number_format(($invoice->total_akhir ?? $payment->total_bayar), 0, ',', '.') }}</strong></td>
+          </tr>
+        @endif
+
+        <tr>
+          <th>Total Bayar</th>
           <td><strong>Rp{{ number_format($payment->total_bayar, 0, ',', '.') }}</strong></td>
         </tr>
         <tr>

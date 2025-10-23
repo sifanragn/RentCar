@@ -152,18 +152,48 @@
         <td>Durasi</td>
         <td>: {{ $rental->durasi_hari }} Hari</td>
       </tr>
-      <tr>
-        <td>Pakai Sopir</td>
-        <td>: {{ $rental->driver === 'ya' ? 'Ya - Rp '.number_format(150000 * $rental->durasi_hari,0,',','.') : 'Tidak' }}</td>
-      </tr>
+      @php
+  $driverTarif = 0;
+  if ($rental->driver && $rental->driver === 'ya' && $rental->driverData) {
+      $driverTarif = $rental->driverData->harga_per_hari * $rental->durasi_hari;
+  }
+@endphp
+
+<tr>
+  <td>Pakai Sopir</td>
+  <td>
+    @if($rental->driver === 'ya' && $rental->driverData)
+      Ya — {{ $rental->driverData->nama }}  
+      (Rp{{ number_format($rental->driverData->harga_per_hari,0,',','.') }}/hari × {{ $rental->durasi_hari }} hari =  
+      <b>Rp{{ number_format($driverTarif,0,',','.') }}</b>)
+    @else
+      Tidak
+    @endif
+  </td>
+</tr>
+
       <tr>
         <td>Dari - Sampai</td>
         <td>: {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m/Y') }} s.d {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m/Y') }}</td>
       </tr>
-      <tr>
-        <td>Total Biaya Sewa</td>
-        <td>: <b>Rp{{ number_format($rental->total_biaya,0,',','.') }}</b></td>
-      </tr>
+      @php
+  $driverTarif = 0;
+  if ($rental->driver === 'ya' && $rental->driverData) {
+      $driverTarif = $rental->driverData->harga_per_hari * $rental->durasi_hari;
+  }
+  $mobilTarif = $rental->car->harga_sewa_per_hari * $rental->durasi_hari;
+  $totalKeseluruhan = $mobilTarif + $driverTarif;
+@endphp
+
+<tr>
+  <td>Total Biaya Sewa</td>
+  <td>
+    : <b>Rp{{ number_format($totalKeseluruhan,0,',','.') }}</b>
+    @if($driverTarif > 0)
+      <br><small>(Mobil: Rp{{ number_format($mobilTarif,0,',','.') }} + Sopir: Rp{{ number_format($driverTarif,0,',','.') }})</small>
+    @endif
+  </td>
+</tr>
       <tr>
         <td>Lokasi Pengambilan</td>
         <td>: {{ $rental->car->lokasi ?? 'Lokasi belum ditentukan' }}</td>

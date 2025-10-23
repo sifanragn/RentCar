@@ -152,6 +152,7 @@ Route::delete('cars/brands/{id}', [CarAdminController::class, 'brandDestroy'])->
     Route::get('/rentals', [RentalAdminController::class, 'index'])->name('admin.rentals.index');
     Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('admin.rentals.show');
     Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('admin.rentals.updateStatus');
+
     
 
 Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])
@@ -164,7 +165,9 @@ Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh']
     Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('admin.laporan.index');
 Route::get('/laporan/cetak', [App\Http\Controllers\Admin\LaporanController::class, 'cetak'])->name('admin.laporan.cetak');
 
-
+Route::resource('drivers', \App\Http\Controllers\Admin\DriverAdminController::class, [
+    'as' => 'admin'
+]);
 
 });
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

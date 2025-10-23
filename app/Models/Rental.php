@@ -20,12 +20,14 @@ class Rental extends Model
         'durasi_hari',
         'metode_pickup',
         'driver',
+        'driver_id',  // ✅ tambahkan ini
         'harga_driver_per_hari',
         'total_biaya',
         'status_rental',
         'tanggal_pengembalian',
         'denda',
         'catatan_admin',
+        'expired_at', // 🟢 tambahkan ini
     ];
 
     /*
@@ -157,6 +159,17 @@ public function invoices()
     public function mainPayment()
 {
     return $this->hasOne(Payment::class, 'rental_id')->where('payment_type', 'main');
+}
+
+// App\Models\Rental
+public function driver()
+{
+    return $this->belongsTo(Driver::class, 'driver_id');
+}
+
+public function driverData()
+{
+    return $this->belongsTo(\App\Models\Driver::class, 'driver_id', 'driver_id');
 }
 
 }

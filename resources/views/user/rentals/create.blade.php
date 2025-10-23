@@ -87,6 +87,151 @@
       from { opacity: 0; transform: scale(0.9); }
       to { opacity: 1; transform: scale(1); }
     }
+
+   <!-- ========================= DRIVER SECTION ========================= -->
+.driver-section {
+  margin-top: 25px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.driver-section label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.driver-section select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  outline: none;
+  transition: .2s;
+}
+
+.driver-section select:focus {
+  border-color: #0d6efd;
+}
+
+.driver-list {
+  margin-top: 15px;
+  display: none;
+}
+
+.driver-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 12px;
+  transition: 0.3s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.driver-card:hover {
+  background: #eef6ff;
+  border-color: #0d6efd;
+}
+
+.driver-card img {
+  width: 65px;
+  height: 65px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.driver-info {
+  flex: 1;
+}
+
+.driver-info h4 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.driver-info small {
+  color: #666;
+  font-size: 13px;
+}
+
+.driver-selected {
+  display: none;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #eaf6ff;
+  border-left: 4px solid #0d6efd;
+}
+
+.driver-selected strong {
+  color: #0d6efd;
+}
+
+/* === Modal Popup === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  position: relative;
+  animation: fadeIn .3s ease;
+}
+
+.modal-box img {
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+  margin: auto;
+}
+
+.modal-box h3 {
+  text-align: center;
+  margin: 12px 0 4px;
+}
+
+.modal-box p {
+  color: #555;
+  font-size: 14px;
+  margin: 3px 0;
+  text-align: center;
+}
+
+.modal-box button.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(20px);}
+  to {opacity:1; transform:translateY(0);}
+}
   </style>
 </head>
 <body>
@@ -116,11 +261,53 @@
     <label for="tanggal_selesai">Tanggal & Jam Selesai</label>
     <input type="datetime-local" name="tanggal_selesai" id="tanggal_selesai" required>
 
-    <label for="driver">Butuh Driver?</label>
-    <select name="driver" id="driver" required>
-      <option value="tidak">Tidak</option>
-      <option value="ya">Ya (+Rp150.000/hari)</option>
+    <div class="driver-section">
+  <label for="driver">Butuh Driver?</label>
+  <select name="driver" id="driver" required onchange="toggleDriverList(this)">
+    <option value="tidak">Tidak</option>
+    <option value="ya">Ya (+ otomatis sesuai tarif driver)</option>
+  </select>
+
+  <!-- Pilih driver -->
+  <div id="driverList" class="driver-list">
+    <label for="driver_id" style="margin-top:10px;">Pilih Driver</label>
+    <select id="driver_id" name="driver_id" onchange="showDriverCard(this)">
+      <option value="">-- Pilih Driver --</option>
+      @foreach($drivers as $driver)
+        <option 
+          value="{{ $driver->driver_id }}"
+          data-foto="{{ asset('storage/' . $driver->foto) }}"
+          data-nama="{{ $driver->nama }}"
+          data-lokasi="{{ $driver->lokasi ?? 'Tidak diketahui' }}"
+          data-harga="{{ number_format($driver->harga_per_hari,0,',','.') }}"
+          data-pengalaman="{{ $driver->pengalaman ?? 'Tidak diketahui' }}"
+          data-verifikasi="{{ ucfirst($driver->status_verifikasi) }}"
+          data-deskripsi="{{ $driver->deskripsi ?? 'Tidak ada deskripsi.' }}">
+          {{ $driver->nama }}
+        </option>
+      @endforeach
     </select>
+
+    <div id="driverSelected" class="driver-selected">
+      <strong id="selectedDriverName"></strong><br>
+      <button type="button" class="btn btn-sm" style="margin-top:6px;background:#0d6efd;color:#fff;padding:6px 10px;border:none;border-radius:6px;" onclick="showDriverDetail()">Lihat Detail Driver</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal detail driver -->
+<div id="driverModal" class="modal-overlay">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeDriverModal()">×</button>
+    <img id="modalDriverFoto" src="">
+    <h3 id="modalDriverNama"></h3>
+    <p id="modalDriverVerifikasi"></p>
+    <p id="modalDriverLokasi"></p>
+    <p id="modalDriverHarga"></p>
+    <p id="modalDriverPengalaman"></p>
+    <p id="modalDriverDeskripsi"></p>
+  </div>
+</div>
 
     <label for="metode_pickup">Metode Pengambilan</label>
     <select name="metode_pickup" id="metode_pickup" required>
@@ -284,6 +471,45 @@
     })
     .catch(() => alert('Terjadi kesalahan koneksi.'));
   });
+</script>
+<script>
+function toggleDriverList(sel) {
+  const list = document.getElementById('driverList');
+  const selected = document.getElementById('driver_id');
+// lalu ambil opt.dataset.harga untuk ditampilkan
+  list.style.display = (sel.value === 'ya') ? 'block' : 'none';
+  document.getElementById('driverSelected').style.display = 'none';
+  document.getElementById('driver_id').value = '';
+}
+
+function showDriverCard(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt.value) {
+    document.getElementById('driverSelected').style.display = 'none';
+    return;
+  }
+  document.getElementById('driverSelected').style.display = 'block';
+  document.getElementById('selectedDriverName').textContent = opt.dataset.nama;
+}
+
+function showDriverDetail() {
+  const sel = document.getElementById('driver_id');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt.value) return;
+
+  document.getElementById('driverModal').style.display = 'flex';
+  document.getElementById('modalDriverFoto').src = opt.dataset.foto;
+  document.getElementById('modalDriverNama').textContent = opt.dataset.nama;
+  document.getElementById('modalDriverVerifikasi').textContent = '✅ ' + opt.dataset.verifikasi;
+  document.getElementById('modalDriverLokasi').textContent = '📍 Lokasi: ' + opt.dataset.lokasi;
+  document.getElementById('modalDriverHarga').textContent = '💰 Tarif: Rp' + opt.dataset.harga + ' /hari';
+  document.getElementById('modalDriverPengalaman').textContent = '🕓 Pengalaman: ' + opt.dataset.pengalaman;
+  document.getElementById('modalDriverDeskripsi').textContent = opt.dataset.deskripsi;
+}
+
+function closeDriverModal() {
+  document.getElementById('driverModal').style.display = 'none';
+}
 </script>
 </body>
 </html>
