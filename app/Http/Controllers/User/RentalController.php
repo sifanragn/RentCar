@@ -82,23 +82,14 @@ class RentalController extends Controller
         'metode_pickup'   => 'required|in:ambil_sendiri,pickup_alamat',
     ]);
 
-    /*
-    |--------------------------------------------------------------------------
-    | 🕒 Konversi waktu ke zona Indonesia (WIB/WITA/WIT)
-    |--------------------------------------------------------------------------
-    */
-    $timezone = 'Asia/Jakarta'; // WIB default
+    // 🕒 Konversi waktu ke zona Indonesia
+    $timezone = 'Asia/Jakarta';
     $tanggalMulai   = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tanggal_mulai'], $timezone)->setTimezone($timezone);
     $tanggalSelesai = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tanggal_selesai'], $timezone)->setTimezone($timezone);
 
-    /*
-    |--------------------------------------------------------------------------
-    | ⏰ Validasi jam input (08:00 - 22:00 WIB)
-    |--------------------------------------------------------------------------
-    */
+    // ⏰ Validasi jam input (08:00 - 22:00 WIB)
     $jamMulai   = (int) $tanggalMulai->format('H');
     $jamSelesai = (int) $tanggalSelesai->format('H');
-
     if ($jamMulai < 8 || $jamMulai > 22 || $jamSelesai < 8 || $jamSelesai > 22) {
         return response()->json([
             'success' => false,
@@ -106,17 +97,15 @@ class RentalController extends Controller
         ], 422);
     }
 
-    // 🔹 hitung durasi dalam jam dan hari
+    // 🔹 Hitung durasi dan total biaya
     $durasiJam  = $tanggalMulai->diffInHours($tanggalSelesai);
     $durasiHari = ceil($durasiJam / 24);
-
-    // 🔹 hitung biaya driver + total
     $hargaDriver = $validated['driver'] === 'ya' ? 150000 * $durasiHari : 0;
     $total = ($car->harga_sewa_per_hari * $durasiHari) + $hargaDriver;
 
     // 🔹 Status awal
     $statusAwal = ($user->status_verifikasi === 'disetujui')
-        ? 'menunggu_pembayaran'
+        ? 'draft'
         : 'verifikasi_diperlukan';
 
     // 🔹 Simpan rental
@@ -141,18 +130,30 @@ class RentalController extends Controller
         'zona'      => $timezone,
     ]);
 
+    // 🧹 Jika status draft, hapus langsung dari DB (tidak muncul di riwayat)
+if ($statusAwal === 'draft') {
+    return response()->json([
+        'success' => true,
+        'message' => 'Draft disimpan sementara, silakan lanjutkan ke pembayaran.',
+        'redirect_url' => route('user.payments.detailRental', $rental->rental_id),
+    ]);
+}
+
+    // 🟢 Kalau perlu verifikasi manual
     if ($statusAwal === 'verifikasi_diperlukan') {
         return response()->json([
             'success' => false,
-            'redirect_url' => route('user.profile'),
+            'redirect_url' => route('user.verifikasi.index'),
         ]);
     }
 
+    // Default (user verified)
     return response()->json([
         'success' => true,
         'redirect_url' => route('user.payments.detailRental', $rental->rental_id),
     ]);
 }
+
 
     /**
      * 🔍 Detail penyewaan user

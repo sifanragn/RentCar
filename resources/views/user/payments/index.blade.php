@@ -200,18 +200,24 @@
       @foreach($payments as $i => $p)
         @php
           $exp = now()->diffInSeconds(\Carbon\Carbon::parse($p->created_at)->addMinutes(30), false);
-          $jenis = match($p->payment_type) {
-              'main' => 'Kuitansi Utama',
-              'charge' => 'Kuitansi Tambahan',
-              'final' => 'Kuitansi Akhir',
-              default => ucfirst($p->payment_type),
-          };
-          $warna = match($p->payment_type) {
-              'main' => '#0d6efd',
-              'charge' => '#e67e22',
-              'final' => '#28a745',
-              default => '#555',
-          };
+          $jenis = match(true) {
+    $p->payment_type === 'main' => 'Kuitansi Utama',
+    $p->payment_type === 'charge' => 'Kuitansi Tambahan',
+    // jika invoice tapi total_bayar sama dengan denda tambahan
+    $p->payment_type === 'invoice' && $p->rental->invoice?->denda_tambahan > 0 
+        && $p->total_bayar == $p->rental->invoice->denda_tambahan => 'Kuitansi Tambahan',
+    $p->payment_type === 'final' => 'Kuitansi Akhir',
+    default => ucfirst($p->payment_type),
+};
+          $warna = match(true) {
+    $p->payment_type === 'main' => '#0d6efd',
+    $p->payment_type === 'charge' 
+        || ($p->payment_type === 'invoice' && $p->rental->invoice?->denda_tambahan > 0 && $p->total_bayar == $p->rental->invoice->denda_tambahan)
+        => '#e67e22',
+    $p->payment_type === 'final' => '#28a745',
+    default => '#555',
+};
+
         @endphp
         <tr>
           <td>{{ $i+1 }}</td>
@@ -238,12 +244,24 @@
           <td>
             @if($p->status_pembayaran === 'pending')
               <a class="btn" href="{{ route('user.payments.continue', $p->payment_id) }}">Lanjutkan</a>
-              @if($p->payment_type !== 'charge')
-                <form action="{{ route('user.payments.cancelSoft', $p->payment_id) }}" method="POST" onsubmit="return confirm('Batalkan pembayaran ini?')">
-                  @csrf
-                  <button type="submit" class="btn btn-danger">Batalkan</button>
-                </form>
-              @endif
+              @if($p->status_pembayaran === 'pending')
+  <a class="btn" href="{{ route('user.payments.continue', $p->payment_id) }}">Lanjutkan</a>
+
+  @php
+    // deteksi kuitansi tambahan (baik charge maupun invoice denda)
+    $isKuitansiTambahan = $p->payment_type === 'charge' ||
+      ($p->payment_type === 'invoice' &&
+       $p->rental->invoice?->denda_tambahan > 0 &&
+       $p->total_bayar == $p->rental->invoice->denda_tambahan);
+  @endphp
+
+  @if(!$isKuitansiTambahan)
+    <form action="{{ route('user.payments.cancelSoft', $p->payment_id) }}" method="POST" onsubmit="return confirm('Batalkan pembayaran ini?')">
+      @csrf
+      <button type="submit" class="btn btn-danger">Batalkan</button>
+    </form>
+  @endif
+@endif
             @else
               <button class="btn" onclick="openReceipt({{ $p->payment_id }})">
                 {{ $p->status_pembayaran === 'success' ? 'Lihat Kuitansi' : 'Lihat Info' }}
@@ -441,6 +459,62 @@ function downloadPDF(id) {
 function closeModal(){
   document.getElementById('receiptModal').style.display='none';
 }
+
+/* ---------------- COUNTDOWN STYLE IMPROVEMENT ---------------- */
+const style = document.createElement('style');
+style.textContent = `
+  .cd {
+    font-weight: 700;
+    color: #222;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #fff8e1;
+    transition: all .3s ease;
+  }
+  .cd.warning {
+    background: #fff3cd;
+    color: #856404;
+  }
+  .cd.danger {
+    background: #f8d7da;
+    color: #721c24;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+`;
+document.head.appendChild(style);
+
+/* ---------------- IMPROVED COUNTDOWN TIMER ---------------- */
+document.querySelectorAll('.cd').forEach(el => {
+  let s = +el.dataset.s || 0;
+  const row = el.closest('tr');
+  const update = () => {
+    if (s < 0) s = 0;
+    const m = String(Math.floor(s / 60)).padStart(2, '0');
+    const sec = String(s % 60).padStart(2, '0');
+    el.textContent = `${m}:${sec}`;
+
+    // Ganti warna countdown sesuai sisa waktu
+    el.classList.remove('warning', 'danger');
+    if (s <= 60 && s > 0) el.classList.add('danger');     // <1 menit
+    else if (s <= 300) el.classList.add('warning');       // <5 menit
+  };
+
+  const tick = () => {
+    update();
+    if (s <= 0) {
+      expireRow(row);
+    } else {
+      s--;
+      setTimeout(tick, 1000);
+    }
+  };
+
+  tick();
+});
 </script>
 </body>
 </html>

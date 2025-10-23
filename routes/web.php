@@ -113,8 +113,9 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('admin.invoices.store');
     Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('admin.invoices.show');
     Route::post('/admin/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
-    
-    
+    Route::post('/invoices/{id}/manual-update', [App\Http\Controllers\Admin\InvoiceController::class, 'manualUpdate'])
+    ->name('admin.invoices.manualUpdate');
+
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])
         ->name('admin.dashboard.index');

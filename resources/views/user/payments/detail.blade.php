@@ -178,7 +178,7 @@
     </form>
 
     {{-- ========================== STEP 5: KEMBALI ========================== --}}
-    <a href="{{ route('user.cars.index') }}" class="btn-kembali">← Kembali</a>
+    <a href="{{ route('user.rentals.create', $rental->car->car_id) }}" class="btn-kembali">← Kembali</a>
   </div>
 
   <script>

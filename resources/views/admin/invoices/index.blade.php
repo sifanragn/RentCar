@@ -58,7 +58,7 @@
               $warnaInvoice = match($statusInvoice) {
                   'pending' => 'status-yellow',
                   'selesai' => 'status-green',
-                  'cancel'  => 'status-red',
+                  'dibatalkan'  => 'status-red',
                   default   => 'status-gray'
               };
             @endphp

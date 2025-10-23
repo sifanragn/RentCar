@@ -173,3 +173,113 @@ body.light-mode .admin-sidebar nav a.active {
   }
 }
 
+/* 💰 CARD TOTAL PENDAPATAN */
+.sidebar-stats {
+  background: #f9fafc;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 26px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+.sidebar-stats .stats-label {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 5px;
+}
+.sidebar-stats .stats-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 6px;
+}
+.sidebar-stats .stats-growth {
+  font-size: 15px;
+  font-weight: 600;
+}
+.sidebar-stats.up .stats-growth { color: #22c55e; } /* hijau naik */
+.sidebar-stats.down .stats-growth { color: #ef4444; } /* merah turun */
+
+/* Light mode */
+body.light-mode .sidebar-stats {
+  background: #f1f5ff;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+body.light-mode .sidebar-stats .stats-value {
+  color: #000;
+}
+body.light-mode .sidebar-stats .stats-label {
+  color: #4b5563;
+}
+
+/* Dark mode */
+body:not(.light-mode) .sidebar-stats {
+  background: rgba(255,255,255,0.05);
+  color: #e5e7eb;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+body:not(.light-mode) .sidebar-stats .stats-value {
+  color: #fff;
+}
+
+/* === Dropdown Mobil === */
+.nav-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+.nav-dropdown .dropdown-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 10px 12px;
+  color: #cfd3dc;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+.nav-dropdown .dropdown-toggle:hover {
+  background: rgba(35,200,255,0.1);
+}
+.nav-dropdown .arrow {
+  transition: transform 0.25s ease;
+}
+.nav-dropdown.open .arrow {
+  transform: rotate(180deg);
+}
+
+/* Dropdown inner */
+.dropdown-inner {
+  display: none;
+  flex-direction: column;
+  margin-left: 40px;
+  gap: 6px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.nav-dropdown.open .dropdown-inner {
+  display: flex;
+}
+.dropdown-inner a {
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 14px;
+}
+.dropdown-inner a:hover {
+  color: #fff;
+}
+
+/* Collapsed Mode */
+.admin-sidebar.collapsed .sidebar-stats { display: none; }
+.admin-sidebar.collapsed .nav-dropdown .dropdown-inner,
+.admin-sidebar.collapsed .nav-dropdown .dropdown-toggle span,
+.admin-sidebar.collapsed .nav-dropdown .dropdown-toggle .arrow {
+  display: none;
+}
+.admin-sidebar.collapsed .nav-dropdown .dropdown-toggle {
+  justify-content: center;
+}

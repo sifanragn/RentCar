@@ -98,7 +98,7 @@
   @if(auth()->user()->status_verifikasi !== 'disetujui')
     <div class="alert">
       ⚠️ Penyewaan hanya bisa dilakukan setelah <b>admin memverifikasi KTP & KK Anda.</b><br>
-      <a href="{{ route('user.profile') }}" style="color:#0d6efd;">Klik di sini untuk verifikasi sekarang</a>
+      <a href="{{ route('user.verifikasi.index') }}" style="color:#0d6efd;">Klik di sini untuk verifikasi sekarang</a>
     </div>
   @endif
 
@@ -132,8 +132,8 @@
     <!-- Lokasi rental -->
     <div id="lokasiRental" style="display:none; margin-top:10px;">
       <p>📍 Lokasi Rental Kami:</p>
-      <p><strong>Jl. Melati No. 12, Bandung</strong></p>
-      <a href="https://www.google.com/maps?q=-6.914744,107.609810" target="_blank"
+      <p><strong>Hexagon Inc</strong></p>
+      <a href="https://maps.app.goo.gl/A2nueYrYoqiqduJs8" target="_blank"
          style="color:#0d6efd;">Lihat di Google Maps</a>
     </div>
 
@@ -168,7 +168,7 @@
          style="width:150px; margin:10px auto;">
     <h3>Belum Diverifikasi</h3>
     <p>Anda harus mengunggah KTP & KK terlebih dahulu sebelum melanjutkan penyewaan.</p>
-    <a href="{{ route('user.profile') }}"
+    <a href="{{ route('user.verifikasi.index') }}"
        style="display:inline-block;background:#0d6efd;color:#fff;padding:10px 14px;border-radius:6px;text-decoration:none;">Unggah Sekarang</a>
   </div>
 </div>

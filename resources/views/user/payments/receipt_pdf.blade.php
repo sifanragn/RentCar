@@ -210,16 +210,45 @@
           </td>
         </tr>
 
-        @if($payment->payment_type === 'charge' && $payment->rental->invoice)
-          <tr>
-            <th>Status Pengembalian</th>
-            <td>{{ str_replace('_', ' ', $payment->rental->invoice->status_pengembalian ?? '-') }}</td>
-          </tr>
-          <tr>
-            <th>Deskripsi</th>
-            <td>{{ $payment->rental->invoice->catatan ?? '-' }}</td>
-          </tr>
-        @endif
+        {{-- Tambahan khusus jika ini kuitansi tambahan (charge) --}}
+@if($payment->payment_type === 'charge' && $payment->rental->invoice)
+  @php
+    $invoice = $payment->rental->invoice;
+    // cari payment utama
+    $mainPayment = $payment->rental->payments()
+        ->where('payment_type', 'main')
+        ->where('status_pembayaran', 'success')
+        ->latest()
+        ->first();
+  @endphp
+
+  <tr>
+    <th>Status Pengembalian</th>
+    <td>{{ str_replace('_', ' ', $invoice->status_pengembalian ?? '-') }}</td>
+  </tr>
+  <tr>
+    <th>Catatan Pengembalian</th>
+    <td>{{ $invoice->catatan ?? '-' }}</td>
+  </tr>
+  <tr>
+    <th>Total dari Kuitansi Utama</th>
+    <td>
+      @if($mainPayment)
+        <strong>Rp{{ number_format($mainPayment->total_bayar, 0, ',', '.') }}</strong>
+      @else
+        <em>Belum ada pembayaran utama</em>
+      @endif
+    </td>
+  </tr>
+  <tr>
+    <th>Denda Tambahan</th>
+    <td><strong>Rp{{ number_format($invoice->denda_tambahan ?? 0, 0, ',', '.') }}</strong></td>
+  </tr>
+  <tr style="background:#f6fbff;">
+    <th>Total Akhir</th>
+    <td><strong>Rp{{ number_format(($invoice->total_akhir ?? $payment->total_bayar), 0, ',', '.') }}</strong></td>
+  </tr>
+@endif
 
         <tr>
           <th>Metode Pembayaran</th>

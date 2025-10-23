@@ -13,12 +13,43 @@
     <p>Data ringkasan transaksi penyewaan yang telah dilakukan pengguna.</p>
   </div>
 
-  {{-- 🔹 Tombol Cetak --}}
   <div class="laporan-actions">
-    <a href="{{ route('admin.laporan.cetak') }}" target="_blank" class="btn-cetak">
-      🖨 Cetak Laporan
-    </a>
-  </div>
+  <form action="{{ route('admin.laporan.index') }}" method="GET" class="filter-form">
+    <label>Bulan:</label>
+    <select name="bulan">
+      <option value="">Semua</option>
+      @for ($m = 1; $m <= 12; $m++)
+        <option value="{{ $m }}" {{ request('bulan') == $m ? 'selected' : '' }}>
+          {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+        </option>
+      @endfor
+    </select>
+
+    <label>Tahun:</label>
+    <select name="tahun">
+      <option value="">Semua</option>
+      @for ($y = now()->year; $y >= now()->year - 5; $y--)
+        <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
+      @endfor
+    </select>
+
+    <label>Jenis Kuitansi:</label>
+    <select name="jenis">
+      <option value="">Semua</option>
+      <option value="utama" {{ request('jenis') == 'utama' ? 'selected' : '' }}>Kuitansi Utama</option>
+      <option value="tambahan" {{ request('jenis') == 'tambahan' ? 'selected' : '' }}>Kuitansi Tambahan</option>
+    </select>
+
+    <button type="submit" class="btn-filter">🔍 Tampilkan</button>
+  </form>
+
+  {{-- Tombol Cetak --}}
+  <a href="{{ route('admin.laporan.cetak', ['bulan' => request('bulan'), 'tahun' => request('tahun'), 'jenis' => request('jenis')]) }}" 
+     target="_blank" 
+     class="btn-cetak">
+    🖨 Cetak Laporan
+  </a>
+</div>
 
   {{-- 🔹 Tabel Laporan --}}
   <div class="table-wrapper">
@@ -27,33 +58,41 @@
     @else
       <table class="laporan-table">
         <thead>
-          <tr>
-            <th>No</th>
-            <th>Nama User</th>
-            <th>Mobil</th>
-            <th>Tanggal Sewa</th>
-            <th>Tanggal Selesai</th>
-            <th>Total (Rp)</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach($rentals as $rental)
-          <tr>
-            <td>{{ $loop->iteration }}</td>
-            <td>{{ $rental->user->nama_lengkap }}</td>
-            <td>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model }}</td>
-            <td>{{ $rental->tanggal_mulai }}</td>
-            <td>{{ $rental->tanggal_selesai }}</td>
-            <td>Rp{{ number_format($rental->total_biaya, 0, ',', '.') }}</td>
-            <td>
-              <span class="status {{ strtolower($rental->status_rental) }}">
-                {{ ucfirst($rental->status_rental) }}
-              </span>
-            </td>
-          </tr>
-          @endforeach
-        </tbody>
+  <tr>
+    <th>No</th>
+    <th>Nama User</th>
+    <th>Mobil</th>
+    <th>Tanggal Sewa</th>
+    <th>Tanggal Selesai</th>
+    <th>Total (Rp)</th>
+    <th>Status</th>
+    <th>Jenis Kuitansi</th>
+  </tr>
+</thead>
+<tbody>
+  @foreach($rentals as $rental)
+    @foreach($rental->payments as $payment)
+      <tr>
+        <td>{{ $loop->parent->iteration }}</td>
+        <td>{{ $rental->user->nama_lengkap }}</td>
+        <td>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model }}</td>
+        <td>{{ $rental->tanggal_mulai }}</td>
+        <td>{{ $rental->tanggal_selesai }}</td>
+        <td>Rp{{ number_format($payment->total_bayar, 0, ',', '.') }}</td>
+        <td>
+          <span class="status {{ strtolower($rental->status_rental) }}">
+            {{ ucfirst($rental->status_rental) }}
+          </span>
+        </td>
+        <td>
+          <span class="badge {{ $payment->payment_type === 'charge' ? 'badge-tambahan' : 'badge-utama' }}">
+            {{ $payment->payment_type === 'charge' ? 'Kuitansi Tambahan' : 'Kuitansi Utama' }}
+          </span>
+        </td>
+      </tr>
+    @endforeach
+  @endforeach
+</tbody>
       </table>
 
       {{-- 🔹 Total Pendapatan --}}

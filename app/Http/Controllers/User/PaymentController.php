@@ -34,50 +34,76 @@ class PaymentController extends Controller
     /* --------------------------------------------------------------------------
      | ▶️ STEP 2: Kirim ke Duitku & redirect ke halaman pembayaran
      * -------------------------------------------------------------------------- */
-    public function startProcess(Request $r, $rental_id)
-    {
-        $r->validate(['metode' => 'required|in:qris,bca,bri']);
-        $rental = Rental::with(['car.brand', 'user'])->findOrFail($rental_id);
-        abort_if($rental->user_id !== auth()->id(), 403);
+   public function startProcess(Request $r, $rental_id)
+{
+    $r->validate(['metode' => 'required|in:qris,bca,bri']);
+    $rental = Rental::with(['car.brand', 'user'])->findOrFail($rental_id);
+    abort_if($rental->user_id !== auth()->id(), 403);
 
-        // 🚫 Cegah duplikat pending
-        if (Payment::where('rental_id', $rental->rental_id)->where('status_pembayaran', 'pending')->exists()) {
-            $exist = Payment::where('rental_id', $rental->rental_id)->latest()->first();
-            return redirect()->route('user.payments.process', $exist->payment_id);
-        }
-
-        // 🟢 Simpan ke DB
-        $payment = DB::transaction(function () use ($rental, $r) {
-            $p = Payment::create([
-                'rental_id' => $rental->rental_id,
-                'gateway' => 'Duitku',
-                'metode' => $r->metode,
-                'payment_type' => 'main',
-                'total_bayar' => $rental->total_biaya,
-                'status_pembayaran' => 'pending',
-                'gateway_reference' => 'MAN-' . rand(100000, 999999),
-                'payment_token' => 'WAIT-' . strtoupper(uniqid()),
-                'callback_status' => 'waiting',
-                'tanggal_bayar' => now(),
-                'expired_at' => now()->addMinutes(30),
-            ]);
-            $rental->update(['status_rental' => 'menunggu_pembayaran']);
-            return $p;
-        });
-
-        // 🔗 Request ke Duitku
-        $payload = $this->duitkuPayload($rental, $payment, $r->metode);
-        $res = Http::post('https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry', $payload)->json();
-
-        if (empty($res['paymentUrl'])) return back()->with('error', 'Gagal membuat transaksi.');
-
-        $payment->update([
-            'gateway_reference' => $res['reference'] ?? $payment->gateway_reference,
-            'payment_token' => $res['paymentUrl'],
-        ]);
-
-        return redirect()->away($res['paymentUrl']);
+    // 🚫 Jika sudah ada payment pending, arahkan ke sana
+    if (Payment::where('rental_id', $rental->rental_id)->where('status_pembayaran', 'pending')->exists()) {
+        $exist = Payment::where('rental_id', $rental->rental_id)->latest()->first();
+        return redirect()->route('user.payments.process', $exist->payment_id);
     }
+
+    // 🔗 Request ke Duitku
+    $tempOrder = 'TMP-' . strtoupper(uniqid());
+    $payload = [
+        "merchantCode" => $this->merchantCode,
+        "paymentAmount" => (int)$rental->total_biaya,
+        "paymentMethod" => match($r->metode) {
+            'bca' => 'BC', 'bri' => 'BR', default => 'QRIS',
+        },
+        "merchantOrderId" => $tempOrder,
+        "productDetails" => "Sewa Mobil " . ($rental->car->brand->nama_merek ?? ''),
+        "email" => $rental->user->email,
+        "phoneNumber" => $rental->user->no_hp ?? '08123456789',
+        "customerVaName" => $rental->user->nama_lengkap,
+        "callbackUrl" => $this->callbackUrl,
+        "returnUrl" => route('user.payments.index'),
+        "signature" => md5($this->merchantCode . $tempOrder . (int)$rental->total_biaya . $this->apiKey),
+        "expiryPeriod" => 30,
+    ];
+
+    $res = Http::post('https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry', $payload)->json();
+
+    if (empty($res['paymentUrl'])) {
+        return back()->with('error', 'Gagal membuat transaksi, silakan coba lagi.');
+    }
+
+    // ✅ Update status rental → menunggu pembayaran
+    $rental->update([
+        'status_rental' => 'menunggu_pembayaran',
+        'updated_at'    => now(),
+    ]);
+
+    // ✅ Buat payment utama (langsung pending biar countdown aktif)
+    $payment = Payment::create([
+        'rental_id'         => $rental->rental_id,
+        'gateway'           => 'Duitku',
+        'metode'            => $r->metode,
+        'payment_type'      => 'main',
+        'total_bayar'       => $rental->total_biaya,
+        'status_pembayaran' => 'pending',
+        'gateway_reference' => $res['reference'] ?? ('MAN-' . rand(100000, 999999)),
+        'payment_token'     => $res['paymentUrl'],
+        'callback_status'   => 'waiting',
+        'tanggal_bayar'     => now(),
+        'expired_at'        => now()->addMinutes(30),
+    ]);
+
+    Log::info('💰 Pembayaran dimulai', [
+        'payment_id' => $payment->payment_id,
+        'rental_id'  => $rental->rental_id,
+        'status'     => 'pending',
+        'metode'     => $r->metode,
+    ]);
+
+    // 🚀 Redirect ke Duitku
+    return redirect()->away($res['paymentUrl']);
+}
+
+
 
     private function duitkuPayload($rental, $payment, $metode)
     {
@@ -125,7 +151,7 @@ class PaymentController extends Controller
 
         $p->update(['status_pembayaran' => 'failed', 'callback_status' => 'cancelled']);
         $p->rental?->update(['status_rental' => 'dibatalkan']);
-        Invoice::where('rental_id', $p->rental_id)->first()?->update(['status_invoice' => 'cancel']);
+        Invoice::where('rental_id', $p->rental_id)->first()?->update(['status_invoice' => 'dibatalkan']);
 
         return back()->with('success', '❌ Pembayaran dibatalkan.');
     }
@@ -152,21 +178,52 @@ class PaymentController extends Controller
      | ⏱️ Auto expire + sinkron cancel
      * -------------------------------------------------------------------------- */
     public function checkExpired()
-    {
-        $now = now();
-        $cancelled = Invoice::whereIn('status_invoice', ['cancel', 'dibatalkan'])->pluck('rental_id');
-        $expired = Payment::where('status_pembayaran', 'pending')
-            ->where(fn($q) => $q->where('expired_at', '<=', $now)->orWhereIn('rental_id', $cancelled))
-            ->get();
+{
+    $now = now();
 
-        foreach ($expired as $p) {
-            $p->update(['status_pembayaran' => 'failed', 'callback_status' => 'expired']);
-            $p->rental?->update(['status_rental' => 'dibatalkan']);
-            Invoice::where('rental_id', $p->rental_id)->first()?->update(['status_invoice' => 'cancel']);
+    // 1️⃣ Ambil semua rental_id dari invoice yang sudah dibatalkan / cancel manual
+    $cancelled = Invoice::whereIn('status_invoice', ['cancel', 'dibatalkan'])
+        ->pluck('rental_id');
+
+    // 2️⃣ Ambil semua payment pending yang sudah expired atau invoice-nya dibatalkan
+    $expired = Payment::where('status_pembayaran', 'pending')
+        ->where(function ($q) use ($now, $cancelled) {
+            $q->where('expired_at', '<=', $now)
+              ->orWhereIn('rental_id', $cancelled);
+        })
+        ->get();
+
+    foreach ($expired as $p) {
+        // 3️⃣ Update payment ke failed
+        $p->update([
+            'status_pembayaran' => 'failed',
+            'callback_status'   => 'expired',
+        ]);
+
+        // 4️⃣ Sinkron ke invoice (kalau ada)
+        $invoice = Invoice::where('rental_id', $p->rental_id)->first();
+        if ($invoice && $invoice->status_invoice === 'pending') {
+            $invoice->update(['status_invoice' => 'dibatalkan']);
         }
 
-        return response()->json(['message' => 'Synced', 'count' => $expired->count()]);
+        // 5️⃣ Sinkron ke rental (jika belum selesai)
+        if ($p->rental && !in_array($p->rental->status_rental, ['selesai', 'selesai_dengan_charge'])) {
+            $p->rental->update(['status_rental' => 'dibatalkan']);
+        }
+
+        Log::info("⏰ Payment expired otomatis:", [
+            'payment_id' => $p->payment_id,
+            'rental_id'  => $p->rental_id,
+            'type'       => $p->payment_type,
+        ]);
     }
+
+    return response()->json([
+        'message' => 'Synced',
+        'count'   => $expired->count(),
+    ]);
+}
+
 
     /* --------------------------------------------------------------------------
      | 🔁 Auto-refresh: ambil status terbaru semua pembayaran
@@ -182,30 +239,61 @@ class PaymentController extends Controller
      | 🟢 Callback dari Duitku
      * -------------------------------------------------------------------------- */
     public function callback(Request $r)
-    {
-        $sign = md5($this->merchantCode . ($r->merchantOrderId ?? '') . ($r->amount ?? '') . $this->apiKey);
-        if ($sign !== ($r->signature ?? '')) return response()->json(['message' => 'Invalid signature'], 400);
+{
+    $sign = md5($this->merchantCode . ($r->merchantOrderId ?? '') . ($r->amount ?? '') . $this->apiKey);
+    if ($sign !== ($r->signature ?? '')) return response()->json(['message' => 'Invalid signature'], 400);
 
-        $p = Payment::where('gateway_reference', $r->reference)->first();
-        if (!$p) return response()->json(['message' => 'Payment not found'], 404);
+    $p = Payment::where('gateway_reference', $r->reference)->first();
+    if (!$p) return response()->json(['message' => 'Payment not found'], 404);
 
-        $status = match ($r->resultCode ?? '') {
-            '00' => 'success', '03' => 'failed', default => 'pending',
-        };
+    $resultCode = $r->resultCode ?? '';
+    $status = match ($resultCode) {
+        '00' => 'success',
+        '01', '02', '03' => 'pending',
+        default => 'failed',
+    };
 
-        if ($p->payment_type === 'charge' && $status === 'failed')
-            return response()->json(['message' => 'Charge tetap pending.']);
+    // ✅ khusus payment tambahan (charge)
+    if ($p->payment_type === 'charge') {
+        if ($status === 'success') {
+            $p->update([
+                'status_pembayaran' => 'success',
+                'callback_status'   => 'done',
+            ]);
 
-        $p->update([
-            'status_pembayaran' => $status,
-            'callback_status' => $status === 'success' ? 'done' : ($status === 'failed' ? 'error' : 'waiting'),
-        ]);
+            // invoice-nya jadi selesai_dengan_charge
+            Invoice::where('rental_id', $p->rental_id)
+                ->first()?->update(['status_invoice' => 'selesai']);
 
-        $p->rental?->update(['status_rental' => $status === 'success' ? 'selesai' : ($status === 'failed' ? 'dibatalkan' : 'menunggu_pembayaran')]);
-        Invoice::where('rental_id', $p->rental_id)->first()?->update(['status_invoice' => $status === 'success' ? 'selesai' : ($status === 'failed' ? 'cancel' : 'pending')]);
+            // rental juga ikut selesai_dengan_charge
+            $p->rental?->update(['status_rental' => 'selesai']);
+        } elseif ($status === 'pending') {
+            // biarin pending dulu, jangan ubah apa pun
+            $p->update(['callback_status' => 'waiting']);
+        } else {
+            // ❌ jangan ubah ke failed — Duitku bisa kirim callback “03” duluan sebelum sukses
+            Log::warning("⚠️ Callback charge non-success tapi diabaikan", ['payment_id' => $p->payment_id, 'resultCode' => $resultCode]);
+        }
 
-        return response()->json(['message' => 'Callback processed', 'status' => $status]);
+        return response()->json(['message' => 'Charge callback processed', 'status' => $status]);
     }
+
+    // 🧾 untuk payment utama (main/invoice)
+    $p->update([
+        'status_pembayaran' => $status,
+        'callback_status' => $status === 'success' ? 'done' : ($status === 'failed' ? 'error' : 'waiting'),
+    ]);
+
+    $p->rental?->update([
+        'status_rental' => $status === 'success' ? 'berjalan' : ($status === 'failed' ? 'dibatalkan' : 'menunggu_pembayaran'),
+    ]);
+
+    Invoice::where('rental_id', $p->rental_id)->first()?->update([
+    'status_invoice' => $status === 'success' ? 'selesai' : ($status === 'failed' ? 'dibatalkan' : 'pending'),
+]);
+
+    return response()->json(['message' => 'Callback processed', 'status' => $status]);
+}
 
     /* --------------------------------------------------------------------------
      | 🔁 Lanjutkan pembayaran
@@ -239,7 +327,7 @@ class PaymentController extends Controller
     {
         $p->update(['status_pembayaran' => 'failed', 'callback_status' => 'expired']);
         $p->rental?->update(['status_rental' => 'dibatalkan']);
-        Invoice::where('rental_id', $p->rental_id)->first()?->update(['status_invoice' => 'cancel']);
+        Invoice::where('rental_id', $p->rental_id)->first()?->update(['status_invoice' => 'dibatalkan']);
         return redirect()->route('user.payments.index')->with('error', $msg);
     }
 
@@ -279,10 +367,26 @@ class PaymentController extends Controller
      | 🧩 Helper: sinkron dari admin
      * -------------------------------------------------------------------------- */
     private function syncFromAdmin($p)
-    {
-        if ($p->rental && $p->rental->status_rental === 'dibatalkan' && $p->status_pembayaran === 'pending') {
-            $p->update(['status_pembayaran' => 'failed', 'callback_status' => 'cancelled']);
-            Invoice::where('rental_id', $p->rental_id)->first()?->update(['status_invoice' => 'cancel']);
-        }
+{
+    if (!$p->rental) return;
+
+    // 🚫 jangan cancel pembayaran tambahan (charge)
+    if ($p->payment_type === 'charge') return;
+
+    // 🚫 jangan sentuh payment yang sudah sukses
+    if ($p->status_pembayaran !== 'pending') return;
+
+    // cuma cancel kalau rental benar-benar dibatalkan oleh user/admin
+    if ($p->rental->status_rental === 'dibatalkan') {
+        $p->update([
+            'status_pembayaran' => 'failed',
+            'callback_status'   => 'cancelled',
+        ]);
+
+        Invoice::where('rental_id', $p->rental_id)->first()?->update([
+            'status_invoice' => 'dibatalkan',
+        ]);
     }
+}
+
 }
