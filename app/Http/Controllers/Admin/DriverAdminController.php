@@ -30,34 +30,48 @@ class DriverAdminController extends Controller
      * 💾 Simpan data driver baru
      */
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'nama'            => 'required|string|max:100',
-            'no_hp'           => 'nullable|string|max:20',
-            'email'           => 'nullable|email|max:100',
-            'foto'            => 'nullable|image|max:2048',
-            'sim_number'      => 'nullable|string|max:50',
-            'harga_per_hari'  => 'required|numeric|min:0',
-            'pengalaman'      => 'nullable|string|max:100',
-            'lokasi'          => 'nullable|string|max:100',
-            'deskripsi'       => 'nullable|string',
-            'status'          => 'nullable|in:aktif,nonaktif',
-            'status_verifikasi' => 'nullable|in:menunggu,disetujui,ditolak',
-        ]);
+{
+    $data = $request->validate([
+        'nama'            => 'required|string|max:100',
+        'no_hp'           => 'nullable|string|max:20',
+        'email'           => 'nullable|email|max:100',
+        'foto'            => 'nullable|image|max:2048',
+        'foto_sim'        => 'nullable|image|max:2048',
+        'foto_ktp'        => 'nullable|image|max:2048',
+        'foto_kk'         => 'nullable|image|max:2048',
+        'sim_number'      => 'nullable|string|max:50',
+        'harga_per_hari'  => 'required|numeric|min:0',
+        'pengalaman'      => 'nullable|string|max:100',
+        'lokasi'          => 'nullable|string|max:100',
+        'deskripsi'       => 'nullable|string',
+        'status'          => 'nullable|in:aktif,nonaktif',
+    ]);
 
-        if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('drivers', 'public');
-        }
+    $data['status_verifikasi'] = 'disetujui'; // ✅ otomatis disetujui
 
-        Driver::create($data);
-
-        return redirect()
-            ->route('admin.drivers.index')
-            ->with('success', '✅ Driver baru berhasil ditambahkan!');
+    // Upload semua file
+    if ($request->hasFile('foto')) {
+        $data['foto'] = $request->file('foto')->store('drivers/foto', 'public');
+    }
+    if ($request->hasFile('foto_sim')) {
+        $data['foto_sim'] = $request->file('foto_sim')->store('drivers/sim', 'public');
+    }
+    if ($request->hasFile('foto_ktp')) {
+        $data['foto_ktp'] = $request->file('foto_ktp')->store('drivers/ktp', 'public');
+    }
+    if ($request->hasFile('foto_kk')) {
+        $data['foto_kk'] = $request->file('foto_kk')->store('drivers/kk', 'public');
     }
 
+    Driver::create($data);
+
+    return redirect()->route('admin.drivers.index')
+        ->with('success', '✅ Driver baru berhasil ditambahkan!');
+}
+
+
     /**
-     * 🔍 Tampilkan detail driver
+     * 🔍 Detail driver
      */
     public function show(Driver $driver)
     {
@@ -65,7 +79,7 @@ class DriverAdminController extends Controller
     }
 
     /**
-     * ✏ Form edit driver
+     * ✏ Edit driver
      */
     public function edit(Driver $driver)
     {
@@ -73,47 +87,60 @@ class DriverAdminController extends Controller
     }
 
     /**
-     * 🔁 Update data driver
+     * 🔁 Update driver
      */
     public function update(Request $request, Driver $driver)
-    {
-        $data = $request->validate([
-            'nama'            => 'required|string|max:100',
-            'no_hp'           => 'nullable|string|max:20',
-            'email'           => 'nullable|email|max:100',
-            'foto'            => 'nullable|image|max:2048',
-            'sim_number'      => 'nullable|string|max:50',
-            'harga_per_hari'  => 'required|numeric|min:0',
-            'pengalaman'      => 'nullable|string|max:100',
-            'lokasi'          => 'nullable|string|max:100',
-            'deskripsi'       => 'nullable|string',
-            'status'          => 'nullable|in:aktif,nonaktif',
-            'status_verifikasi' => 'nullable|in:menunggu,disetujui,ditolak',
-        ]);
+{
+    $data = $request->validate([
+        'nama'            => 'required|string|max:100',
+        'no_hp'           => 'nullable|string|max:20',
+        'email'           => 'nullable|email|max:100',
+        'foto'            => 'nullable|image|max:2048',
+        'foto_sim'        => 'nullable|image|max:2048',
+        'foto_ktp'        => 'nullable|image|max:2048',
+        'foto_kk'         => 'nullable|image|max:2048',
+        'sim_number'      => 'nullable|string|max:50',
+        'harga_per_hari'  => 'required|numeric|min:0',
+        'pengalaman'      => 'nullable|string|max:100',
+        'lokasi'          => 'nullable|string|max:100',
+        'deskripsi'       => 'nullable|string',
+        'status'          => 'nullable|in:aktif,nonaktif',
+    ]);
 
-        // Jika upload foto baru, hapus yang lama
-        if ($request->hasFile('foto')) {
-            if ($driver->foto && Storage::disk('public')->exists($driver->foto)) {
-                Storage::disk('public')->delete($driver->foto);
+    $data['status_verifikasi'] = 'disetujui';
+
+    // ✅ Hapus & ganti foto lama kalau diupload baru
+    foreach (['foto', 'foto_sim', 'foto_ktp', 'foto_kk'] as $field) {
+        if ($request->hasFile($field)) {
+            if ($driver->$field && Storage::disk('public')->exists($driver->$field)) {
+                Storage::disk('public')->delete($driver->$field);
             }
-            $data['foto'] = $request->file('foto')->store('drivers', 'public');
+            $folder = match($field) {
+                'foto' => 'drivers/foto',
+                'foto_sim' => 'drivers/sim',
+                'foto_ktp' => 'drivers/ktp',
+                'foto_kk' => 'drivers/kk',
+            };
+            $data[$field] = $request->file($field)->store($folder, 'public');
         }
-
-        $driver->update($data);
-
-        return redirect()
-            ->route('admin.drivers.index')
-            ->with('success', '✅ Data driver berhasil diperbarui!');
     }
+
+    $driver->update($data);
+
+    return redirect()->route('admin.drivers.index')
+        ->with('success', '✅ Data driver berhasil diperbarui!');
+}
 
     /**
      * 🗑 Hapus driver
      */
     public function destroy(Driver $driver)
     {
-        // Hapus foto jika ada
         if ($driver->foto && Storage::disk('public')->exists($driver->foto)) {
             Storage::disk('public')->delete($driver->foto);
+        }
+        if ($driver->foto_sim && Storage::disk('public')->exists($driver->foto_sim)) {
+            Storage::disk('public')->delete($driver->foto_sim);
         }
 
         $driver->delete();
