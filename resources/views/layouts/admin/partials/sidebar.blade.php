@@ -17,7 +17,7 @@
     </a>
 
     {{-- Daftar Mobil --}}
-    <a href="{{ route('cars.index') }}" 
+    <a href="{{ route('admin.cars.index') }}" 
        class="{{ request()->routeIs('cars.*') ? 'active' : '' }}">
       <i class="bi bi-car-front"></i>
       <span>Daftar Mobil</span>

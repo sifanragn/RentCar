@@ -21,6 +21,7 @@
     padding: 12px 0;
   }
   .car-image { width:100%; height:auto; object-fit:contain; }
+
   .car-info {
     background-color:#262625; color:#fff;
     border-radius:20px; padding:16px;
@@ -59,13 +60,13 @@
   }
   .btn-rent:hover { background-color:#444; }
   
-.back-link svg {
-  vertical-align: middle;
-}
+  .back-link svg {
+    vertical-align: middle;
+  }
 
   .carousel { width:100%; margin-top:15px; }
   .carousel-inner { border-radius:16px; overflow:hidden; }
-  .car-slide-img { width:100%; height:200px; object-fit:contain; }
+  .car-slide-img { width:100%; height:220px; object-fit:cover; }
   .carousel-control-prev-icon,
   .carousel-control-next-icon { filter:invert(100%); }
   .alert {
@@ -78,40 +79,46 @@
 
 @section('content')
 <div class="detail-container">
-  {{-- Link Kembali --}}
-<a href="{{ route('user.cars.index') }}" class="back-link" aria-label="Kembali">
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
-    <line x1="19" y1="12" x2="5" y2="12"/>
-    <polyline points="12 19 5 12 12 5"/>
-  </svg>
-</a>
 
-  {{-- Gambar Mobil (Carousel) --}}
+  {{-- 🔙 Tombol Kembali --}}
+  <a href="{{ route('user.cars.index') }}" class="back-link" aria-label="Kembali">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+  </a>
+
+  {{-- 🖼️ Gambar Mobil (Carousel Dinamis) --}}
   <div id="carCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner rounded-3 shadow-sm">
+
+      {{-- Foto Utama --}}
       <div class="carousel-item active">
-        <img src="{{ asset('images/detail1.png') }}" class="d-block w-100 car-slide-img" alt="Mobil 1">
+        <img src="{{ asset('storage/' . $car->foto) }}" class="d-block w-100 car-slide-img" alt="Foto Mobil Utama">
       </div>
-      <div class="carousel-item">
-        <img src="{{ asset('images/detail2.png') }}" class="d-block w-100 car-slide-img" alt="Mobil 2">
-      </div>
-      <div class="carousel-item">
-        <img src="{{ asset('images/detail3.png') }}" class="d-block w-100 car-slide-img" alt="Mobil 3">
-      </div>
-      <div class="carousel-item">
-        <img src="{{ asset('images/detail4.png') }}" class="d-block w-100 car-slide-img" alt="Mobil 4">
-      </div>
+
+      {{-- Foto Tambahan --}}
+      @if($car->photos && $car->photos->count())
+        @foreach($car->photos as $photo)
+          <div class="carousel-item">
+            <img src="{{ asset('storage/' . $photo->path) }}" class="d-block w-100 car-slide-img" alt="Foto Tambahan">
+          </div>
+        @endforeach
+      @endif
     </div>
 
-    <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon"></span>
-    </button>
+    {{-- Navigasi Carousel --}}
+    @if($car->photos && $car->photos->count() > 0)
+      <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    @endif
   </div>
 
-  {{-- Informasi Mobil --}}
+  {{-- 🧾 Informasi Mobil --}}
   <div class="car-info">
     <h2>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }} – {{ ucfirst($car->warna) }}</h2>
     <div class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</div>
@@ -135,32 +142,15 @@
       <div class="tag-box"><img src="{{ asset('images/audio.png') }}" alt=""> {{ $car->sistem_audio ? 'Ada Audio' : 'Tanpa Audio' }}</div>
     </div>
 
-    {{-- Tombol Sewa dengan Logika Status --}}
-    @php
-      $rental = \App\Models\Rental::where('car_id', $car->car_id)
-          ->whereIn('status_rental', ['verifikasi_diperlukan','menunggu','menunggu_pembayaran','berjalan'])
-          ->latest()
-          ->first();
-    @endphp
-
-    @if($car->status_mobil === 'tidak_tersedia')
-      @if($rental && $rental->status_rental === 'menunggu_pembayaran')
-        <div class="alert">
-          💰 Mobil ini sedang <b>menunggu pembayaran penyewa</b>.<br>
-          Silakan pilih mobil lain terlebih dahulu.
-        </div>
-      @else
-        <div class="alert">
-          🚫 Mobil ini sedang disewa oleh pengguna lain.<br>
-          Silakan pilih mobil lain.
-        </div>
-      @endif
+    {{-- Tombol Sewa --}}
+    @if($car->status === 'tidak_tersedia')
+      <div class="alert">
+        🚫 Mobil ini sedang disewa oleh pengguna lain.<br>Silakan pilih mobil lain.
+      </div>
     @else
       @auth
-        {{-- 🔹 Jika user sudah login --}}
         <a href="{{ route('user.rentals.create', $car->car_id) }}" class="btn-rent">Sewa Sekarang</a>
       @else
-        {{-- 🔹 Jika belum login, arahkan ke halaman guest --}}
         <a href="{{ route('user.car.guest') }}" class="btn-rent">Sewa Sekarang</a>
       @endauth
     @endif

@@ -77,7 +77,7 @@
       </a>
     @endif
 
-    <a href="{{ route('cars.index') }}" class="menu-item">
+<a href="{{ route('admin.cars.index') }}" class="menu-item">
       <img src="{{ asset('img/icons/car.png') }}" class="menu-icon" alt="Kelola Mobil">
       <div class="menu-text">
         <h3>Kelola Mobil</h3>

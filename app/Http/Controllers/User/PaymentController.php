@@ -133,20 +133,31 @@ class PaymentController extends Controller
     /* --------------------------------------------------------------------------
      | 📋 Daftar pembayaran (index)
      * -------------------------------------------------------------------------- */
-    public function index(Request $r)
-    {
-        $q = Payment::with(['rental.car.brand', 'rental.invoice'])
-            ->whereHas('rental', fn($q) => $q->where('user_id', auth()->id()));
+public function index(Request $r)
+{
+    $q = Payment::with(['rental.car.brand', 'rental.invoice'])
+        ->where(function ($query) {
+            $query->whereHas('rental', function ($rental) {
+                $rental->where('user_id', auth()->id());
+            })
+            ->orWhereNull('rental_id'); // 🔹 Tambahan: tampilkan juga jika rental_id null
+        });
 
-        if ($r->filled('no_transaksi'))
-            $q->whereHas('rental.invoice', fn($i) => $i->where('invoice_id', str_replace('INV', '', $r->no_transaksi)));
-        if ($r->filled('tanggal'))
-            $q->whereDate('created_at', $r->tanggal);
-        if ($r->filled('status'))
-            $q->where('status_pembayaran', $r->status);
+    if ($r->filled('no_transaksi'))
+        $q->whereHas('rental.invoice', fn($i) => 
+            $i->where('invoice_id', str_replace('INV', '', $r->no_transaksi))
+        );
 
-        return view('user.payments.index', ['payments' => $q->latest()->get()]);
-    }
+    if ($r->filled('tanggal'))
+        $q->whereDate('created_at', $r->tanggal);
+
+    if ($r->filled('status'))
+        $q->where('status_pembayaran', $r->status);
+
+    $payments = $q->latest()->get();
+    return view('user.payments.index', compact('payments'));
+}
+
 
     /* --------------------------------------------------------------------------
      | ⏱️ Auto expire + sinkron cancel

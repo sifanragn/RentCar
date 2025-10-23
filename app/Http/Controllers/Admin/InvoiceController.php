@@ -128,7 +128,7 @@ class InvoiceController extends Controller
     /**
      * 💾 Simpan invoice baru + otomatis buat payment charge (asynchronous)
      */
-    public function store(Request $request, $rental_id)
+public function store(Request $request, $rental_id)
 {
     $request->validate([
         'status_pengembalian' => 'required|in:tepat_waktu,telat,rusak',
@@ -151,6 +151,8 @@ class InvoiceController extends Controller
     ];
     $pilihan = strtolower($request->input('payment_method', 'qris'));
     $duitkuMethod = $mapMetode[$pilihan] ?? 'QRIS';
+
+    $payment = null;
 
     DB::beginTransaction();
     try {
@@ -182,7 +184,7 @@ class InvoiceController extends Controller
                 'expired_at'        => now()->addMinutes(30),
             ]);
 
-            // panggil Duitku langsung
+            // 🔹 Kirim ke Duitku
             $this->createDuitkuPayment($rental, $payment, $invoice->invoice_id, $duitkuMethod, $denda, 'CHARGE');
         }
 
@@ -198,16 +200,8 @@ class InvoiceController extends Controller
         return back()->with('error', 'Gagal membuat invoice: ' . $e->getMessage());
     }
 
-    try {
-    $this->createDuitkuPayment($rental, $payment, $invoice->invoice_id, $duitkuMethod, $denda, 'CHARGE');
-} catch (\Throwable $e) {
-    Log::error('❌ Error saat kirim ke Duitku: ' . $e->getMessage());
-    return back()->with('error', 'Gagal kirim ke Duitku: ' . $e->getMessage());
-}
-
-
     return redirect()->route('admin.invoices.show', $invoice->invoice_id)
-        ->with('success', '✅ Invoice berhasil dibuat dengan tagihan denda.');
+        ->with('success', '✅ Invoice berhasil dibuat' . ($denda > 0 ? ' dengan tagihan denda.' : '.'));
 }
 
     /**

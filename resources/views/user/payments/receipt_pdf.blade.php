@@ -157,6 +157,10 @@
       border-top: 2px solid #dee2e6;
     }
 
+    .footer b {
+      color: #1976d2;
+    }
+
     /* ===== BACKGROUND MOBIL ===== */
     .car-bg {
       position: absolute;
@@ -257,8 +261,8 @@
     </div>
 
     <div class="footer">
-      Terima kasih telah menggunakan layanan kami 🙏<br>
-      <small>Dicetak otomatis oleh sistem RentCar pada {{ now()->format('d M Y, H:i') }} WIB</small>
+      Terima kasih telah menggunakan layanan kami.<br>
+      <small>Dicetak otomatis oleh <b>RentCar System</b> pada {{ now()->format('d M Y, H:i') }} WIB</small>
     </div>
 
     <img class="car-bg" src="{{ public_path('img/car-bg.png') }}" alt="mobil">

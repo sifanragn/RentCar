@@ -38,7 +38,7 @@ class LoginController extends Controller
 
             \Log::info('✅ Admin login berhasil', ['email' => $admin->email]);
 
-return redirect()->route('cars.index');
+return redirect()->route('admin.dashboard.index');
         }
 
         // 2️⃣ Kalau bukan admin, cek user biasa

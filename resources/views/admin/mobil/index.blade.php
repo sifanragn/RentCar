@@ -6,9 +6,9 @@
 <div class="cars-header">
   <h2>Daftar Mobil</h2>
   <div class="car-actions">
-    <a href="{{ route('cars.create') }}" class="btn btn-primary">+ Tambah Mobil Baru</a>
-    <a href="{{ route('cars.brands') }}" class="btn btn-success">+ Tambah Merek</a>
-    <a href="{{ route('cars.models') }}" class="btn btn-blue">+ Tambah Model</a>
+    <a href="{{ route('admin.cars.create') }}" class="btn btn-primary">+ Tambah Mobil Baru</a>
+    <a href="{{ route('admin.cars.brands') }}" class="btn btn-success">+ Tambah Merek</a>
+    <a href="{{ route('admin.cars.models') }}" class="btn btn-blue">+ Tambah Model</a>
   </div>
 </div>
 
@@ -43,8 +43,8 @@
           <td>{{ $car->tahun }}</td>
           <td class="car-actions-td">
             <button class="link detail" onclick='showCarDetail(@json($car))'>Detail</button>
-            <a href="{{ route('cars.edit', $car->car_id) }}" class="link edit">Edit</a>
-            <form action="{{ route('cars.destroy', $car->car_id) }}" method="POST" 
+            <a href="{{ route('admin.cars.edit', $car->car_id) }}" class="link edit">Edit</a>
+            <form action="{{ route('admin.cars.destroy', $car->car_id) }}" method="POST" 
                   class="inline" onsubmit="return confirm('Yakin hapus mobil ini?')">
               @csrf
               @method('DELETE')

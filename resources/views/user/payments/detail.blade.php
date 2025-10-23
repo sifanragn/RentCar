@@ -97,6 +97,7 @@
 
 .back-link svg {
   vertical-align: middle;
+  margin-left: -150px;
 }
 
 </style>

@@ -16,7 +16,7 @@
   </div>
 @endif
 
-<form action="{{ route('cars.store') }}" method="POST" enctype="multipart/form-data" class="car-form">
+<form action="{{ route('admin.cars.store') }}" method="POST" enctype="multipart/form-data" class="car-form">
   @csrf
 
   <div class="form-grid">
@@ -50,7 +50,7 @@
         <select id="model" name="model" required>
           <option value="">-- Pilih Model --</option>
         </select>
-        <a href="{{ route('cars.models') }}" class="link-add">+ Tambah Model</a>
+        <a href="{{ route('admin.cars.models') }}" class="link-add">+ Tambah Model</a>
       </div>
     </div>
 
@@ -146,7 +146,7 @@
 
   <div class="form-actions">
     <button type="submit" class="btn-submit">Simpan</button>
-    <a href="{{ route('cars.index') }}" class="btn-cancel">Kembali</a>
+    <a href="{{ route('admin.cars.index') }}" class="btn-cancel">Kembali</a>
   </div>
 </form>
 

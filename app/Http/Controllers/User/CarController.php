@@ -62,7 +62,8 @@ class CarController extends Controller
      */
 public function show($id)
 {
-    $car = Car::with(['brand', 'capacity'])->findOrFail($id);
+    $car = Car::with(['brand', 'capacity', 'photos'])->findOrFail($id);
+    // 🔹 Tambahin 'photos' biar galeri ikut di-load
 
     // 🔹 Cek apakah mobil sedang disewa / menunggu pembayaran / dsb
     $rental = Rental::where('car_id', $car->car_id)
@@ -74,6 +75,5 @@ public function show($id)
 
     return view('user.car.show', compact('car', 'isUnavailable', 'rental'));
 }
-    
 }
 

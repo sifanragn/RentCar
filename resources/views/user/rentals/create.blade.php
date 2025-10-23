@@ -226,7 +226,7 @@ button:hover {
   @endphp
 
   {{-- Link Kembali --}}
-<a href="{{ route('user.cars.show') }}" class="back-link" aria-label="Kembali">
+<a href="{{ route('user.cars.show', $car->car_id) }}" class="back-link" aria-label="Kembali">
   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
     <line x1="19" y1="12" x2="5" y2="12"/>
     <polyline points="12 19 5 12 12 5"/>
@@ -331,16 +331,28 @@ window.addEventListener('load', function() {
     };
   }
 
-  // Batasi tanggal sebelum hari ini
+  // ===== BATASI TANGGAL (minimal hari ini & minimal 24 jam sewa) =====
   const now = new Date();
   const localNow = now.toISOString().slice(0, 16);
   mulai.min = localNow;
   selesai.min = localNow;
 
+  // Ketika user ubah tanggal mulai
   mulai.addEventListener('change', function () {
-    selesai.min = mulai.value;
+    if (!mulai.value) return;
+
+    const startDate = new Date(mulai.value);
+    const minEndDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000); // +24 jam
+    const formattedMin = minEndDate.toISOString().slice(0, 16);
+    selesai.min = formattedMin;
+
+    // Reset kalau tanggal selesai lebih kecil dari minimum
+    if (selesai.value && new Date(selesai.value) < minEndDate) {
+      selesai.value = '';
+    }
   });
 
+  // ===== TOGGLE PICKUP =====
   function togglePickup() {
     const val = metodePickup.value;
     if (val === 'ambil_sendiri') {
@@ -360,7 +372,7 @@ window.addEventListener('load', function() {
   togglePickup();
   metodePickup.addEventListener('change', togglePickup);
 
-  // Cek ongkir
+  // ===== CEK ONGKIR =====
   cekOngkirBtn.addEventListener('click', async () => {
     const alamat = document.getElementById('alamat').value.trim();
     if (!alamat) return showAlert('Masukkan alamat Anda terlebih dahulu.');
@@ -382,7 +394,7 @@ window.addEventListener('load', function() {
     }
   });
 
-  // Validasi jam sewa
+  // ===== VALIDASI JAM SEWA (antara 08:00–22:00) =====
   function validateTimeRange(input) {
     if (!input.value) return;
     const hour = new Date(input.value).getHours();
@@ -395,7 +407,7 @@ window.addEventListener('load', function() {
   mulai.addEventListener('change', e => validateTimeRange(e.target));
   selesai.addEventListener('change', e => validateTimeRange(e.target));
 
-  // Submit form
+  // ===== SUBMIT FORM =====
   form.addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -409,6 +421,14 @@ window.addEventListener('load', function() {
 
     const mulaiVal = mulai.value;
     const selesaiVal = selesai.value;
+
+    // Validasi tanggal selesai minimal 24 jam setelah mulai
+    const startDate = new Date(mulaiVal);
+    const minEndDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
+    if (new Date(selesaiVal) < minEndDate) {
+      return showAlert('Durasi sewa minimal 24 jam dari waktu mulai.');
+    }
+
     if (new Date(mulaiVal) >= new Date(selesaiVal)) {
       return showAlert('Tanggal selesai harus lebih besar dari tanggal mulai.');
     }
@@ -430,10 +450,11 @@ window.addEventListener('load', function() {
     .catch(() => showAlert('Terjadi kesalahan koneksi.'));
   });
 
-  // Tutup popup verifikasi
+  // ===== TUTUP POPUP VERIFIKASI =====
   document.getElementById('close-popup').addEventListener('click', () => {
     popup.style.display = 'none';
   });
 });
 </script>
+
 @endsection
