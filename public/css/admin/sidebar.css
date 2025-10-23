@@ -1,6 +1,6 @@
 /* ==== SIDEBAR UTAMA ==== */
 .admin-sidebar {
-  width: 200px; /* ✅ dari 230px jadi 200px (pas garis merah) */
+  width: 200px;
   background: #141821;
   color: #cfd3dc;
   display: flex;
@@ -17,22 +17,18 @@
   border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* ==== HEADER SIDEBAR ==== */
+/* ==== HEADER ==== */
 .sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
-
 .sidebar-header h2 {
   font-size: 20px;
   font-weight: 700;
   color: #23c8ff;
-  transition: opacity 0.3s ease;
 }
-
-/* Tombol toggle (panah) */
 .sidebar-toggle {
   background: none;
   border: none;
@@ -41,11 +37,9 @@
   cursor: pointer;
   transition: transform 0.3s ease;
 }
-.sidebar-toggle:hover {
-  transform: scale(1.1);
-}
+.sidebar-toggle:hover { transform: scale(1.1); }
 
-/* ==== LINK MENU ==== */
+/* ==== MENU ==== */
 .admin-sidebar nav {
   display: flex;
   flex-direction: column;
@@ -55,11 +49,10 @@
   overflow-y: auto;
   scrollbar-width: none;
 }
-.admin-sidebar nav::-webkit-scrollbar {
-  display: none;
-}
+.admin-sidebar nav::-webkit-scrollbar { display: none; }
 
-.admin-sidebar nav a {
+.admin-sidebar nav a,
+.nav-dropdown .dropdown-toggle {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -69,197 +62,60 @@
   border-radius: 10px;
   transition: all 0.25s ease;
   font-weight: 500;
-  font-size: 15px; /* ✅ tetap besar */
+  font-size: 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
+/* Hover & Active */
 .admin-sidebar nav a:hover,
-.admin-sidebar nav a.active {
+.admin-sidebar nav a.active,
+.nav-dropdown .dropdown-toggle:hover {
   background: rgba(35, 200, 255, 0.1);
   color: #fff;
   transform: translateX(2px);
 }
 
-/* ==== MODE COLLAPSED (DESKTOP) ==== */
-.admin-sidebar.collapsed {
-  width: 75px;
+/* ==== DROPDOWN PANAH ==== */
+.nav-dropdown .dropdown-toggle {
+  position: relative;
+  padding-right: 32px; /* ruang buat panah */
 }
-
-.admin-sidebar.collapsed .sidebar-header h2,
-.admin-sidebar.collapsed nav a span {
-  opacity: 0;
-  pointer-events: none;
-  width: 0;
+.nav-dropdown .arrow {
+  margin-left: auto;
+  margin-right: 6px; /* 🔹 geser ke kiri biar keliatan */
+  color: inherit;
+  opacity: 0.8;
+  transition: transform 0.25s ease, color 0.25s ease;
 }
-
-.admin-sidebar.collapsed .sidebar-toggle i {
+.nav-dropdown.open .arrow {
   transform: rotate(180deg);
+  opacity: 1;
+}
+.nav-dropdown .dropdown-toggle:hover .arrow {
+  color: #fff;
+  opacity: 1;
 }
 
-.admin-sidebar.collapsed nav a {
-  justify-content: center;
-  padding: 12px 0;
-}
-
-.admin-sidebar.collapsed nav a i {
-  font-size: 18px;
-}
-
-/* ==== LIGHT MODE ==== */
-body.light-mode .admin-sidebar {
-  background: #fff;
-  color: #333;
-  border-right: 1px solid #ddd;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
-}
-
-body.light-mode .admin-sidebar nav a {
+/* Light mode untuk panah */
+body.light-mode .nav-dropdown .arrow {
   color: #555;
 }
-
-body.light-mode .admin-sidebar nav a:hover,
-body.light-mode .admin-sidebar nav a.active {
-  background: #eef3ff;
+body.light-mode .nav-dropdown .dropdown-toggle:hover .arrow {
   color: #000;
 }
 
-/* ==== OVERLAY UNTUK MOBILE ==== */
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(2px);
-  z-index: 900;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-.sidebar-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* ==== RESPONSIVE MODE (MOBILE <992px) ==== */
-@media (max-width: 992px) {
-  .admin-sidebar {
-    width: 200px; /* ✅ sesuai garis merah */
-    left: -200px; /* geser sesuai width baru */
-  }
-
-  .admin-sidebar.active {
-    left: 0;
-  }
-
-  .admin-main {
-    margin-left: 0 !important;
-  }
-}
-
-/* === TABLE WRAPPER RESPONSIVE === */
-.admin-content table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-@media (max-width: 768px) {
-  .admin-content {
-    padding: 20px;
-    overflow-x: auto;
-  }
-  .admin-content table {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-}
-
-/* 💰 CARD TOTAL PENDAPATAN */
-.sidebar-stats {
-  background: #f9fafc;
-  padding: 16px;
-  border-radius: 16px;
-  margin-bottom: 26px;
-  text-align: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
-}
-.sidebar-stats .stats-label {
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 5px;
-}
-.sidebar-stats .stats-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: #000;
-  margin-bottom: 6px;
-}
-.sidebar-stats .stats-growth {
-  font-size: 15px;
-  font-weight: 600;
-}
-.sidebar-stats.up .stats-growth { color: #22c55e; } /* hijau naik */
-.sidebar-stats.down .stats-growth { color: #ef4444; } /* merah turun */
-
-/* Light mode */
-body.light-mode .sidebar-stats {
-  background: #f1f5ff;
-  color: #333;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-body.light-mode .sidebar-stats .stats-value {
-  color: #000;
-}
-body.light-mode .sidebar-stats .stats-label {
-  color: #4b5563;
-}
-
-/* Dark mode */
-body:not(.light-mode) .sidebar-stats {
-  background: rgba(255,255,255,0.05);
-  color: #e5e7eb;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
-body:not(.light-mode) .sidebar-stats .stats-value {
-  color: #fff;
-}
-
-/* === Dropdown Mobil === */
+/* ==== DROPDOWN INNER ==== */
 .nav-dropdown {
   display: flex;
   flex-direction: column;
 }
-.nav-dropdown .dropdown-toggle {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: none;
-  border: none;
-  padding: 10px 12px;
-  color: #cfd3dc;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.25s ease;
-}
-.nav-dropdown .dropdown-toggle:hover {
-  background: rgba(35,200,255,0.1);
-}
-.nav-dropdown .arrow {
-  transition: transform 0.25s ease;
-}
-.nav-dropdown.open .arrow {
-  transform: rotate(180deg);
-}
-
-/* Dropdown inner */
 .dropdown-inner {
   display: none;
   flex-direction: column;
   margin-left: 40px;
   gap: 6px;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
 }
 .nav-dropdown.open .dropdown-inner {
   display: flex;
@@ -269,17 +125,55 @@ body:not(.light-mode) .sidebar-stats .stats-value {
   text-decoration: none;
   font-size: 14px;
 }
-.dropdown-inner a:hover {
-  color: #fff;
-}
+.dropdown-inner a:hover { color: #fff; }
 
-/* Collapsed Mode */
-.admin-sidebar.collapsed .sidebar-stats { display: none; }
+/* ==== CARD TOTAL PENDAPATAN ==== */
+.sidebar-stats {
+  background: #f9fafc;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 26px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+.sidebar-stats .stats-label { font-size: 14px; color: #6b7280; margin-bottom: 5px; }
+.sidebar-stats .stats-value { font-size: 22px; font-weight: 700; color: #000; margin-bottom: 6px; }
+.sidebar-stats.up .stats-growth { color: #22c55e; }
+.sidebar-stats.down .stats-growth { color: #ef4444; }
+
+/* ==== LIGHT MODE ==== */
+body.light-mode .admin-sidebar {
+  background: #fff;
+  color: #333;
+  border-right: 1px solid #ddd;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+}
+body.light-mode .admin-sidebar nav a,
+body.light-mode .nav-dropdown .dropdown-toggle {
+  color: #555;
+}
+body.light-mode .admin-sidebar nav a:hover,
+body.light-mode .admin-sidebar nav a.active,
+body.light-mode .nav-dropdown .dropdown-toggle:hover {
+  background: #eef3ff;
+  color: #000;
+}
+body.light-mode .dropdown-inner a { color: #666; }
+body.light-mode .dropdown-inner a:hover { color: #000; }
+
+/* ==== COLLAPSED MODE ==== */
+.admin-sidebar.collapsed { width: 75px; }
+.admin-sidebar.collapsed .sidebar-header h2,
+.admin-sidebar.collapsed nav a span { opacity: 0; width: 0; pointer-events: none; }
 .admin-sidebar.collapsed .nav-dropdown .dropdown-inner,
 .admin-sidebar.collapsed .nav-dropdown .dropdown-toggle span,
-.admin-sidebar.collapsed .nav-dropdown .dropdown-toggle .arrow {
-  display: none;
-}
-.admin-sidebar.collapsed .nav-dropdown .dropdown-toggle {
-  justify-content: center;
+.admin-sidebar.collapsed .nav-dropdown .dropdown-toggle .arrow { display: none; }
+.admin-sidebar.collapsed .sidebar-stats { display: none; }
+
+/* ==== RESPONSIVE ==== */
+@media (max-width: 992px) {
+  .admin-sidebar { width: 200px; left: -200px; }
+  .admin-sidebar.active { left: 0; }
+  .admin-main { margin-left: 0 !important; }
 }

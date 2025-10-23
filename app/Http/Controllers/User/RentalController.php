@@ -29,169 +29,166 @@ class RentalController extends Controller
     /**
      * 🚗 Form penyewaan mobil
      */
-<<<<<<< HEAD
     public function create($car_id)
     {
-        $car  = Car::with('brand')->findOrFail($car_id);
-        $user = auth()->user()->refresh(); // pastikan data terbaru
-        return view('user.rentals.create', compact('car', 'user'));
+        // 🚘 Ambil data mobil beserta brand-nya
+        $car = Car::with('brand')->findOrFail($car_id);
+
+        // 👨‍✈️ Ambil semua driver aktif & sudah diverifikasi
+        $drivers = Driver::where('status', 'aktif')
+            ->where('status_verifikasi', 'disetujui')
+            ->orderBy('nama', 'asc')
+            ->get([
+                'driver_id',
+                'nama',
+                'foto',
+                'harga_per_hari',
+                'lokasi',
+                'pengalaman',
+                'deskripsi',
+                'status_verifikasi'
+            ]);
+
+        // 📦 Ambil user login
+        $user = auth()->user()->refresh();
+
+        // 📦 Kirim data ke view
+        return view('user.rentals.create', compact('car', 'user', 'drivers'));
     }
-=======
-   public function create($car_id)
-{
-    // 🚘 Ambil data mobil beserta brand-nya
-    $car = \App\Models\Car::with('brand')->findOrFail($car_id);
-
-    // 👨‍✈️ Ambil semua driver aktif & sudah diverifikasi
-    $drivers = \App\Models\Driver::where('status', 'aktif')
-        ->where('status_verifikasi', 'disetujui')
-        ->orderBy('nama', 'asc')
-        ->get(['driver_id', 'nama', 'foto', 'harga_per_hari', 'lokasi', 'pengalaman', 'deskripsi', 'status_verifikasi']);
-
-    // 📦 Kirim data ke view
-    return view('user.rentals.create', [
-        'car' => $car,
-        'drivers' => $drivers,
-    ]);
-}
->>>>>>> 85b8545aa3bcb1f9c63a84c6181ba87ce03d1d8c
 
     /**
      * 💾 Simpan data penyewaan baru (dengan blokir transaksi ganda)
      */
     public function store(Request $request, $car_id)
-{
-    $user = auth()->user();
-    $car  = Car::findOrFail($car_id);
+    {
+        $user = auth()->user();
+        $car  = Car::findOrFail($car_id);
 
-    // 🚫 Cegah transaksi ganda
-    $hasPendingPayment = Payment::whereHas('rental', function ($q) use ($user) {
-            $q->where('user_id', $user->user_id);
-        })
-        ->where('payment_type', 'main')
-        ->where('status_pembayaran', 'pending')
-        ->where(function ($q) {
-            $q->whereNull('expired_at')->orWhere('expired_at', '>', now());
-        })
-        ->exists();
+        // 🚫 Cegah transaksi ganda
+        $hasPendingPayment = Payment::whereHas('rental', function ($q) use ($user) {
+                $q->where('user_id', $user->user_id);
+            })
+            ->where('payment_type', 'main')
+            ->where('status_pembayaran', 'pending')
+            ->where(function ($q) {
+                $q->whereNull('expired_at')->orWhere('expired_at', '>', now());
+            })
+            ->exists();
 
-    if ($hasPendingPayment) {
-        return response()->json([
-            'success' => false,
-            'message' => '⚠️ Kamu masih memiliki pembayaran yang belum diselesaikan.',
-            'redirect_url' => route('user.payments.index'),
-        ], 409);
-    }
-
-    // 🚫 Cegah mobil sedang disewa
-    $existingRental = Rental::where('car_id', $car->car_id)
-        ->whereIn('status_rental', ['verifikasi_diperlukan', 'menunggu_pembayaran', 'berjalan'])
-        ->exists();
-
-    if ($existingRental) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Mobil ini sedang disewa atau menunggu konfirmasi. Silakan pilih mobil lain.',
-        ], 409);
-    }
-
-    // ✅ Validasi input
-    $validated = $request->validate([
-        'tanggal_mulai'   => 'required|date|after_or_equal:today',
-        'tanggal_selesai' => 'required|date|after:tanggal_mulai',
-        'driver'          => 'required|in:ya,tidak',
-        'driver_id'       => 'nullable|exists:drivers,driver_id',
-        'metode_pickup'   => 'required|in:ambil_sendiri,pickup_alamat',
-    ]);
-
-    // 🕒 Konversi ke WIB
-    $timezone = 'Asia/Jakarta';
-    $tanggalMulai   = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tanggal_mulai'], $timezone)->setTimezone($timezone);
-    $tanggalSelesai = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tanggal_selesai'], $timezone)->setTimezone($timezone);
-
-    // 🔹 Validasi jam operasional (08–22 WIB)
-    $jamMulai   = (int) $tanggalMulai->format('H');
-    $jamSelesai = (int) $tanggalSelesai->format('H');
-    if ($jamMulai < 8 || $jamMulai > 22 || $jamSelesai < 8 || $jamSelesai > 22) {
-        return response()->json([
-            'success' => false,
-            'message' => '⚠️ Jam penyewaan hanya diperbolehkan antara 08:00 hingga 22:00 WIB.',
-        ], 422);
-    }
-
-    // 🔹 Hitung durasi dan total biaya
-    $durasiHari = $tanggalMulai->diffInDays($tanggalSelesai) + 1;
-    $hargaDriver = 0;
-    $driver = null;
-
-    // 💰 Jika pakai driver, ambil data dari tabel driver
-    if ($validated['driver'] === 'ya' && $validated['driver_id']) {
-        $driver = Driver::where('status', 'aktif')
-            ->where('status_verifikasi', 'disetujui')
-            ->find($validated['driver_id']);
-
-        if ($driver) {
-            $hargaDriver = $driver->harga_per_hari * $durasiHari;
+        if ($hasPendingPayment) {
+            return response()->json([
+                'success' => false,
+                'message' => '⚠️ Kamu masih memiliki pembayaran yang belum diselesaikan.',
+                'redirect_url' => route('user.payments.index'),
+            ], 409);
         }
-    }
 
-    $total = ($car->harga_sewa_per_hari * $durasiHari) + $hargaDriver;
+        // 🚫 Cegah mobil sedang disewa
+        $existingRental = Rental::where('car_id', $car->car_id)
+            ->whereIn('status_rental', ['verifikasi_diperlukan', 'menunggu_pembayaran', 'berjalan'])
+            ->exists();
 
-    // 🔹 Status awal
-    $statusAwal = ($user->status_verifikasi === 'disetujui')
-        ? 'draft'
-        : 'verifikasi_diperlukan';
-        $expiredAt = null;
+        if ($existingRental) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mobil ini sedang disewa atau menunggu konfirmasi. Silakan pilih mobil lain.',
+            ], 409);
+        }
+
+        // ✅ Validasi input
+        $validated = $request->validate([
+            'tanggal_mulai'   => 'required|date|after_or_equal:today',
+            'tanggal_selesai' => 'required|date|after:tanggal_mulai',
+            'driver'          => 'required|in:ya,tidak',
+            'driver_id'       => 'nullable|exists:drivers,driver_id',
+            'metode_pickup'   => 'required|in:ambil_sendiri,pickup_alamat',
+        ]);
+
+        // 🕒 Konversi ke WIB
+        $timezone = 'Asia/Jakarta';
+        $tanggalMulai   = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tanggal_mulai'], $timezone)->setTimezone($timezone);
+        $tanggalSelesai = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tanggal_selesai'], $timezone)->setTimezone($timezone);
+
+        // 🔹 Validasi jam operasional (08–22 WIB)
+        $jamMulai   = (int) $tanggalMulai->format('H');
+        $jamSelesai = (int) $tanggalSelesai->format('H');
+        if ($jamMulai < 8 || $jamMulai > 22 || $jamSelesai < 8 || $jamSelesai > 22) {
+            return response()->json([
+                'success' => false,
+                'message' => '⚠️ Jam penyewaan hanya diperbolehkan antara 08:00 hingga 22:00 WIB.',
+            ], 422);
+        }
+
+        // 🔹 Hitung durasi dan total biaya
+        $durasiHari = $tanggalMulai->diffInDays($tanggalSelesai) + 1;
+        $hargaDriver = 0;
+        $driver = null;
+
+        // 💰 Jika pakai driver, ambil data dari tabel driver
+        if ($validated['driver'] === 'ya' && $validated['driver_id']) {
+            $driver = Driver::where('status', 'aktif')
+                ->where('status_verifikasi', 'disetujui')
+                ->find($validated['driver_id']);
+
+            if ($driver) {
+                $hargaDriver = $driver->harga_per_hari * $durasiHari;
+            }
+        }
+
+        $total = ($car->harga_sewa_per_hari * $durasiHari) + $hargaDriver;
+
+        // 🔹 Status awal
+        $statusAwal = ($user->status_verifikasi === 'disetujui')
+            ? 'draft'
+            : 'verifikasi_diperlukan';
+
+        $expiredAt = $statusAwal === 'draft' ? now()->addMinutes(30) : null;
+
+        // 🔹 Simpan rental
+        $rental = Rental::create([
+            'user_id'         => $user->user_id,
+            'car_id'          => $car->car_id,
+            'tanggal_mulai'   => $tanggalMulai,
+            'tanggal_selesai' => $tanggalSelesai,
+            'durasi_hari'     => $durasiHari,
+            'driver'          => $validated['driver'],
+            'driver_id'       => $driver?->driver_id,
+            'metode_pickup'   => $validated['metode_pickup'],
+            'total_biaya'     => $total,
+            'status_rental'   => $statusAwal,
+            'expired_at'      => $expiredAt,
+        ]);
+
+        Log::info('📦 Penyewaan dibuat', [
+            'rental_id' => $rental->rental_id,
+            'user'      => $user->email,
+            'driver'    => $driver?->nama ?? 'tidak ada',
+            'total'     => $total,
+        ]);
+
+        // 🚀 Redirect
         if ($statusAwal === 'draft') {
-            $expiredAt = now()->addMinutes(30);
+            return response()->json([
+                'success' => true,
+                'message' => 'Draft disimpan sementara, silakan lanjut ke pembayaran.',
+                'redirect_url' => route('user.payments.detailRental', $rental->rental_id),
+            ]);
         }
 
-    // 🔹 Simpan rental
-    $rental = Rental::create([
-        'user_id'         => $user->user_id,
-        'car_id'          => $car->car_id,
-        'tanggal_mulai'   => $tanggalMulai,
-        'tanggal_selesai' => $tanggalSelesai,
-        'durasi_hari'     => $durasiHari,
-        'driver'          => $validated['driver'],
-        'driver_id'       => $driver?->driver_id,
-        'metode_pickup'   => $validated['metode_pickup'],
-        'total_biaya'     => $total,
-        'status_rental'   => $statusAwal,
-        'expired_at'      => $expiredAt, // 🕒 simpan waktu kedaluwarsa
-    ]);
+        if ($statusAwal === 'verifikasi_diperlukan') {
+            return response()->json([
+                'success' => false,
+                'redirect_url' => route('user.verifikasi.index'),
+            ]);
+        }
 
-    Log::info('📦 Penyewaan dibuat', [
-        'rental_id' => $rental->rental_id,
-        'user'      => $user->email,
-        'driver'    => $driver?->nama ?? 'tidak ada',
-        'total'     => $total,
-    ]);
-
-    // 🚀 Redirect
-    if ($statusAwal === 'draft') {
         return response()->json([
             'success' => true,
-            'message' => 'Draft disimpan sementara, silakan lanjut ke pembayaran.',
             'redirect_url' => route('user.payments.detailRental', $rental->rental_id),
         ]);
     }
 
-    if ($statusAwal === 'verifikasi_diperlukan') {
-        return response()->json([
-            'success' => false,
-            'redirect_url' => route('user.verifikasi.index'),
-        ]);
-    }
-
-    return response()->json([
-        'success' => true,
-        'redirect_url' => route('user.payments.detailRental', $rental->rental_id),
-    ]);
-}
-
     /**
-     * 🔍 Detail penyewaan
      * 🔍 Detail penyewaan user
      */
     public function show($id)
@@ -215,7 +212,9 @@ class RentalController extends Controller
 
         if ($rental) {
             $rental->update(['status_rental' => 'dibatalkan']);
-            Log::info('❌ Rental dibatalkan oleh user', ['rental_id' => $rental->rental_id]);
+            Log::info('❌ Rental dibatalkan oleh user', [
+                'rental_id' => $rental->rental_id
+            ]);
         }
 
         return response()->json(['message' => 'Transaksi dibatalkan.']);

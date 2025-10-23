@@ -19,7 +19,7 @@
     @endif
 
     {{-- FORM TAMBAH MODEL --}}
-    <form action="{{ route('cars.models.store') }}" method="POST" class="model-form">
+    <form action="{{ route('admin.cars.models.store') }}" method="POST" class="model-form">
       @csrf
       <div class="form-grid">
 

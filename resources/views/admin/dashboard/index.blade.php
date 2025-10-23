@@ -108,6 +108,23 @@
         <p>Verifikasi dan kelola akun pelanggan.</p>
       </div>
     </a>
+
+        <a href="{{ route('admin.drivers.index') }}" class="menu-item">
+      <img src="{{ asset('img/icons/drivers.png') }}" class="menu-icon" alt="Data Driver">
+      <div class="menu-text">
+        <h3>Data Driver</h3>
+        <p>Kelola informasi, status, dan verifikasi driver.</p>
+      </div>
+    </a>
+
+        <a href="{{ route('admin.laporan.index') }}" class="menu-item">
+      <img src="{{ asset('img/icons/laporan.png') }}" class="menu-icon" alt="Data User">
+      <div class="menu-text">
+        <h3>Laporan</h3>
+        <p>Lihat ringkasan penyewaan dan pendapatan secara lengkap.</p>
+      </div>
+    </a>
+
   </div>
 </div>
 

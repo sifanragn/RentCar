@@ -92,7 +92,7 @@
       </div>
 
       {{-- Deskripsi --}}
-      <div class="form-group" style="grid-column:1 / span 2;">
+      <div class="form-group full-width">
         <label for="deskripsi">Deskripsi (opsional)</label>
         <textarea id="deskripsi" name="deskripsi" rows="3" placeholder="Contoh: Ramah, berpengalaman di rute luar kota.">{{ old('deskripsi') }}</textarea>
       </div>
@@ -100,76 +100,163 @@
 
     <div class="form-actions">
       <button type="submit" class="btn-primary">💾 Simpan Driver</button>
-      <a href="{{ route('admin.drivers.index') }}" class="btn-secondary">↩ Kembali</a>
+      <a href="{{ route('admin.drivers.index') }}" class="btn-cancel">↩ Kembali</a>
     </div>
   </form>
 </div>
 
+{{-- ========================= STYLE ========================= --}}
 <style>
+.admin-content-wrapper {
+  padding: 10px 30px 50px 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* === HEADER === */
+.page-header {
+  margin-bottom: 25px;
+  padding: 18px 24px;
+  border-radius: 14px;
+  background: #181c26;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+body.light-mode .page-header {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.page-header h2 {
+  color: #f5f7fa;
+  font-size: 22px;
+  font-weight: 700;
+}
+body.light-mode .page-header h2 { color: #222; }
+.page-header p {
+  color: #d4d8e3;
+  margin-top: 6px;
+}
+body.light-mode .page-header p { color: #555; }
+
+/* === FORM WRAPPER === */
+.form-driver {
+  background: #141821;
+  border-radius: 16px;
+  padding: 40px 36px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+  transition: all 0.3s ease;
+}
+body.light-mode .form-driver {
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* === GRID === */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 18px;
+  gap: 26px 32px; /* 🔹 Lebih lega */
 }
 
-.form-group label {
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.form-group input, .form-group select, .form-group textarea {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-  outline: none;
-  transition: border-color .2s ease;
-}
-
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-  border-color: #0d6efd;
-}
-
-.form-actions {
-  margin-top: 25px;
+.form-group {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+/* === LABEL === */
+label {
+  font-weight: 600;
+  color: #d4d8e3;
+  font-size: 15px;
+}
+body.light-mode label { color: #333; }
+
+/* === INPUTS === */
+input, select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #1e2430;
+  color: #e9ecef;
+  font-size: 15px;
+  transition: 0.2s;
+}
+body.light-mode input,
+body.light-mode select,
+body.light-mode textarea {
+  background: #f9fafb;
+  color: #222;
+  border: 1px solid #ccc;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #0d6efd;
+  outline: none;
+}
+
+/* === BUTTON AREA === */
+.form-actions {
+  margin-top: 40px;
+  display: flex;
+  gap: 14px;
 }
 
 .btn-primary {
   background: #0d6efd;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 10px 16px;
+  padding: 12px 22px;
   border-radius: 8px;
-  cursor: pointer;
   font-weight: 600;
-  transition: .2s;
+  transition: all 0.25s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
 }
 
-.btn-primary:hover { background: #0b5ed7; }
-
-.btn-secondary {
-  background: #6c757d;
-  color: white;
-  padding: 10px 16px;
+/* === KEMBALI BUTTON (gradien biru sama kayak detail) === */
+.btn-cancel {
+  background: linear-gradient(135deg, #0d6efd, #2563eb);
+  color: #fff;
+  padding: 12px 22px;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
+  transition: all 0.25s ease;
+}
+.btn-cancel:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
 }
 
-.btn-secondary:hover { background: #5a6268; }
-
+/* === ALERT === */
 .alert-error {
-  background: #ffe5e5;
-  color: #b50000;
-  border-left: 4px solid #dc3545;
-  padding: 10px 15px;
-  margin-bottom: 15px;
+  background: rgba(255, 99, 99, 0.15);
+  color: #e74c3c;
+  border-left: 4px solid #e74c3c;
+  padding: 12px 15px;
+  margin-bottom: 22px;
   border-radius: 8px;
+}
+body.light-mode .alert-error {
+  background: #ffeaea;
+  color: #b30000;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .form-driver {
+    padding: 25px 20px;
+  }
+  .form-actions {
+    flex-direction: column;
+  }
 }
 </style>
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\RentalAdminController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\DriverAdminController;
 
 // ===== USER CONTROLLERS =====
 use App\Http\Controllers\User\HomeController;
@@ -74,6 +75,7 @@ Route::get('/payments', fn() => view('user.payments.guest'))->name('user.payment
 
 // ==================== USER AREA (LOGIN WAJIB) ==================== //
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -119,16 +121,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 });
 
 // ==================== ADMIN AREA ==================== //
-Route::prefix('admin')->middleware('admin.session')->group(function () {
- Route::post('/invoices/{invoice}/retry-payment', [App\Http\Controllers\Admin\InvoiceController::class, 'retryPayment'])
-    ->name('admin.invoices.retryPayment');
-    Route::get('/invoices', [InvoiceController::class, 'index'])->name('admin.invoices.index');
-    Route::get('/invoices/{rental_id}/create', [InvoiceController::class, 'create'])->name('admin.invoices.create');
-    Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('admin.invoices.store');
-    Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('admin.invoices.show');
-    Route::post('/admin/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
-    Route::post('/invoices/{id}/manual-update', [App\Http\Controllers\Admin\InvoiceController::class, 'manualUpdate'])
-    ->name('admin.invoices.manualUpdate');
+Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard.index');
@@ -155,46 +148,26 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::get('/users/{id}', [UserVerificationController::class, 'show'])->name('users.show');
     Route::post('/users/{id}/verify', [UserVerificationController::class, 'verify'])->name('users.verify');
 
-<<<<<<< HEAD
-    // Penyewaan
+    // Penyewaan (Admin)
     Route::get('/rentals', [RentalAdminController::class, 'index'])->name('rentals.index');
     Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('rentals.show');
     Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('rentals.updateStatus');
+
+    // Payments
+    Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])->name('payments.refresh');
 
     // Invoices
     Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('/invoices/{rental_id}/create', [InvoiceController::class, 'create'])->name('invoices.create');
     Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('invoices.store');
     Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('invoices.show');
-    Route::post('/invoices/{invoice}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('invoices.retryPayment');
-    Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
-    Route::post('/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])->name('payments.manualUpdate');
     Route::post('/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
+    Route::post('/invoices/{id}/manual-update', [InvoiceController::class, 'manualUpdate'])->name('invoices.manualUpdate');
+    Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
+    Route::post('/invoices/{invoice}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('invoices.retryPayment');
 
-    // Pembayaran (Admin)
-    Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])->name('payments.refresh');
-=======
-    // 📦 Penyewaan (Admin)
-    Route::get('/rentals', [RentalAdminController::class, 'index'])->name('admin.rentals.index');
-    Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('admin.rentals.show');
-    Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('admin.rentals.updateStatus');
-
-    
-
-Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])
-    ->name('admin.payments.refresh');
-    Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])
-    ->name('admin.invoices.updateStatus');
-    Route::post('/admin/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])
-    ->name('admin.payments.manualUpdate');
-
-    Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('admin.laporan.index');
-Route::get('/laporan/cetak', [App\Http\Controllers\Admin\LaporanController::class, 'cetak'])->name('admin.laporan.cetak');
-
-Route::resource('drivers', \App\Http\Controllers\Admin\DriverAdminController::class, [
-    'as' => 'admin'
-]);
->>>>>>> 85b8545aa3bcb1f9c63a84c6181ba87ce03d1d8c
+    // Drivers
+    Route::resource('drivers', DriverAdminController::class);
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');

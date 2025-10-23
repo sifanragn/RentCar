@@ -7,23 +7,22 @@
   </div>
 
   {{-- 💰 Total Pendapatan --}}
-@php
-  $penambahan = $penambahan ?? 0;
-  $totalPendapatan = $totalPendapatan ?? 0;
-@endphp
+  @php
+    $penambahan = $penambahan ?? 0;
+    $totalPendapatan = $totalPendapatan ?? 0;
+  @endphp
 
-<div class="sidebar-stats {{ $penambahan >= 0 ? 'up' : 'down' }}">
-  <p class="stats-label">Total Pendapatan</p>
-  <h4 class="stats-value">Rp{{ number_format($totalPendapatan, 0, ',', '.') }}</h4>
+  <div class="sidebar-stats {{ $penambahan >= 0 ? 'up' : 'down' }}">
+    <p class="stats-label">Total Pendapatan</p>
+    <h4 class="stats-value">Rp{{ number_format($totalPendapatan, 0, ',', '.') }}</h4>
 
-  @if($penambahan != 0)
-    <span class="stats-growth">
-      {{ $penambahan >= 0 ? '+' : '-' }}Rp{{ number_format(abs($penambahan), 0, ',', '.') }}
-      {{ $penambahan >= 0 ? '↑' : '↓' }}
-    </span>
-  @endif
-</div>
-
+    @if($penambahan != 0)
+      <span class="stats-growth">
+        {{ $penambahan >= 0 ? '+' : '-' }}Rp{{ number_format(abs($penambahan), 0, ',', '.') }}
+        {{ $penambahan >= 0 ? '↑' : '↓' }}
+      </span>
+    @endif
+  </div>
 
   <nav>
     {{-- Dashboard --}}
@@ -32,16 +31,29 @@
     </a>
 
     {{-- 🔽 Dropdown Mobil --}}
-    <div class="nav-dropdown {{ request()->routeIs('cars.*') ? 'open' : '' }}">
+    <div class="nav-dropdown {{ request()->routeIs('admin.cars.*') ? 'open' : '' }}">
       <button class="dropdown-toggle">
         <i class="bi bi-car-front"></i>
         <span>Mobil</span>
         <i class="bi bi-chevron-down arrow"></i>
       </button>
       <div class="dropdown-inner">
-        <a href="{{ route('cars.brands') }}">Merek Mobil</a>
-        <a href="{{ route('cars.models') }}">Model Mobil</a>
-        <a href="{{ route('cars.index') }}">Daftar Mobil</a>
+        <a href="{{ route('admin.cars.brands') }}">Merek Mobil</a>
+        <a href="{{ route('admin.cars.models') }}">Model Mobil</a>
+        <a href="{{ route('admin.cars.index') }}">Daftar Mobil</a>
+      </div>
+    </div>
+
+    {{-- 🚗 Drivers --}}
+    <div class="nav-dropdown {{ request()->routeIs('admin.drivers.*') ? 'open' : '' }}">
+      <button class="dropdown-toggle">
+        <i class="bi bi-person-badge"></i>
+        <span>Drivers</span>
+        <i class="bi bi-chevron-down arrow"></i>
+      </button>
+      <div class="dropdown-inner">
+        <a href="{{ route('admin.drivers.index') }}">Daftar Driver</a>
+        <a href="{{ route('admin.drivers.create') }}">Tambah Driver</a>
       </div>
     </div>
 
