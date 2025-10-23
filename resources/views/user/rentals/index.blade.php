@@ -98,6 +98,7 @@ h2 {
 .status.berjalan { background: #d1e7dd; color: #0f5132; }
 .status.selesai { background: #cfe2ff; color: #084298; }
 .status.dibatalkan { background: #f8d7da; color: #842029; }
+.status-ribbon.draft { background: #6c757d; } 
 
 /* ===== BUTTON DETAIL ===== */
 .btn-detail {
@@ -163,29 +164,63 @@ h2 {
     <p class="empty">Belum ada penyewaan mobil yang tercatat.</p>
   @else
     <div class="rentals-container">
-      @foreach($rentals as $rental)
-        <div class="card">
+@foreach($rentals as $rental)
+  <div class="card">
 
-          {{-- Status Ribbon --}}
-          <div class="status-ribbon {{ $rental->status_rental }}">
-            {{ ucfirst($rental->status_rental) }}
+    {{-- Status Ribbon --}}
+    <div class="status-ribbon {{ $rental->status_rental }}">
+      {{ ucfirst($rental->status_rental) }}
+    </div>
+
+    <div class="car-info">
+      <h4>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '' }}</h4>
+      <p><b>Tanggal Sewa:</b> {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d M Y') }}</p>
+      <p><b>Selesai:</b> {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d M Y') }}</p>
+      <p><b>Durasi:</b> {{ $rental->durasi_hari }} hari</p>
+      <p><b>Total:</b> Rp {{ number_format($rental->total_biaya, 0, ',', '.') }}</p>
+
+      {{-- 🚨 Peringatan untuk Draft --}}
+      @if($rental->status_rental === 'draft')
+        @php
+          $expiredAt = \Carbon\Carbon::parse($rental->created_at)->addMinutes(30);
+          $sisaMenit = now()->diffInMinutes($expiredAt, false);
+        @endphp
+
+        @if($sisaMenit > 0)
+          <div style="margin-top:10px;padding:10px;background:#fff3cd;color:#664d03;border-radius:8px;font-size:13px;">
+            ⚠️ Penyewaan ini belum dikonfirmasi. Akan otomatis dihapus dalam 
+            <b><span class="cd" data-s="{{ $sisaMenit * 60 }}"></span></b>.
           </div>
-
-          <div class="car-info">
-            <h4>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '' }}</h4>
-            <p><b>Tanggal Sewa:</b> {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d M Y') }}</p>
-            <p><b>Selesai:</b> {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d M Y') }}</p>
-            <p><b>Durasi:</b> {{ $rental->durasi_hari }} hari</p>
-            <p><b>Total:</b> Rp {{ number_format($rental->total_biaya, 0, ',', '.') }}</p>
+        @else
+          <div style="margin-top:10px;padding:10px;background:#f8d7da;color:#842029;border-radius:8px;font-size:13px;">
+            ❌ Penyewaan ini telah kadaluarsa dan akan segera dihapus.
           </div>
+        @endif
+      @endif
+    </div>
 
-          <a href="{{ route('user.rentals.show', $rental->rental_id) }}" class="btn-detail">
-            Lihat Detail
-          </a>
-        </div>
-      @endforeach
+    <a href="{{ route('user.rentals.show', $rental->rental_id) }}" class="btn-detail">
+      Lihat Detail
+    </a>
+  </div>
+@endforeach
     </div>
   @endif
+  
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const toMMSS = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  document.querySelectorAll('.cd').forEach(el=>{
+    let s = +el.dataset.s;
+    if(s<=0){ el.textContent='00:00'; return; }
+    const tick=()=>{
+      el.textContent=toMMSS(s);
+      if(s>0) setTimeout(()=>{ s--; tick(); },1000);
+    };
+    tick();
+  });
+});
+</script>
 
   @include('partials.bottom-navbar')
 @endsection
