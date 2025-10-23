@@ -20,18 +20,21 @@ class Payment extends Model
     ];
 
     protected $fillable = [
-        'rental_id',
-        'gateway',
-        'metode',
-        'payment_type',
-        'total_bayar',
-        'status_pembayaran',
-        'gateway_reference',
-        'payment_token',
-        'callback_status',
-        'tanggal_bayar',
-        'expired_at'
-    ];
+    'no_transaksi',
+    'rental_id',
+    'gateway',
+    'metode',
+    'payment_type',
+    'total_bayar',
+    'status_pembayaran',
+    'gateway_reference',
+    'merchant_order_id',
+    'payment_token',
+    'callback_status',
+    'tanggal_bayar',
+    'expired_at',
+];
+
 
     /*
     |--------------------------------------------------------------------------

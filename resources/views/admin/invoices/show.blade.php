@@ -156,6 +156,20 @@
         <button type="submit" class="btn btn-danger">❌ Batalkan Invoice</button>
       </form>
     @endif
+    {{-- 🔧 Update Status Manual --}}
+<div class="manual-update-wrapper">
+  <form method="POST" action="{{ route('admin.invoices.manualUpdate', $invoice->invoice_id) }}" class="form-inline">
+    @csrf
+    <label for="status_invoice">🔧 Update Status Invoice:</label>
+    <select name="status_invoice" id="status_invoice" required>
+      <option value="">-- Pilih Status --</option>
+      <option value="pending" {{ $invoice->status_invoice === 'pending' ? 'selected' : '' }}>Pending</option>
+      <option value="selesai" {{ $invoice->status_invoice === 'selesai' ? 'selected' : '' }}>Selesai</option>
+      <option value="dibatalkan" {{ $invoice->status_invoice === 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+    </select>
+    <button type="submit" class="btn btn-secondary">💾 Simpan</button>
+  </form>
+</div>
 
     <div class="back-wrapper">
       <a href="{{ route('admin.invoices.index') }}" class="btn-back">← Kembali ke Daftar</a>

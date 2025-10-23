@@ -262,7 +262,6 @@ body.light-mode .link-blue {
 /* warna per status */
 .dropdown-menu li[data-value="berjalan"] { color: #2ed573; }
 .dropdown-menu li[data-value="selesai"] { color: #23c8ff; }
-.dropdown-menu li[data-value="dikembalikan"] { color: #cbb279; }
 .dropdown-menu li[data-value="dibatalkan"] { color: #ff6b6b; }
 
 /* animasi */

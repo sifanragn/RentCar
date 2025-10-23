@@ -187,3 +187,34 @@ body.light-mode .form-inline select {
   color: #111;
   border-color: #ddd;
 }
+
+.manual-update-wrapper {
+  margin-top: 25px;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+.manual-update-wrapper label {
+  font-weight: 600;
+  margin-right: 8px;
+  color: #333;
+}
+.manual-update-wrapper select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+}
+.manual-update-wrapper button {
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: .2s;
+}
+.manual-update-wrapper button:hover {
+  background: #5a6268;
+}

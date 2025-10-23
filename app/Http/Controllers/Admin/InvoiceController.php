@@ -37,40 +37,22 @@ class InvoiceController extends Controller
     }
 
     /**
-     * 🔁 Buat ulang pembayaran charge (retry tagihan denda)
+     * 💾 Simpan invoice baru + otomatis buat payment charge
      */
-    public function retryPayment(Request $request, $invoice_id)
+    public function store(Request $request, $rental_id)
     {
-        $invoice = Invoice::with(['rental.user', 'rental.car'])->findOrFail($invoice_id);
+        $request->validate([
+            'status_pengembalian' => 'required|in:tepat_waktu,telat,rusak',
+            'denda'               => 'nullable|numeric|min:0',
+            'catatan'             => 'nullable|string|max:255',
+            'payment_method'      => 'nullable|string',
+        ]);
 
-        if (!$invoice->rental) {
-            return back()->with('error', '❌ Rental tidak ditemukan untuk invoice ini.');
-        }
+        $rental = Rental::with(['car.brand', 'user'])->findOrFail($rental_id);
+        $denda = (float) $request->input('denda', 0);
+        $total_tagihan = (float) $rental->total_biaya;
+        $total_akhir = $total_tagihan + $denda;
 
-        // Pastikan invoice sudah dibatalkan
-        if (!in_array(strtolower($invoice->status_invoice), ['cancel', 'dibatalkan'])) {
-            return back()->with('info', '⚠️ Invoice ini belum dibatalkan, tidak perlu dikirim ulang.');
-        }
-
-        // Pastikan ada denda
-        if ($invoice->denda_tambahan <= 0) {
-            return back()->with('error', 'Invoice ini tidak memiliki denda tambahan untuk ditagihkan ulang.');
-        }
-
-        // Cek apakah masih ada payment charge pending
-        $existing = Payment::where('rental_id', $invoice->rental_id)
-            ->where('payment_type', 'charge')
-            ->where('status_pembayaran', 'pending')
-            ->first();
-
-        if ($existing) {
-            return redirect()
-                ->route('admin.invoices.show', $invoice->invoice_id)
-                ->with('info', 'Masih ada tagihan charge yang menunggu. Gunakan link yang sudah ada.');
-        }
-
-        // Pilihan metode pembayaran dari admin (default qris)
-        $pilihan = strtolower($request->input('payment_method', 'qris'));
         $mapMetode = [
             'qris' => 'QRIS',
             'bca'  => 'BC',
@@ -78,216 +60,138 @@ class InvoiceController extends Controller
             'bni'  => 'N2',
             'mandiri' => 'M2',
         ];
+        $pilihan = strtolower($request->input('payment_method', 'qris'));
         $duitkuMethod = $mapMetode[$pilihan] ?? 'QRIS';
 
-        // Tandai payment lama kalau masih pending → failed
-        if ($invoice->rental->payment && $invoice->rental->payment->status_pembayaran === 'pending') {
-            $invoice->rental->payment->update([
-                'status_pembayaran' => 'failed',
-                'callback_status'   => 'expired',
-            ]);
-        }
-
-        // 🟢 Buat payment baru khusus charge denda
-        $payment = Payment::create([
-            'rental_id'         => $invoice->rental_id,
-            'gateway'           => 'Duitku',
-            'metode'            => $pilihan,
-            'payment_type'      => 'charge',
-            'total_bayar'       => $invoice->denda_tambahan,
-            'status_pembayaran' => 'pending',
-            'gateway_reference' => 'CHARGE-RETRY-' . strtoupper(uniqid()),
-            'payment_token'     => 'WAIT-' . strtoupper(uniqid()),
-            'callback_status'   => 'waiting',
-            'tanggal_bayar'     => now(),
-            'expired_at'        => now()->addMinutes(30),
-        ]);
-
-        // Ubah invoice jadi pending lagi
-        $invoice->update(['status_invoice' => 'pending']);
-
-        // 🚀 Request baru ke Duitku
+        DB::beginTransaction();
         try {
-            $this->createDuitkuPayment(
-                $invoice->rental,
-                $payment,
-                $invoice->invoice_id,
-                $duitkuMethod,
-                $invoice->denda_tambahan,
-                'RETRY'
-            );
-        } catch (\Throwable $e) {
-            Log::error('❌ Gagal membuat pembayaran ulang denda: ' . $e->getMessage());
-        }
+            // 🧾 Buat invoice baru
+            $invoice = Invoice::create([
+                'rental_id'           => $rental->rental_id,
+                'tanggal_cetak'       => now(),
+                'total_tagihan'       => $total_tagihan,
+                'status_pengembalian' => $request->status_pengembalian,
+                'denda_tambahan'      => $denda,
+                'total_akhir'         => $total_akhir,
+                'status_invoice'      => 'pending',
+                'admin_id'            => Auth::id(),
+            ]);
 
-        return redirect()
-            ->route('admin.invoices.show', $invoice->invoice_id)
-            ->with('success', '✅ Pembayaran ulang untuk denda berhasil dibuat dengan metode ' . strtoupper($pilihan) . '.');
-    }
+            $amountToCharge = $denda > 0 ? $denda : $total_akhir;
+            $merchantOrderId = 'INV' . $rental->rental_id . '-' . strtoupper(uniqid());
 
-    /**
-     * 💾 Simpan invoice baru + otomatis buat payment charge (asynchronous)
-     */
-public function store(Request $request, $rental_id)
-{
-    $request->validate([
-        'status_pengembalian' => 'required|in:tepat_waktu,telat,rusak',
-        'denda'               => 'nullable|numeric|min:0',
-        'catatan'             => 'nullable|string|max:255',
-        'payment_method'      => 'nullable|string',
-    ]);
-
-    $rental = Rental::with(['car.brand', 'user'])->findOrFail($rental_id);
-    $denda = (float) $request->input('denda', 0);
-    $total_tagihan = (float) $rental->total_biaya;
-    $total_akhir = $total_tagihan + $denda;
-
-    $mapMetode = [
-        'qris' => 'QRIS',
-        'bca'  => 'BC',
-        'bri'  => 'BR',
-        'bni'  => 'N2',
-        'mandiri' => 'M2',
-    ];
-    $pilihan = strtolower($request->input('payment_method', 'qris'));
-    $duitkuMethod = $mapMetode[$pilihan] ?? 'QRIS';
-
-    $payment = null;
-
-    DB::beginTransaction();
-    try {
-        // 🧾 Buat invoice baru
-        $invoice = Invoice::create([
-            'rental_id'           => $rental->rental_id,
-            'tanggal_cetak'       => now(),
-            'total_tagihan'       => $total_tagihan,
-            'status_pengembalian' => $request->status_pengembalian,
-            'denda_tambahan'      => $denda,
-            'total_akhir'         => $total_akhir,
-            'status_invoice'      => 'pending',
-            'admin_id'            => Auth::id(),
-        ]);
-
-        // 💰 Kalau ada denda → buat payment charge
-        if ($denda > 0) {
+            // 💳 Buat payment
             $payment = Payment::create([
+                'no_transaksi'      => 'INV' . str_pad($rental->rental_id, 4, '0', STR_PAD_LEFT),
                 'rental_id'         => $rental->rental_id,
                 'gateway'           => 'Duitku',
                 'metode'            => $pilihan,
-                'payment_type'      => 'charge',
-                'total_bayar'       => $denda,
+                'payment_type'      => $denda > 0 ? 'charge' : 'invoice',
+                'total_bayar'       => $amountToCharge,
                 'status_pembayaran' => 'pending',
-                'gateway_reference' => 'CHARGE-' . strtoupper(uniqid()),
+                'gateway_reference' => 'INV-' . strtoupper(uniqid()),
+                'merchant_order_id' => $merchantOrderId,
                 'payment_token'     => 'WAIT-' . strtoupper(uniqid()),
                 'callback_status'   => 'waiting',
                 'tanggal_bayar'     => now(),
                 'expired_at'        => now()->addMinutes(30),
             ]);
 
-            // 🔹 Kirim ke Duitku
-            $this->createDuitkuPayment($rental, $payment, $invoice->invoice_id, $duitkuMethod, $denda, 'CHARGE');
+            // 🚗 Update status rental → selesai (karena sudah dikembalikan)
+            $rental->update(['status_rental' => 'selesai']);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            dd('❌ ERROR ASLI:', $e->getMessage(), $e->getTraceAsString());
         }
 
-        // 🚗 Update status rental
-        $rental->update([
-            'status_rental' => $denda > 0 ? 'selesai_dengan_charge' : 'selesai',
-        ]);
+        // 🚀 Kirim ke Duitku
+        try {
+            $this->createDuitkuPayment($rental, $payment, $invoice->invoice_id, $duitkuMethod, $total_akhir, 'INVOICE');
+        } catch (\Throwable $e) {
+            Log::error('❌ Gagal kirim ke Duitku: ' . $e->getMessage());
+        }
 
-        DB::commit();
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        Log::error('❌ Error saat buat invoice: ' . $e->getMessage());
-        return back()->with('error', 'Gagal membuat invoice: ' . $e->getMessage());
+        return redirect()->route('admin.invoices.show', $invoice->invoice_id)
+            ->with('success', '✅ Invoice & pembayaran berhasil dibuat!');
     }
-
-    return redirect()->route('admin.invoices.show', $invoice->invoice_id)
-        ->with('success', '✅ Invoice berhasil dibuat' . ($denda > 0 ? ' dengan tagihan denda.' : '.'));
-}
 
     /**
      * 🔍 Detail invoice + auto refresh status pembayaran jika masih pending
      */
     public function show($invoice_id)
-{
-    $invoice = Invoice::with([
-        'rental.car.brand',
-        'rental.user',
-        'admin',
-        'rental.payments', // ✅ pakai plural, bukan rental.payment
-    ])->findOrFail($invoice_id);
+    {
+        $invoice = Invoice::with([
+            'rental.car.brand',
+            'rental.user',
+            'admin',
+            'rental.payments',
+        ])->findOrFail($invoice_id);
 
-    // 🔄 Auto-refresh payment yang pending (utama & charge)
-    foreach ($invoice->rental->payments as $payment) {
-        if ($payment->status_pembayaran === 'pending') {
-            $this->refreshPaymentStatus($payment);
+        foreach ($invoice->rental->payments as $payment) {
+            if ($payment->status_pembayaran === 'pending') {
+                $this->refreshPaymentStatus($payment);
+            }
         }
+
+        $invoice->refresh();
+        return view('admin.invoices.show', compact('invoice'));
     }
-
-    // 🔁 Refresh data invoice biar up to date
-    $invoice->refresh();
-
-    return view('admin.invoices.show', compact('invoice'));
-}
-
 
     /**
      * 🔧 Util: Buat pembayaran di Duitku
      */
     private function createDuitkuPayment($rental, $payment, $invoiceId, $method, $amount, $prefix)
-{
-    $merchantCode = 'DS25394';
-    $apiKey = '06a924ce717ea70f6522e5c51241ccc6';
-    $merchantOrderId = 'INV' . $invoiceId . '-P' . $payment->id; // ✅ lebih aman
-    $amount = (int) $amount; // ✅ wajib integer
-    $signature = md5($merchantCode . $merchantOrderId . $amount . $apiKey);
+    {
+        $merchantCode = 'DS25394';
+        $apiKey = '06a924ce717ea70f6522e5c51241ccc6';
+        $merchantOrderId = $payment->merchant_order_id ?? ('INV' . $invoiceId . '-P' . $payment->id);
+        $amount = (int) $amount;
+        $signature = md5($merchantCode . $merchantOrderId . $amount . $apiKey);
 
-    $payload = [
-        "merchantCode"     => $merchantCode,
-        "paymentAmount"    => $amount,
-        "paymentMethod"    => $method,
-        "merchantOrderId"  => $merchantOrderId,
-        "productDetails"   => "Denda sewa mobil " . ($rental->car->brand->nama_merek ?? ''),
-        "email"            => $rental->user->email,
-        "phoneNumber"      => $rental->user->no_hp ?? '08123456789',
-        "customerVaName"   => $rental->user->nama_lengkap ?? 'Penyewa',
-        "callbackUrl"      => "https://amiyah-mouselike-stably.ngrok-free.dev/api/payment/callback",
-        "returnUrl"        => url('/user/payments'), // ✅ FIXED
-        "signature"        => $signature,
-        "expiryPeriod"     => 30,
-    ];
+        $payload = [
+            "merchantCode"     => $merchantCode,
+            "paymentAmount"    => $amount,
+            "paymentMethod"    => $method,
+            "merchantOrderId"  => $merchantOrderId,
+            "productDetails"   => "Denda sewa mobil " . ($rental->car->brand->nama_merek ?? ''),
+            "email"            => $rental->user->email,
+            "phoneNumber"      => $rental->user->no_hp ?? '08123456789',
+            "customerVaName"   => $rental->user->nama_lengkap ?? 'Penyewa',
+            "callbackUrl"      => "https://amiyah-mouselike-stably.ngrok-free.dev/api/payment/callback",
+            "returnUrl"        => url('/user/payments'),
+            "signature"        => $signature,
+            "expiryPeriod"     => 30,
+        ];
 
-    $response = Http::post('https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry', $payload);
-    $result = $response->json();
+        $response = Http::post('https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry', $payload);
+        $result = $response->json();
 
-    Log::info('💬 Duitku Response (Invoice)', [
-        'payload' => $payload,
-        'result' => $result,
-    ]);
-
-    if (!empty($result['paymentUrl'])) {
-        $payment->update([
-            'gateway_reference' => $result['reference'] ?? $payment->gateway_reference,
-            'payment_token'     => $result['paymentUrl'],
-            'expired_at'        => now()->addMinutes(30),
-        ]);
-        Log::info('✅ Duitku charge berhasil dibuat.', ['url' => $result['paymentUrl']]);
-    } else {
-        $payment->update([
-            'status_pembayaran' => 'failed',
-            'callback_status'   => 'error',
-        ]);
-        Log::error('❌ Gagal buat pembayaran charge di Duitku.', ['response' => $result]);
+        if (!empty($result['paymentUrl'])) {
+            $payment->update([
+                'gateway_reference' => $result['reference'] ?? $payment->gateway_reference,
+                'payment_token'     => $result['paymentUrl'],
+                'expired_at'        => now()->addMinutes(30),
+            ]);
+            Log::info('✅ Duitku charge berhasil dibuat.', ['url' => $result['paymentUrl']]);
+        } else {
+            $payment->update([
+                'gateway_reference' => $result['reference'] ?? $payment->gateway_reference,
+                'payment_token'     => $result['paymentUrl'],
+                'merchant_order_id' => $merchantOrderId,
+                'expired_at'        => now()->addMinutes(30),
+            ]);
+            Log::error('❌ Gagal buat pembayaran charge di Duitku.', ['response' => $result]);
+        }
     }
-}
 
     /**
      * 🔄 Auto-refresh status pembayaran jika pending
      */
     private function refreshPaymentStatus($payment)
     {
-        if (!$payment || $payment->status_pembayaran !== 'pending') {
-            return;
-        }
+        if (!$payment || $payment->status_pembayaran !== 'pending') return;
 
         try {
             $merchantCode = 'DS25394';
@@ -321,50 +225,77 @@ public function store(Request $request, $rental_id)
     /**
      * ❌ Batalkan invoice + sinkron rental & payment
      */
-   public function cancel($id)
-{
-    $invoice = Invoice::with(['rental.payments'])->findOrFail($id);
+    public function cancel($id)
+    {
+        $invoice = Invoice::with(['rental.payments'])->findOrFail($id);
 
-    DB::beginTransaction();
-    try {
-        // Update status invoice
-        $invoice->update(['status_invoice' => 'cancel']);
+        DB::beginTransaction();
+        try {
+            $invoice->update(['status_invoice' => 'dibatalkan']);
 
-        // Update status rental (jika ada)
-        if ($invoice->rental) {
-            foreach ($invoice->rental->payments as $payment) {
-                // Batalkan hanya payment charge yang masih pending
-                if ($payment->payment_type === 'charge' && $payment->status_pembayaran === 'pending') {
-                    $payment->update([
-                        'status_pembayaran' => 'failed',
-                        'callback_status'   => 'cancelled',
-                    ]);
+            if ($invoice->rental) {
+                $rental = $invoice->rental;
+
+                $paymentUtama = $rental->payments()
+                    ->where('payment_type', 'main')
+                    ->where('status_pembayaran', 'success')
+                    ->first();
+
+                if ($paymentUtama) {
+                    $rental->update(['status_rental' => 'selesai']);
+                } else {
+                    $rental->update(['status_rental' => 'dibatalkan']);
+                }
+
+                foreach ($rental->payments as $payment) {
+                    if ($payment->status_pembayaran === 'pending') {
+                        $payment->update([
+                            'status_pembayaran' => 'failed',
+                            'callback_status'   => 'cancelled',
+                        ]);
+                    }
                 }
             }
 
-            // Jangan ubah payment main yang sudah sukses
-            $invoice->rental->update(['status_rental' => 'selesai']);
+            DB::commit();
+            return back()->with('success', '✅ Invoice dibatalkan dan pembayaran denda ikut dibatalkan.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('❌ Gagal batalkan invoice: ' . $e->getMessage());
+            return back()->with('error', 'Gagal membatalkan invoice: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 🛠 Update manual status invoice dari admin
+     */
+    public function manualUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'status_invoice' => 'required|in:pending,selesai,dibatalkan',
+        ]);
+
+        $invoice = Invoice::with('rental.payments')->findOrFail($id);
+        $invoice->update(['status_invoice' => $request->status_invoice]);
+
+        if ($invoice->rental) {
+            $invoice->rental->update([
+                'status_rental' => match ($request->status_invoice) {
+                    'selesai' => 'selesai',
+                    'dibatalkan' => 'dibatalkan',
+                    default => $invoice->rental->status_rental,
+                },
+            ]);
+
+            foreach ($invoice->rental->payments as $p) {
+                if ($request->status_invoice === 'selesai') {
+                    $p->update(['status_pembayaran' => 'success', 'callback_status' => 'done']);
+                } elseif ($request->status_invoice === 'dibatalkan') {
+                    $p->update(['status_pembayaran' => 'failed', 'callback_status' => 'cancelled']);
+                }
+            }
         }
 
-        DB::commit();
-        return back()->with('success', '✅ Invoice dibatalkan dan pembayaran denda ikut dibatalkan.');
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        \Log::error('❌ Gagal batalkan invoice: ' . $e->getMessage());
-        return back()->with('error', 'Gagal membatalkan invoice: ' . $e->getMessage());
+        return back()->with('success', '✅ Status invoice berhasil diperbarui dan disinkron ke pembayaran.');
     }
-}
- public function manualUpdate(Request $request, $id)
-{
-    $request->validate([
-        'status_pembayaran' => 'required|in:pending,success,failed',
-    ]);
-
-    $payment = Payment::findOrFail($id);
-    $payment->update(['status_pembayaran' => $request->status_pembayaran]);
-
-    return back()->with('success', 'Status pembayaran berhasil diperbarui secara manual.');
-}
-
-
 }

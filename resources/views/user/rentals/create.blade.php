@@ -12,9 +12,7 @@ body {
   padding: 0;
 }
 
-.container-wrapper {
-  padding: 15px;
-}
+.container-wrapper { padding: 15px; }
 
 /* ===== Card ===== */
 .card { 
@@ -28,32 +26,12 @@ body {
   margin-bottom: 15px;
 }
 
-h2 {
-  font-size: 22px;
-  color: #333;
-  margin-bottom: 15px;
-  text-align: center;
-  font-weight: 700;
-}
-
-h3 {
-  font-size: 20px;
-  color: #444;
-  margin-bottom: 6px;
-}
-
-p {
-  color: #555;
-  font-size: 15px;
-}
+h2 { font-size: 22px; color: #333; margin-bottom: 15px; text-align: center; font-weight: 700; }
+h3 { font-size: 20px; color: #444; margin-bottom: 6px; }
+p  { color: #555; font-size: 15px; }
 
 /* ===== Label & Input ===== */
-label {
-  display: block;
-  margin-top: 12px;
-  font-weight: 550;
-  color: #333;
-}
+label { display: block; margin-top: 12px; font-weight: 550; color: #333; }
 
 input, select, textarea {
   width: 100%;
@@ -85,26 +63,14 @@ button {
   transition: all 0.3s ease;
   width: 100%;
 }
-
-button:hover {
-  background: #5AC260;
-  transform: scale(1.03);
-}
+button:hover { background: #5AC260; transform: scale(1.03); }
 
 /* ===== Back Link ===== */
 .back-link {
-  color: #000;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 15px;
-  display: inline-block;
-  margin-bottom: 10px;
+  color: #000; text-decoration: none; font-weight: 500;
+  font-size: 15px; display: inline-block; margin-bottom: 10px;
 }
-
-.back-link:hover {
-  color: #000;
-  text-decoration: underline;
-}
+.back-link:hover { color: #000; text-decoration: underline; }
 
 /* ===== Info Box ===== */
 .price-box {
@@ -137,7 +103,6 @@ button:hover {
   align-items: center;
   z-index: 9999;
 }
-
 #popup-menunggu .popup-content {
   background: #fff;
   border-radius: 20px;
@@ -148,7 +113,6 @@ button:hover {
   animation: fadeIn 0.4s ease;
   box-shadow: 0 6px 18px rgba(0,0,0,0.15);
 }
-
 #popup-menunggu button.close-btn {
   position: absolute;
   top: 10px;
@@ -160,10 +124,7 @@ button:hover {
   color: #888;
   transition: 0.2s;
 }
-
-#popup-menunggu button.close-btn:hover {
-  color: #333;
-}
+#popup-menunggu button.close-btn:hover { color: #333; }
 
 /* ===== Popup Alert ===== */
 #popup-alert {
@@ -185,16 +146,8 @@ button:hover {
   box-shadow: 0 6px 18px rgba(0,0,0,0.15);
   animation: fadeIn 0.3s ease;
 }
-#popup-alert h3 {
-  margin-bottom: 10px;
-  color: #333;
-  font-size: 18px;
-}
-#popup-alert p {
-  font-size: 15px;
-  color: #444;
-  margin-bottom: 20px;
-}
+#popup-alert h3 { margin-bottom: 10px; color: #333; font-size: 18px; }
+#popup-alert p { font-size: 15px; color: #444; margin-bottom: 20px; }
 #popup-alert button {
   background: #70D972;
   border: none;
@@ -225,13 +178,13 @@ button:hover {
     $redirectBack = url()->previous();
   @endphp
 
-  {{-- Link Kembali --}}
-<a href="{{ route('user.cars.show', $car->car_id) }}" class="back-link" aria-label="Kembali">
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
-    <line x1="19" y1="12" x2="5" y2="12"/>
-    <polyline points="12 19 5 12 12 5"/>
-  </svg>
-</a>
+  {{-- 🔙 Link Kembali --}}
+  <a href="{{ route('user.cars.show', $car->car_id) }}" class="back-link" aria-label="Kembali">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+  </a>
 
   <div class="card">
     <h2>Form Penyewaan Mobil</h2>
@@ -286,16 +239,19 @@ button:hover {
   @include('partials.bottom-navbar')
 </div>
 
-{{-- Popup Menunggu Verifikasi --}}
+{{-- 🕐 Popup Menunggu Verifikasi --}}
 <div id="popup-menunggu">
   <div class="popup-content">
     <button class="close-btn" id="close-popup">✖</button>
-    <h3>Menunggu Verifikasi</h3>
-    <p>Dokumen Anda sedang diperiksa oleh admin. Silakan tunggu sampai proses verifikasi selesai sebelum melanjutkan penyewaan.</p>
+    <img src="{{ asset('img/waiting-illustration.png') }}" alt="Menunggu" style="width:150px; margin:10px auto;">
+    <h3>Belum Diverifikasi</h3>
+    <p>Anda harus mengunggah KTP & KK terlebih dahulu sebelum melanjutkan penyewaan.</p>
+    <a href="{{ route('user.verifikasi.index') }}"
+       style="display:inline-block;background:#0d6efd;color:#fff;padding:10px 14px;border-radius:6px;text-decoration:none;">Unggah Sekarang</a>
   </div>
 </div>
 
-{{-- Popup Alert --}}
+{{-- ⚠️ Popup Alert --}}
 <div id="popup-alert">
   <div class="popup-box">
     <h3>Peringatan</h3>
@@ -319,11 +275,9 @@ window.addEventListener('load', function() {
   const hasDocuments = {{ $hasDocuments ? 'true' : 'false' }};
   const isVerified   = {{ $isVerified ? 'true' : 'false' }};
 
-  // ===== Modal Alert Function =====
   function showAlert(message, redirectUrl = null) {
     const popupAlert = document.getElementById('popup-alert');
-    const msg = document.getElementById('alert-message');
-    msg.innerHTML = message;
+    document.getElementById('alert-message').innerHTML = message;
     popupAlert.style.display = 'flex';
     document.getElementById('alert-ok').onclick = () => {
       popupAlert.style.display = 'none';
@@ -331,52 +285,33 @@ window.addEventListener('load', function() {
     };
   }
 
-  // ===== BATASI TANGGAL (minimal hari ini & minimal 24 jam sewa) =====
+  // BATASI TANGGAL (minimal hari ini & minimal 24 jam sewa)
   const now = new Date();
   const localNow = now.toISOString().slice(0, 16);
   mulai.min = localNow;
   selesai.min = localNow;
 
-  // Ketika user ubah tanggal mulai
   mulai.addEventListener('change', function () {
-    if (!mulai.value) return;
-
     const startDate = new Date(mulai.value);
-    const minEndDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000); // +24 jam
-    const formattedMin = minEndDate.toISOString().slice(0, 16);
-    selesai.min = formattedMin;
-
-    // Reset kalau tanggal selesai lebih kecil dari minimum
-    if (selesai.value && new Date(selesai.value) < minEndDate) {
-      selesai.value = '';
-    }
+    const minEndDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
+    selesai.min = minEndDate.toISOString().slice(0, 16);
+    if (selesai.value && new Date(selesai.value) < minEndDate) selesai.value = '';
   });
 
-  // ===== TOGGLE PICKUP =====
+  // TOGGLE PICKUP
   function togglePickup() {
     const val = metodePickup.value;
-    if (val === 'ambil_sendiri') {
-      lokasiRental.style.display = 'block';
-      alamatUser.style.display = 'none';
-      hasilOngkir.textContent = '';
-    } else if (val === 'pickup_alamat') {
-      lokasiRental.style.display = 'none';
-      alamatUser.style.display = 'block';
-    } else {
-      lokasiRental.style.display = 'none';
-      alamatUser.style.display = 'none';
-      hasilOngkir.textContent = '';
-    }
+    lokasiRental.style.display = val === 'ambil_sendiri' ? 'block' : 'none';
+    alamatUser.style.display   = val === 'pickup_alamat' ? 'block' : 'none';
+    if (val !== 'pickup_alamat') hasilOngkir.textContent = '';
   }
-
   togglePickup();
   metodePickup.addEventListener('change', togglePickup);
 
-  // ===== CEK ONGKIR =====
+  // CEK ONGKIR
   cekOngkirBtn.addEventListener('click', async () => {
     const alamat = document.getElementById('alamat').value.trim();
     if (!alamat) return showAlert('Masukkan alamat Anda terlebih dahulu.');
-
     hasilOngkir.textContent = 'Menghitung jarak...';
     try {
       const res = await fetch("{{ route('user.pickup.distance') }}", {
@@ -394,44 +329,28 @@ window.addEventListener('load', function() {
     }
   });
 
-  // ===== VALIDASI JAM SEWA (antara 08:00–22:00) =====
+  // VALIDASI JAM SEWA (antara 08:00–22:00)
   function validateTimeRange(input) {
-    if (!input.value) return;
     const hour = new Date(input.value).getHours();
     if (hour < 8 || hour > 22) {
       showAlert('⚠️ Jam penyewaan hanya diperbolehkan antara 08:00 hingga 22:00 WIB.');
       input.value = '';
     }
   }
-
   mulai.addEventListener('change', e => validateTimeRange(e.target));
   selesai.addEventListener('change', e => validateTimeRange(e.target));
 
-  // ===== SUBMIT FORM =====
+  // SUBMIT FORM
   form.addEventListener('submit', function(e) {
     e.preventDefault();
+    if (!hasDocuments) return showAlert('Silakan unggah KTP & KK terlebih dahulu.', "{{ route('user.verifikasi.index') }}");
+    if (!isVerified) return popup.style.display = 'flex';
 
-    if (!hasDocuments) {
-      return showAlert('Silakan unggah KTP & KK terlebih dahulu.', "{{ route('user.verifikasi.index') }}");
-    }
-
-    if (!isVerified) {
-      return popup.style.display = 'flex';
-    }
-
-    const mulaiVal = mulai.value;
-    const selesaiVal = selesai.value;
-
-    // Validasi tanggal selesai minimal 24 jam setelah mulai
-    const startDate = new Date(mulaiVal);
+    const startDate = new Date(mulai.value);
+    const endDate = new Date(selesai.value);
     const minEndDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
-    if (new Date(selesaiVal) < minEndDate) {
-      return showAlert('Durasi sewa minimal 24 jam dari waktu mulai.');
-    }
-
-    if (new Date(mulaiVal) >= new Date(selesaiVal)) {
-      return showAlert('Tanggal selesai harus lebih besar dari tanggal mulai.');
-    }
+    if (endDate < minEndDate) return showAlert('Durasi sewa minimal 24 jam dari waktu mulai.');
+    if (startDate >= endDate) return showAlert('Tanggal selesai harus lebih besar dari tanggal mulai.');
 
     fetch(this.action, {
       method: 'POST',
@@ -440,21 +359,13 @@ window.addEventListener('load', function() {
       credentials: 'same-origin'
     })
     .then(res => res.json())
-    .then(data => {
-      if (data.success && data.redirect_url) {
-        window.location.href = data.redirect_url;
-      } else {
-        showAlert(data.message || 'Terjadi kesalahan.');
-      }
-    })
+    .then(data => data.success && data.redirect_url 
+      ? window.location.href = data.redirect_url
+      : showAlert(data.message || 'Terjadi kesalahan.'))
     .catch(() => showAlert('Terjadi kesalahan koneksi.'));
   });
 
-  // ===== TUTUP POPUP VERIFIKASI =====
-  document.getElementById('close-popup').addEventListener('click', () => {
-    popup.style.display = 'none';
-  });
+  document.getElementById('close-popup').addEventListener('click', () => popup.style.display = 'none');
 });
 </script>
-
 @endsection

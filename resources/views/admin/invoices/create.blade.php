@@ -40,7 +40,6 @@
         <label>Status Pengembalian <span class="required">*</span></label>
         <select name="status_pengembalian" required>
           <option value="">-- Pilih Status --</option>
-          <option value="tepat_waktu">Tepat Waktu</option>
           <option value="telat">Telat</option>
           <option value="rusak">Rusak</option>
         </select>

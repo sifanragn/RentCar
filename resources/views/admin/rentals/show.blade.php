@@ -42,7 +42,7 @@
       <div><span class="status {{ strtolower($rental->status_rental) }}">{{ ucfirst($rental->status_rental) }}</span></div>
     </div>
 
-    @if(in_array($rental->status_rental, ['selesai', 'dikembalikan']))
+    @if(in_array($rental->status_rental, ['selesai']))
       <hr>
       <a href="{{ route('admin.invoices.create', $rental->rental_id) }}" class="btn btn-green">
         🧾 Buat Invoice
@@ -114,7 +114,6 @@
       <ul class="dropdown-menu" id="statusOptions">
         <li data-value="berjalan"><span class="icon">🚗</span> <span class="label">Sedang Berjalan</span></li>
         <li data-value="selesai"><span class="icon">✅</span> <span class="label">Selesai</span></li>
-        <li data-value="dikembalikan"><span class="icon">📦</span> <span class="label">Dikembalikan</span></li>
         <li data-value="dibatalkan"><span class="icon">❌</span> <span class="label">Dibatalkan</span></li>
       </ul>
       <input type="hidden" name="status_rental" id="statusInput" required>

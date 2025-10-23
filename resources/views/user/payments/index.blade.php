@@ -3,7 +3,7 @@
 @section('title', 'Daftar Pembayaran')
 
 @section('styles')
-<style>
+  <style>
   /* ===== Container utama ===== */
   .container {
     max-width: 900px;
@@ -348,6 +348,23 @@
       @foreach($payments as $p)
         @php
           $exp = now()->diffInSeconds(\Carbon\Carbon::parse($p->created_at)->addMinutes(30), false);
+          // tambahan dari branch lain: logika jenis kuitansi dan warna
+          $jenis = match(true) {
+              $p->payment_type === 'main' => 'Kuitansi Utama',
+              $p->payment_type === 'charge' => 'Kuitansi Tambahan',
+              $p->payment_type === 'invoice' && $p->rental->invoice?->denda_tambahan > 0 
+                  && $p->total_bayar == $p->rental->invoice->denda_tambahan => 'Kuitansi Tambahan',
+              $p->payment_type === 'final' => 'Kuitansi Akhir',
+              default => ucfirst($p->payment_type),
+          };
+          $warna = match(true) {
+              $p->payment_type === 'main' => '#0d6efd',
+              $p->payment_type === 'charge' 
+                  || ($p->payment_type === 'invoice' && $p->rental->invoice?->denda_tambahan > 0 && $p->total_bayar == $p->rental->invoice->denda_tambahan)
+                  => '#e67e22',
+              $p->payment_type === 'final' => '#28a745',
+              default => '#555',
+          };
         @endphp
 
         <div class="payment-card" data-payment-id="{{ $p->payment_id }}">
@@ -358,8 +375,7 @@
             <div class="car-info">
               <div class="car-name">{{ $p->rental->car->brand->nama_merek ?? '-' }} {{ $p->rental->car->model ?? '-' }}</div>
               <div class="car-meta">
-                {{ $p->payment_type === 'main' ? 'Kuitansi Utama' : ($p->payment_type === 'charge' ? 'Kuitansi Tambahan' : 'Kuitansi Akhir') }}
-                • {{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y H:i') }}
+                {{ $jenis }} • {{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y H:i') }}
               </div>
             </div>
           </div>
@@ -377,8 +393,16 @@
             </div>
 
             @if($p->status_pembayaran === 'pending')
-              <a class="btn" href="{{ route('user.payments.continue', $p->payment_id) }}">Bayar</a>
-              @if($p->payment_type !== 'charge')
+              <a class="btn" href="{{ route('user.payments.continue', $p->payment_id) }}">Lanjutkan</a>
+
+              @php
+                $isKuitansiTambahan = $p->payment_type === 'charge' ||
+                  ($p->payment_type === 'invoice' &&
+                  $p->rental->invoice?->denda_tambahan > 0 &&
+                  $p->total_bayar == $p->rental->invoice->denda_tambahan);
+              @endphp
+
+              @if(!$isKuitansiTambahan)
                 <form action="{{ route('user.payments.cancelSoft', $p->payment_id) }}" method="POST" onsubmit="return confirm('Batalkan pembayaran ini?')">
                   @csrf
                   <button type="submit" class="btn btn-danger">Batalkan</button>
@@ -472,7 +496,7 @@ function openReceipt(id){
 function closeModal(){ document.getElementById('receiptModal').style.display='none'; }
 
 function downloadPDF(id){
-fetch(`/user/payments/${id}/download`)
+  fetch(`/user/payments/${id}/download`)
     .then(async res=>{
       if(!res.ok){ const err=await res.json().catch(()=>({})); throw new Error(err.error||'Gagal mengunduh PDF.'); }
       return res.blob();

@@ -186,5 +186,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!select.contains(e.target)) select.classList.remove('active');
   });
 });
+/* ===================================================
+   NAV DROPDOWN (Mobil)
+=================================================== */
+document.querySelectorAll('.nav-dropdown .dropdown-toggle').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const parent = btn.closest('.nav-dropdown');
+    parent.classList.toggle('open');
+  });
+});
+
+document.addEventListener('click', e => {
+  document.querySelectorAll('.nav-dropdown.open').forEach(opened => {
+    if (!opened.contains(e.target)) opened.classList.remove('open');
+  });
+});
 
 });

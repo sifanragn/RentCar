@@ -119,7 +119,17 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 });
 
 // ==================== ADMIN AREA ==================== //
-Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(function () {
+Route::prefix('admin')->middleware('admin.session')->group(function () {
+ Route::post('/invoices/{invoice}/retry-payment', [App\Http\Controllers\Admin\InvoiceController::class, 'retryPayment'])
+    ->name('admin.invoices.retryPayment');
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('admin.invoices.index');
+    Route::get('/invoices/{rental_id}/create', [InvoiceController::class, 'create'])->name('admin.invoices.create');
+    Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('admin.invoices.store');
+    Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('admin.invoices.show');
+    Route::post('/admin/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
+    Route::post('/invoices/{id}/manual-update', [App\Http\Controllers\Admin\InvoiceController::class, 'manualUpdate'])
+    ->name('admin.invoices.manualUpdate');
+
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard.index');
 
