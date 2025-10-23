@@ -155,6 +155,7 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
     Route::get('/users/{id}', [UserVerificationController::class, 'show'])->name('users.show');
     Route::post('/users/{id}/verify', [UserVerificationController::class, 'verify'])->name('users.verify');
 
+<<<<<<< HEAD
     // Penyewaan
     Route::get('/rentals', [RentalAdminController::class, 'index'])->name('rentals.index');
     Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('rentals.show');
@@ -172,6 +173,28 @@ Route::prefix('admin')->middleware('admin.session')->group(function () {
 
     // Pembayaran (Admin)
     Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])->name('payments.refresh');
+=======
+    // 📦 Penyewaan (Admin)
+    Route::get('/rentals', [RentalAdminController::class, 'index'])->name('admin.rentals.index');
+    Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('admin.rentals.show');
+    Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('admin.rentals.updateStatus');
+
+    
+
+Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])
+    ->name('admin.payments.refresh');
+    Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])
+    ->name('admin.invoices.updateStatus');
+    Route::post('/admin/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])
+    ->name('admin.payments.manualUpdate');
+
+    Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('admin.laporan.index');
+Route::get('/laporan/cetak', [App\Http\Controllers\Admin\LaporanController::class, 'cetak'])->name('admin.laporan.cetak');
+
+Route::resource('drivers', \App\Http\Controllers\Admin\DriverAdminController::class, [
+    'as' => 'admin'
+]);
+>>>>>>> 85b8545aa3bcb1f9c63a84c6181ba87ce03d1d8c
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');

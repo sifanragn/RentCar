@@ -6,7 +6,7 @@
 <style>
   .card-payment {
     max-width: 500px;
-    margin: 15px auto 30px; /* bagian atas diperkecil dari 30px ke 15px */
+    margin: 15px auto 30px;
     background: white;
     border-radius: 15px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.5);
@@ -27,6 +27,7 @@
   .step-title {
     font-size: 16px;
     margin-bottom: 12px;
+    font-weight: 600;
   }
 
   .methods {
@@ -120,7 +121,7 @@
 @endsection
 
 @section('content')
-  {{-- Link Kembali --}}
+  {{-- 🔙 Link Kembali --}}
   <a href="{{ route('user.cars.index') }}" class="back-link" aria-label="Kembali">
     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
       <line x1="19" y1="12" x2="5" y2="12"/>
@@ -131,7 +132,7 @@
   <div class="card-payment">
     <h2>Detail Pembayaran</h2>
 
-    {{-- STEP 1 --}}
+    {{-- ========================== STEP 1: METODE PEMBAYARAN ========================== --}}
     <div class="step-section">
       <h3 class="step-title">1. Pilih Metode Pembayaran</h3>
       <div class="methods" id="methods">
@@ -153,7 +154,7 @@
       </div>
     </div>
 
-    {{-- STEP 2 --}}
+    {{-- ========================== STEP 2: INFORMASI PENYEWA ========================== --}}
     <div class="step-section">
       <h3 class="step-title">2. Informasi Penyewa</h3>
       <table>
@@ -162,30 +163,82 @@
       </table>
     </div>
 
-    {{-- STEP 3 --}}
+    {{-- ========================== STEP 3: DETAIL PESANAN ========================== --}}
     <div class="step-section">
       <h3 class="step-title">3. Detail Pesanan</h3>
       <table>
-        <tr><td>Nama Mobil</td><td>: {{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '-' }}</td></tr>
-        <tr><td>Tahun Mobil</td><td>: {{ $rental->car->tahun ?? '-' }}</td></tr>
-        <tr><td>Harga Sewa</td><td>: Rp{{ number_format($rental->car->harga_sewa_per_hari ?? 0, 0, ',', '.') }} / Hari</td></tr>
-        <tr><td>Kapasitas</td><td>: {{ $rental->car->capacity->jumlah_orang ?? '-' }} Orang</td></tr>
-        <tr><td>Durasi</td><td>: {{ $rental->durasi_hari }} Hari</td></tr>
-        <tr><td>Pakai Sopir</td><td>: {{ $rental->driver === 'ya' ? 'Ya - Rp '.number_format(150000 * $rental->durasi_hari,0,',','.') : 'Tidak' }}</td></tr>
-        <tr><td>Dari - Sampai</td><td>: {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m/Y') }} s.d {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m/Y') }}</td></tr>
-        <tr><td>Total Biaya Sewa</td><td>: <b>Rp{{ number_format($rental->total_biaya,0,',','.') }}</b></td></tr>
-        <tr><td>Lokasi Pengambilan</td><td>: {{ $rental->car->lokasi ?? 'Lokasi belum ditentukan' }}</td></tr>
+        <tr>
+          <td>Nama Mobil</td>
+          <td>: {{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '-' }}</td>
+        </tr>
+        <tr>
+          <td>Tahun Mobil</td>
+          <td>: {{ $rental->car->tahun ?? '-' }}</td>
+        </tr>
+        <tr>
+          <td>Harga Sewa</td>
+          <td>: Rp{{ number_format($rental->car->harga_sewa_per_hari ?? 0, 0, ',', '.') }} / Hari</td>
+        </tr>
+        <tr>
+          <td>Kapasitas</td>
+          <td>: {{ $rental->car->capacity->jumlah_orang ?? '-' }} Orang</td>
+        </tr>
+        <tr>
+          <td>Durasi</td>
+          <td>: {{ $rental->durasi_hari }} Hari</td>
+        </tr>
+
+        @php
+          $driverTarif = 0;
+          if ($rental->driver && $rental->driver === 'ya' && $rental->driverData) {
+              $driverTarif = $rental->driverData->harga_per_hari * $rental->durasi_hari;
+          }
+          $mobilTarif = ($rental->car->harga_sewa_per_hari ?? 0) * $rental->durasi_hari;
+          $totalKeseluruhan = $mobilTarif + $driverTarif;
+        @endphp
+
+        <tr>
+          <td>Pakai Sopir</td>
+          <td>
+            @if($rental->driver === 'ya' && $rental->driverData)
+              Ya — {{ $rental->driverData->nama }}
+              (Rp{{ number_format($rental->driverData->harga_per_hari,0,',','.') }}/hari × {{ $rental->durasi_hari }} hari =
+              <b>Rp{{ number_format($driverTarif,0,',','.') }}</b>)
+            @else
+              Tidak
+            @endif
+          </td>
+        </tr>
+
+        <tr>
+          <td>Dari - Sampai</td>
+          <td>: {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m/Y') }} s.d {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m/Y') }}</td>
+        </tr>
+
+        <tr>
+          <td>Total Biaya Sewa</td>
+          <td>
+            : <b>Rp{{ number_format($totalKeseluruhan,0,',','.') }}</b>
+            @if($driverTarif > 0)
+              <br><small>(Mobil: Rp{{ number_format($mobilTarif,0,',','.') }} + Sopir: Rp{{ number_format($driverTarif,0,',','.') }})</small>
+            @endif
+          </td>
+        </tr>
+        <tr>
+          <td>Lokasi Pengambilan</td>
+          <td>: {{ $rental->car->lokasi ?? 'Lokasi belum ditentukan' }}</td>
+        </tr>
       </table>
     </div>
 
-    {{-- STEP 4 --}}
+    {{-- ========================== STEP 4: PEMBAYARAN ========================== --}}
     <form action="{{ route('user.payments.start', $rental->rental_id) }}" method="POST" id="startForm">
       @csrf
       <input type="hidden" name="metode" id="metode" value="qris">
       <button type="submit" class="btn" id="payBtn">Lanjut ke Pembayaran Duitku</button>
     </form>
 
-    {{-- STEP 5: Kembali --}}
+    {{-- ========================== STEP 5: KEMBALI ========================== --}}
     <a href="{{ route('user.rentals.create', $rental->car->car_id) }}" class="btn-kembali">← Kembali</a>
   </div>
 

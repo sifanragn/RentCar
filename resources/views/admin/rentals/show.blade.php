@@ -39,8 +39,36 @@
       <div><strong>Rp{{ number_format($rental->total_biaya, 0, ',', '.') }}</strong></div>
 
       <label>Status Sewa:</label>
-      <div><span class="status {{ strtolower($rental->status_rental) }}">{{ ucfirst($rental->status_rental) }}</span></div>
-    </div>
+<div>
+  <span class="status {{ strtolower($rental->status_rental) }}">
+    {{ ucfirst($rental->status_rental) }}
+  </span>
+
+  {{-- ⏳ Countdown kalau draft --}}
+  @if($rental->status_rental === 'draft' && $rental->expired_at)
+    <div id="countdown" style="margin-top:5px; color:#f39c12; font-weight:600;"></div>
+    <script>
+      const expireTime = new Date("{{ \Carbon\Carbon::parse($rental->expired_at)->format('Y-m-d H:i:s') }}").getTime();
+
+      const countdownInterval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = expireTime - now;
+
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          document.getElementById("countdown").innerHTML = "❌ Draft telah kedaluwarsa";
+          return;
+        }
+
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("countdown").innerHTML = 
+          `⏳ Draft akan kedaluwarsa dalam <b>${minutes} menit ${seconds} detik</b>`;
+      }, 1000);
+    </script>
+  @endif
+</div>
 
     @if(in_array($rental->status_rental, ['selesai']))
       <hr>
