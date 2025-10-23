@@ -41,6 +41,28 @@
         <input type="email" id="email" name="email" value="{{ old('email') }}">
       </div>
 
+      {{-- Foto SIM --}}
+<div class="form-group">
+  <label for="foto_sim">Foto SIM</label>
+  <input type="file" id="foto_sim" name="foto_sim" accept="image/*" onchange="previewSim(this)">
+  <img id="previewSim" src="#" alt="Preview SIM" style="display:none;margin-top:10px;width:110px;height:110px;border-radius:10px;object-fit:cover;">
+</div>
+
+{{-- Foto KTP --}}
+<div class="form-group">
+  <label for="foto_ktp">Foto KTP</label>
+  <input type="file" id="foto_ktp" name="foto_ktp" accept="image/*" onchange="previewKtp(this)">
+  <img id="previewKtp" src="#" alt="Preview KTP" style="display:none;margin-top:10px;width:110px;height:110px;border-radius:10px;object-fit:cover;">
+</div>
+
+{{-- Foto KK --}}
+<div class="form-group">
+  <label for="foto_kk">Foto KK</label>
+  <input type="file" id="foto_kk" name="foto_kk" accept="image/*" onchange="previewKk(this)">
+  <img id="previewKk" src="#" alt="Preview KK" style="display:none;margin-top:10px;width:110px;height:110px;border-radius:10px;object-fit:cover;">
+</div>
+
+
       {{-- Nomor SIM --}}
       <div class="form-group">
         <label for="sim_number">Nomor SIM</label>
@@ -63,16 +85,6 @@
       <div class="form-group">
         <label for="pengalaman">Pengalaman</label>
         <input type="text" id="pengalaman" name="pengalaman" value="{{ old('pengalaman') }}" placeholder="Contoh: 5 tahun">
-      </div>
-
-      {{-- Status Verifikasi --}}
-      <div class="form-group">
-        <label for="status_verifikasi">Status Verifikasi</label>
-        <select id="status_verifikasi" name="status_verifikasi">
-          <option value="menunggu" {{ old('status_verifikasi')=='menunggu'?'selected':'' }}>Menunggu</option>
-          <option value="disetujui" {{ old('status_verifikasi')=='disetujui'?'selected':'' }}>Disetujui</option>
-          <option value="ditolak" {{ old('status_verifikasi')=='ditolak'?'selected':'' }}>Ditolak</option>
-        </select>
       </div>
 
       {{-- Status --}}
@@ -176,6 +188,25 @@
 <script>
 function previewFoto(input) {
   const preview = document.getElementById('previewFoto');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    preview.style.display = 'none';
+  }
+}
+</script>
+<script>
+function previewSim(input){ previewImage(input, 'previewSim'); }
+function previewKtp(input){ previewImage(input, 'previewKtp'); }
+function previewKk(input){ previewImage(input, 'previewKk'); }
+
+function previewImage(input, previewId) {
+  const preview = document.getElementById(previewId);
   if (input.files && input.files[0]) {
     const reader = new FileReader();
     reader.onload = e => {

@@ -17,6 +17,9 @@ class Driver extends Model
         'no_hp',
         'email',
         'foto',
+        'foto_sim',
+        'foto_ktp',
+        'foto_kk',
         'sim_number',
         'status_verifikasi',
         'status',
@@ -27,54 +30,64 @@ class Driver extends Model
         'created_by',
     ];
 
-    /**
-     * 🔗 Relasi ke Rental
-     * Setiap driver bisa punya banyak rental.
-     */
+    /* ============================
+       🔗 RELASI
+    ============================ */
     public function rentals()
     {
         return $this->hasMany(Rental::class, 'driver_id');
     }
 
-    /**
-     * 🧑‍💻 Relasi ke admin yang menambahkan driver (opsional)
-     */
     public function admin()
     {
         return $this->belongsTo(Admin::class, 'created_by');
     }
 
-    /**
-     * 📸 Accessor: Ambil URL foto lengkap
-     */
+    /* ============================
+       📸 ACCESSOR URL FOTO
+    ============================ */
     public function getFotoUrlAttribute()
     {
-        if (!$this->foto) {
-            return asset('images/default-driver.png'); // fallback foto default
-        }
-        return asset('storage/' . $this->foto);
+        return $this->foto
+            ? asset('storage/' . $this->foto)
+            : asset('images/default-driver.png');
     }
 
-    /**
-     * 🔍 Scope: hanya driver aktif & terverifikasi
-     */
+    public function getFotoSimUrlAttribute()
+    {
+        return $this->foto_sim
+            ? asset('storage/' . $this->foto_sim)
+            : null;
+    }
+
+    public function getFotoKtpUrlAttribute()
+    {
+        return $this->foto_ktp
+            ? asset('storage/' . $this->foto_ktp)
+            : null;
+    }
+
+    public function getFotoKkUrlAttribute()
+    {
+        return $this->foto_kk
+            ? asset('storage/' . $this->foto_kk)
+            : null;
+    }
+
+    /* ============================
+       💰 FORMAT & SCOPE
+    ============================ */
     public function scopeAktif($query)
     {
         return $query->where('status', 'aktif')
                      ->where('status_verifikasi', 'disetujui');
     }
 
-    /**
-     * 💰 Format harga otomatis (contoh: Rp150.000)
-     */
     public function getHargaFormattedAttribute()
     {
         return 'Rp' . number_format($this->harga_per_hari, 0, ',', '.');
     }
 
-    /**
-     * 🕓 Format pengalaman (misal: "5 tahun" atau "-")
-     */
     public function getPengalamanFormattedAttribute()
     {
         return $this->pengalaman ?: '-';
