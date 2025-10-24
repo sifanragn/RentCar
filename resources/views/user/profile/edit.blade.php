@@ -123,15 +123,6 @@ form {
   background: #a31522;
 }
 
-/* ===== ALERT ===== */
-.alert {
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 14.2px;
-  line-height: 1.5;
-  margin: 0 auto 18px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
 
 /* ===== PASSWORD FIELD ===== */
 .input-group {
@@ -172,7 +163,7 @@ form {
   color: #b30000;
 }
 
-/* ===== MODAL CUSTOM (versi rapi & elegan) ===== */
+/* ===== MODAL CUSTOM ===== */
 .modal-content {
   border-radius: 16px;
   border: none;
@@ -180,44 +171,37 @@ form {
   overflow: hidden;
   animation: fadeIn 0.25s ease-in-out;
 }
-
 .modal-header {
   border-bottom: none;
   text-align: center;
   justify-content: center;
   padding-top: 20px;
 }
-
 .modal-header .modal-title {
   font-weight: 700;
   color: #1f2937;
   font-size: 18px;
 }
-
 .modal-body {
   padding: 1.8rem 1.6rem 1.4rem;
   text-align: center;
 }
-
 .modal-body div {
   font-size: 36px;
   margin-bottom: 10px;
 }
-
 .modal-body p {
   font-weight: 500;
   color: #111;
   font-size: 15px;
   margin-bottom: 6px;
 }
-
 .modal-body small {
   display: block;
   color: #6b7280;
   font-size: 13.5px;
   line-height: 1.4;
 }
-
 .modal-footer {
   border-top: none;
   display: flex;
@@ -226,8 +210,6 @@ form {
   gap: 14px;
   padding-bottom: 22px;
 }
-
-/* Tombol sejajar dan proporsional */
 .modal-footer .btn {
   display: inline-flex;
   align-items: center;
@@ -239,44 +221,27 @@ form {
   font-size: 14.2px;
   transition: 0.25s ease;
 }
-
 .modal-footer .btn-outline-secondary {
   border-color: #d1d5db;
   color: #374151;
   background: #fff;
 }
-
 .modal-footer .btn-outline-secondary:hover {
   background: #f3f4f6;
   color: #111827;
 }
-
 .modal-footer .btn-danger {
   background: #dc2626;
   color: #fff;
   border: none;
   margin-bottom: 0 !important;
 }
-
 .modal-footer .btn-danger:hover {
   background: #b91c1c;
 }
 
-/* Responsif */
-@media (max-width: 576px) {
-  .modal-dialog {
-    max-width: 92%;
-    margin: auto;
-  }
-  .modal-footer {
-    flex-direction: row;
-    gap: 10px;
-  }
-  .modal-footer .btn {
-    flex: 1;
-    height: 40px;
-    font-size: 13.5px;
-  }
+form .btn-primary.w-100.small-btn {
+  margin-bottom: 30px; /* 🔹 geser ke atas sedikit, aman di semua layar */
 }
 
 /* ===== BACK LINK ===== */
@@ -284,6 +249,20 @@ form {
   vertical-align: middle;
   margin-left: -155px;
 }
+
+/* ===== Geser Alert di Halaman Profile Sedikit ke Kiri ===== */
+.verification-alert-wrapper {
+  position: relative;
+  left: -15px; /* 🔹 geser dikit ke kiri */
+}
+
+@media (max-width: 480px) {
+  .verification-alert-wrapper {
+    left: -8px; /* 🔹 biar gak kepotong di HP */
+  }
+}
+
+
 </style>
 @endsection
 
@@ -319,30 +298,9 @@ form {
     <div class="text-muted">{{ '@' . $user->username }}</div>
   </div>
 
-  {{-- STATUS VERIFIKASI --}}
-  @if($user->status_verifikasi === 'belum_upload')
-    <div class="alert alert-warning text-center">
-      ⚠️ Anda belum melakukan verifikasi.<br>
-      <a href="{{ route('user.verifikasi.index') }}">Verifikasi sekarang</a>
-    </div>
-  @elseif($user->status_verifikasi === 'menunggu')
-    <div class="alert alert-info text-center">⏳ Dokumen Anda sedang menunggu konfirmasi admin.</div>
-  @elseif($user->status_verifikasi === 'ditolak')
-    <div class="alert alert-danger text-center">
-      ❌ Verifikasi gagal. Silakan unggah ulang dokumen Anda.<br>
-      <a href="{{ route('user.verifikasi.index') }}">Verifikasi ulang</a>
-    </div>
-  @elseif($user->status_verifikasi === 'disetujui')
-    <div class="alert alert-success text-center">✅ Akun Anda telah terverifikasi!</div>
-  @endif
-
-  {{-- FLASH MESSAGE --}}
-  @if(session('success'))
-    <div class="alert alert-success text-center">{{ session('success') }}</div>
-  @endif
-  @if(session('error'))
-    <div class="alert alert-danger text-center">{{ session('error') }}</div>
-  @endif
+<div class="verification-alert-wrapper">
+  @include('partials.verification-alert')
+</div>
 
   {{-- FORM FIELD --}}
   <div class="mb-3">
@@ -451,31 +409,28 @@ form {
         return;
       }
 
-      // Tampilkan status loading
       verifyMsg.textContent = "⏳ Memverifikasi...";
       verifyMsg.style.color = "#555";
 
       try {
-const res = await fetch("{{ route('user.profile.verifyPassword') }}", {
+        const res = await fetch("{{ route('user.profile.verifyPassword') }}", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "X-CSRF-TOKEN": "{{ csrf_token() }}"
           },
-          body: JSON.stringify({ current_password: oldPw }) // ✅ field cocok dgn controller
+          body: JSON.stringify({ current_password: oldPw })
         });
 
         const data = await res.json();
 
         if (data.success) {
-          // ✅ Password benar
           verifyMsg.textContent = "✅ Password lama benar.";
           verifyMsg.style.color = "#008000";
           pwSection.style.display = "block";
           pwSection.style.opacity = "0";
           setTimeout(() => pwSection.style.opacity = "1", 50);
         } else {
-          // ❌ Password salah
           verifyMsg.textContent = "❌ Password lama salah.";
           verifyMsg.style.color = "#c00";
           pwSection.style.display = "none";

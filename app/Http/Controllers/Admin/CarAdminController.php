@@ -33,19 +33,20 @@ class CarAdminController extends Controller
         return view('admin.mobil.create', compact('brands', 'capacities'));
     }
 
-  public function show($id)
+public function show($id)
 {
-    $car = Car::with(['brand', 'capacity'])->findOrFail($id);
+    $car = Car::with(['brand', 'capacity', 'photos'])->findOrFail($id);
+
+    // Debug sementara
+    // dd($car->photos->pluck('path'));
 
     if (request()->ajax()) {
-        // hanya ubah cara return → jadi `response()->view`
-        // biar modal bisa baca HTML parsial dengan benar
         return response()->view('admin.mobil.partials.show', compact('car'));
     }
 
-    // fallback tetap sama persis
     return view('admin.mobil.show', compact('car'));
 }
+
 
 public function store(Request $request)
 {
@@ -98,7 +99,7 @@ public function store(Request $request)
         }
     }
 
-    return redirect()->route('cars.index')->with('success', 'Mobil dan foto tambahan berhasil ditambahkan.');
+    return redirect()->route('admin.cars.index')->with('success', 'Mobil dan foto tambahan berhasil ditambahkan.');
 }
 
 
@@ -154,7 +155,7 @@ public function store(Request $request)
             'foto' => $path,
         ]);
 
-        return redirect()->route('cars.index')->with('success', 'Data mobil berhasil diperbarui.');
+        return redirect()->route('admin.cars.index')->with('success', 'Data mobil berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -221,7 +222,7 @@ public function store(Request $request)
         'logo' => $logo, // ✅ sekarang disimpan ke DB
     ]);
 
-    return redirect()->route('cars.brands')->with('success', 'Merek berhasil ditambahkan!');
+    return redirect()->route('admin.cars.brands')->with('success', 'Merek berhasil ditambahkan!');
 }
 
 
@@ -250,7 +251,7 @@ public function brandDestroy($id)
 
     $brand->delete();
 
-    return redirect()->route('cars.brands')->with('success', 'Merek dan semua mobil terkait berhasil dihapus!');
+    return redirect()->route('admin.cars.brands')->with('success', 'Merek dan semua mobil terkait berhasil dihapus!');
 }
 
 
@@ -275,7 +276,7 @@ public function brandDestroy($id)
             'nama_model' => $request->nama_model
         ]);
 
-        return redirect()->route('cars.models')->with('success', 'Model berhasil ditambahkan!');
+        return redirect()->route('admin.cars.models')->with('success', 'Model berhasil ditambahkan!');
     }
 
     // ====================== API UNTUK DROPDOWN ============================

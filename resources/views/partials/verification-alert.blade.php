@@ -36,6 +36,12 @@
   color: #0c5460;
 }
 
+/* ❌ Warna untuk gagal verifikasi */
+.alert-danger {
+  background: #f8d7da; /* merah lembut */
+  color: #842029; /* teks merah gelap */
+  border: 1px solid #f5c2c7; /* outline senada */
+}
 </style>
 
 {{-- ✅ Alert dinamis sesuai status verifikasi --}}
@@ -55,5 +61,11 @@
       ⏳ Dokumen kamu sedang dalam proses verifikasi. Mohon tunggu konfirmasi admin.
     </div>
 
+  {{-- ❌ Verifikasi gagal --}}
+  @elseif($status === 'ditolak')
+    <div class="alert alert-danger">
+      ❌ Verifikasi gagal. Silakan unggah ulang dokumen kamu.<br>
+      <a href="{{ route('user.verifikasi.index') }}">Verifikasi ulang</a>.
+    </div>
   @endif
 @endif
