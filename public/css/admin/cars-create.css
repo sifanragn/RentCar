@@ -403,3 +403,73 @@ body.light-mode .upload-content p { color: #374151; }
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+.options-list {
+  display: none;
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+  width: 100%;
+  z-index: 100;
+}
+
+.options-list.show {
+  display: block;
+}
+
+.options-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.options-list li:hover {
+  background: #f0f0f0;
+}
+
+.options-list img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* === COLOR PICKER FIELD === */
+.color-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.color-input-wrapper input[type="color"] {
+  width: 45px;
+  height: 45px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.color-input-wrapper input[type="text"] {
+  width: 110px;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.color-preview {
+  width: 35px;
+  height: 35px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: transparent;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}

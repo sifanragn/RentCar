@@ -21,27 +21,32 @@
 
   <div class="form-grid">
 
-    {{-- Merek Mobil --}}
-    <div class="form-group">
-  <label for="brand">Merek Mobil</label>
-  <div class="custom-select-wrapper" id="brandSelect">
-    <div class="selected-option">
-      <span class="selected-text">-- Pilih Merek --</span>
-      <i class="arrow"></i>
+    {{-- ✅ CUSTOM DROPDOWN DENGAN LOGO --}}
+<div class="form-group">
+  <label for="brand_input">Pilih Merek</label>
+
+  {{-- Input hidden untuk kirim brand_id ke backend --}}
+  <input type="hidden" name="brand_id" id="brand_input" required>
+
+  {{-- Custom dropdown container --}}
+  <div class="custom-select-brand" id="brandDropdown">
+    <div class="selected-option" id="selectedBrand">
+      <span class="placeholder">-- Pilih Merek --</span>
+      <i class="bi bi-chevron-down"></i>
     </div>
-    <ul class="options-list">
+    <ul class="options-list" id="brandOptions">
       @foreach($brands as $brand)
-        <li data-value="{{ $brand->id }}">
-          <img src="{{ asset('storage/brand_logos/' . strtolower($brand->nama_merek) . '.png') }}" alt="{{ $brand->nama_merek }}">
-          <span>{{ ucfirst($brand->nama_merek) }}</span>
+        <li data-id="{{ $brand->brand_id }}">
+          @if($brand->logo)
+            <img src="{{ asset('img/brand_logos/' . $brand->logo) }}" alt="{{ $brand->nama_merek }}">
+          @endif
+          <span>{{ $brand->nama_merek }}</span>
         </li>
       @endforeach
     </ul>
   </div>
-
-  {{-- hidden input agar tetap bisa dikirim ke backend --}}
-  <input type="hidden" name="brand_id" id="brandInput">
 </div>
+
 
     {{-- Model Mobil --}}
     <div class="form-group">
@@ -60,9 +65,22 @@
     </div>
 
     <div class="form-group">
-      <label>Warna</label>
-      <input type="text" name="warna" value="{{ old('warna') }}" required>
-    </div>
+  <label>Warna Mobil</label>
+  <div class="color-input-wrapper">
+    <input type="color" id="colorPicker" value="#445677">
+    <input 
+      type="text" 
+      name="warna" 
+      id="colorCode" 
+      value="{{ old('warna', '#445677') }}" 
+      maxlength="7"
+      required
+    >
+    <div class="color-preview" id="colorPreview"></div>
+  </div>
+  <small class="hint-text">Pilih atau ketik warna (contoh: <code>#ff6600</code>)</small>
+</div>
+
 
     <div class="form-group">
       <label>Tipe Transmisi</label>
@@ -106,10 +124,22 @@
       <input type="number" name="kilometer" value="{{ old('kilometer') }}" required>
     </div>
 
-    <div class="form-group">
-      <label>Kapasitas Tangki (Liter)</label>
-      <input type="number" name="liter_tangki" value="{{ old('liter_tangki') }}" required>
-    </div>
+    {{-- KAPASITAS TANGKI (OTOMATIS TERISI BERDASARKAN MEREK) --}}
+<div class="form-group">
+  <label for="liter_tangki">Kapasitas Tangki (Liter)</label>
+  <input 
+    type="number" 
+    name="liter_tangki" 
+    id="liter_tangki" 
+    value="{{ old('liter_tangki') }}" 
+    placeholder="Masukkan kapasitas tangki"
+    required
+  >
+  <small class="hint-text" style="color:#666;">
+    Otomatis terisi sesuai merek mobil, bisa disesuaikan manual.
+  </small>
+</div>
+
 
     <div class="form-group form-wide">
       <label>Deskripsi</label>
@@ -299,6 +329,140 @@ document.addEventListener('click', function (e) {
 document.addEventListener('DOMContentLoaded', () => {
   setupUploadBox('mainUploadBox', 'foto', 'preview-main', false);
   setupUploadBox('galleryUploadBox', 'gallery', 'preview-container', true);
+});
+</script>
+<script>
+  // ===========================
+  // 🔹 CUSTOM DROPDOWN BRAND MOBIL (UL + LOGO) + AUTO ISI KAPASITAS TANGKI
+  // ===========================
+  document.addEventListener("DOMContentLoaded", () => {
+    const brandDropdown = document.getElementById("brandDropdown");
+    const selectedBrand = document.getElementById("selectedBrand");
+    const brandOptions = document.getElementById("brandOptions");
+    const brandInput = document.getElementById("brand_input");
+    const modelSelect = document.getElementById("model");
+    const tankInput = document.getElementById("liter_tangki"); // input kapasitas tangki
+
+    // Default kapasitas tangki (liter) per merek
+    const defaultTankCapacities = {
+  "Toyota": 45,
+  "Honda": 42,
+  "Mitsubishi": 60,
+  "Daihatsu": 40,
+  "Suzuki": 43,
+  "Nissan": 55,
+  "Hyundai": 50,
+  "Kia": 48,
+  "Wuling": 52,
+  "Mazda": 47,
+  "BMW": 65,
+  "Mercedes": 70,
+  "Porsche": 64,   // ✅ tambahkan merek baru
+  "Lamborghini": 85,
+  "Ferrari": 78
+};
+
+    // 🔸 Buka/Tutup dropdown
+    selectedBrand.addEventListener("click", () => {
+      brandOptions.classList.toggle("show");
+    });
+
+    // 🔸 Saat user memilih merek
+    brandOptions.querySelectorAll("li").forEach(option => {
+      option.addEventListener("click", () => {
+        const brandId = option.getAttribute("data-id");
+        const brandName = option.querySelector("span").textContent.trim();
+        const brandImg = option.querySelector("img")?.src;
+
+        // tampilkan nama + logo di atas
+        selectedBrand.innerHTML = `
+          ${brandImg ? `<img src="${brandImg}" style="width:22px;height:22px;object-fit:contain;margin-right:6px;vertical-align:middle;">` : ''}
+          <span>${brandName}</span>
+          <i class="bi bi-chevron-down"></i>
+        `;
+
+        // simpan ke hidden input
+        brandInput.value = brandId;
+
+        // tutup dropdown
+        brandOptions.classList.remove("show");
+
+        // auto-load model mobil
+        loadModelsByBrand(brandId);
+
+        // auto isi kapasitas tangki
+        const kapasitas = defaultTankCapacities[brandName];
+        if (kapasitas) {
+          tankInput.value = kapasitas;
+          tankInput.style.backgroundColor = "#e8f9e9";
+          tankInput.style.transition = "background-color 0.4s ease";
+          setTimeout(() => (tankInput.style.backgroundColor = ""), 1000);
+        } else {
+          tankInput.value = "";
+        }
+      });
+    });
+
+    // 🔸 Klik di luar => tutup dropdown
+    document.addEventListener("click", (e) => {
+      if (!brandDropdown.contains(e.target)) {
+        brandOptions.classList.remove("show");
+      }
+    });
+
+    // 🔹 Fungsi loadModelsByBrand
+    function loadModelsByBrand(brandId) {
+      modelSelect.innerHTML = '<option value="">Memuat...</option>';
+
+      fetch(`/admin/api/models/${brandId}`)
+        .then(res => res.json())
+        .then(data => {
+          modelSelect.innerHTML = '<option value="">-- Pilih Model --</option>';
+          if (data.length === 0) {
+            modelSelect.innerHTML = '<option value="">Tidak ada model tersedia</option>';
+          } else {
+            data.forEach(m => {
+              const opt = document.createElement("option");
+              opt.value = m.nama_model;
+              opt.textContent = m.nama_model;
+              modelSelect.appendChild(opt);
+            });
+          }
+        })
+        .catch(() => {
+          modelSelect.innerHTML = '<option value="">Gagal memuat model</option>';
+        });
+    }
+  });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const picker = document.getElementById("colorPicker");
+  const codeInput = document.getElementById("colorCode");
+  const preview = document.getElementById("colorPreview");
+
+  // update preview warna
+  const updatePreview = (color) => {
+    preview.style.backgroundColor = color;
+    codeInput.value = color;
+  };
+
+  // kalau user pilih pakai color picker
+  picker.addEventListener("input", (e) => {
+    updatePreview(e.target.value);
+  });
+
+  // kalau user ketik manual kode warna
+  codeInput.addEventListener("input", (e) => {
+    const val = e.target.value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+      preview.style.backgroundColor = val;
+      picker.value = val;
+    }
+  });
+
+  // set awal
+  updatePreview(codeInput.value);
 });
 </script>
 
