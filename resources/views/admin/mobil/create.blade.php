@@ -21,20 +21,31 @@
 
   <div class="form-grid">
 
-    {{-- MEREK MOBIL --}}
+    {{-- ✅ PILIH MEREK MOBIL (CUSTOM DROPDOWN DENGAN LOGO) --}}
     <div class="form-group">
-      <label for="brand">Merek Mobil</label>
-      <div class="input-row">
-        <select id="brand" name="brand_id" required>
-          <option value="">-- Pilih Merek --</option>
+      <label for="brand_input">Pilih Merek</label>
+
+      {{-- Hidden input untuk kirim brand_id ke backend --}}
+      <input type="hidden" name="brand_id" id="brand_input" required>
+
+      {{-- Custom dropdown merek --}}
+      <div class="custom-select-brand" id="brandDropdown">
+        <div class="selected-option" id="selectedBrand">
+          <span class="placeholder">-- Pilih Merek --</span>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+        <ul class="options-list" id="brandOptions">
           @foreach($brands as $brand)
-            <option value="{{ $brand->brand_id }}">
-              {{ ucfirst($brand->nama_merek) }}
-            </option>
+            <li data-id="{{ $brand->brand_id }}">
+              @if($brand->logo)
+                <img src="{{ asset('img/brand_logos/' . $brand->logo) }}" alt="{{ $brand->nama_merek }}">
+              @endif
+              <span>{{ $brand->nama_merek }}</span>
+            </li>
           @endforeach
-        </select>
-        <a href="{{ route('admin.cars.brands') }}" class="link-add">+ Kelola Merek</a>
+        </ul>
       </div>
+      <a href="{{ route('admin.cars.brands') }}" class="link-add">+ Kelola Merek</a>
     </div>
 
     {{-- MODEL MOBIL --}}
@@ -48,16 +59,31 @@
       </div>
     </div>
 
+    {{-- TAHUN --}}
     <div class="form-group">
       <label>Tahun</label>
       <input type="number" name="tahun" value="{{ old('tahun') }}" required>
     </div>
 
+    {{-- WARNA DENGAN COLOR PICKER --}}
     <div class="form-group">
-      <label>Warna</label>
-      <input type="text" name="warna" value="{{ old('warna') }}" required>
+      <label>Warna Mobil</label>
+      <div class="color-input-wrapper">
+        <input type="color" id="colorPicker" value="#445677">
+        <input 
+          type="text" 
+          name="warna" 
+          id="colorCode" 
+          value="{{ old('warna', '#445677') }}" 
+          maxlength="7"
+          required
+        >
+        <div class="color-preview" id="colorPreview"></div>
+      </div>
+      <small class="hint-text">Pilih atau ketik warna (contoh: <code>#ff6600</code>)</small>
     </div>
 
+    {{-- TRANSMISI --}}
     <div class="form-group">
       <label>Tipe Transmisi</label>
       <select name="tipe_transmisi" required>
@@ -66,6 +92,7 @@
       </select>
     </div>
 
+    {{-- KAPASITAS ORANG --}}
     <div class="form-group">
       <label>Kapasitas Orang</label>
       <select name="capacity_id" required>
@@ -76,6 +103,7 @@
       </select>
     </div>
 
+    {{-- BAHAN BAKAR --}}
     <div class="form-group">
       <label>Bahan Bakar</label>
       <select name="bahan_bakar" required>
@@ -85,26 +113,41 @@
       </select>
     </div>
 
+    {{-- HARGA --}}
     <div class="form-group">
       <label>Harga Sewa per Hari (Rp)</label>
       <input type="number" step="0.01" name="harga_sewa_per_hari" value="{{ old('harga_sewa_per_hari') }}" required>
     </div>
 
+    {{-- LOKASI --}}
     <div class="form-group">
       <label>Lokasi</label>
       <input type="text" name="lokasi" value="{{ old('lokasi') }}" required>
     </div>
 
+    {{-- KILOMETER --}}
     <div class="form-group">
       <label>Kilometer</label>
       <input type="number" name="kilometer" value="{{ old('kilometer') }}" required>
     </div>
 
+    {{-- KAPASITAS TANGKI --}}
     <div class="form-group">
-      <label>Kapasitas Tangki (Liter)</label>
-      <input type="number" name="liter_tangki" value="{{ old('liter_tangki') }}" required>
+      <label for="liter_tangki">Kapasitas Tangki (Liter)</label>
+      <input 
+        type="number" 
+        name="liter_tangki" 
+        id="liter_tangki" 
+        value="{{ old('liter_tangki') }}" 
+        placeholder="Masukkan kapasitas tangki"
+        required
+      >
+      <small class="hint-text" style="color:#666;">
+        Otomatis terisi sesuai merek mobil, bisa disesuaikan manual.
+      </small>
     </div>
 
+    {{-- DESKRIPSI --}}
     <div class="form-group form-wide">
       <label>Deskripsi</label>
       <textarea name="deskripsi">{{ old('deskripsi') }}</textarea>
@@ -140,52 +183,17 @@
 
   </div>
 
+  {{-- ACTION BUTTONS --}}
   <div class="form-actions">
     <button type="submit" class="btn-submit">Simpan</button>
     <a href="{{ route('admin.cars.index') }}" class="btn-cancel">Kembali</a>
   </div>
 </form>
 
-{{-- SCRIPT --}}
+{{-- ====================== SCRIPTS ====================== --}}
+
 <script>
-// ===========================
-// 🔹 LOAD MODEL BERDASARKAN MEREK
-// ===========================
-function loadModels() {
-  const brandSelect = document.getElementById('brand');
-  const modelSelect = document.getElementById('model');
-  const brandId = brandSelect.value;
-  modelSelect.innerHTML = '<option value="">Memuat...</option>';
-
-  if (!brandId) {
-    modelSelect.innerHTML = '<option value="">-- Pilih Model --</option>';
-    return;
-  }
-
-  fetch(`/admin/api/models/${brandId}`)
-    .then(res => res.json())
-    .then(data => {
-      modelSelect.innerHTML = '<option value="">-- Pilih Model --</option>';
-      if (data.length === 0) {
-        modelSelect.innerHTML = '<option value="">Tidak ada model tersedia</option>';
-      } else {
-        data.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m.id ?? m.model_id ?? m.nama_model;
-          opt.textContent = m.nama_model;
-          modelSelect.appendChild(opt);
-        });
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      modelSelect.innerHTML = '<option value="">Gagal memuat model</option>';
-    });
-}
-
-// ===========================
-// 🔹 PREVIEW & DRAG-DROP UPLOAD
-// ===========================
+// 🔹 DRAG & DROP PREVIEW
 function previewFiles(inputId, previewId) {
   const input = document.getElementById(inputId);
   const container = document.getElementById(previewId);
@@ -258,15 +266,107 @@ function setupUploadBox(boxId, inputId, previewId, multiple = false) {
   input.addEventListener('change', () => previewFiles(inputId, previewId));
 }
 
-// ===========================
-// 🔹 INIT
-// ===========================
+// 🔹 INIT UPLOAD
 document.addEventListener('DOMContentLoaded', () => {
   setupUploadBox('mainUploadBox', 'foto', 'preview-main', false);
   setupUploadBox('galleryUploadBox', 'gallery', 'preview-container', true);
+});
+</script>
 
-  // 🔥 event listener untuk dropdown merek
-  document.getElementById('brand').addEventListener('change', loadModels);
+<script>
+// 🔹 CUSTOM DROPDOWN BRAND + AUTO ISI MODEL & KAPASITAS TANGKI
+document.addEventListener("DOMContentLoaded", () => {
+  const brandDropdown = document.getElementById("brandDropdown");
+  const selectedBrand = document.getElementById("selectedBrand");
+  const brandOptions = document.getElementById("brandOptions");
+  const brandInput = document.getElementById("brand_input");
+  const modelSelect = document.getElementById("model");
+  const tankInput = document.getElementById("liter_tangki");
+
+  const defaultTankCapacities = {
+    "Toyota": 45, "Honda": 42, "Mitsubishi": 60, "Daihatsu": 40,
+    "Suzuki": 43, "Nissan": 55, "Hyundai": 50, "Kia": 48,
+    "Wuling": 52, "Mazda": 47, "BMW": 65, "Mercedes": 70,
+    "Porsche": 64, "Lamborghini": 85, "Ferrari": 78
+  };
+
+  selectedBrand.addEventListener("click", () => {
+    brandOptions.classList.toggle("show");
+  });
+
+  brandOptions.querySelectorAll("li").forEach(option => {
+    option.addEventListener("click", () => {
+      const brandId = option.getAttribute("data-id");
+      const brandName = option.querySelector("span").textContent.trim();
+      const brandImg = option.querySelector("img")?.src;
+
+      selectedBrand.innerHTML = `
+        ${brandImg ? `<img src="${brandImg}" style="width:22px;height:22px;object-fit:contain;margin-right:6px;vertical-align:middle;">` : ''}
+        <span>${brandName}</span>
+        <i class="bi bi-chevron-down"></i>
+      `;
+      brandInput.value = brandId;
+      brandOptions.classList.remove("show");
+      loadModelsByBrand(brandId);
+
+      const kapasitas = defaultTankCapacities[brandName];
+      if (kapasitas) {
+        tankInput.value = kapasitas;
+        tankInput.style.backgroundColor = "#e8f9e9";
+        setTimeout(() => (tankInput.style.backgroundColor = ""), 800);
+      } else {
+        tankInput.value = "";
+      }
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!brandDropdown.contains(e.target)) brandOptions.classList.remove("show");
+  });
+
+  function loadModelsByBrand(brandId) {
+    modelSelect.innerHTML = '<option value="">Memuat...</option>';
+    fetch(`/admin/api/models/${brandId}`)
+      .then(res => res.json())
+      .then(data => {
+        modelSelect.innerHTML = '<option value="">-- Pilih Model --</option>';
+        data.forEach(m => {
+          const opt = document.createElement("option");
+          opt.value = m.nama_model;
+          opt.textContent = m.nama_model;
+          modelSelect.appendChild(opt);
+        });
+      })
+      .catch(() => {
+        modelSelect.innerHTML = '<option value="">Gagal memuat model</option>';
+      });
+  }
+});
+</script>
+
+<script>
+// 🔹 COLOR PICKER
+document.addEventListener("DOMContentLoaded", () => {
+  const picker = document.getElementById("colorPicker");
+  const codeInput = document.getElementById("colorCode");
+  const preview = document.getElementById("colorPreview");
+
+  const updatePreview = (color) => {
+    preview.style.backgroundColor = color;
+    codeInput.value = color;
+  };
+
+  picker.addEventListener("input", (e) => updatePreview(e.target.value));
+
+  codeInput.addEventListener("input", (e) => {
+    const val = e.target.value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+      preview.style.backgroundColor = val;
+      picker.value = val;
+    }
+  });
+
+  updatePreview(codeInput.value);
 });
 </script>
 

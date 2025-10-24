@@ -93,8 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function showCarDetail(car) {
-  console.log("🔍 Klik detail:", car);
-
   const modal = document.getElementById('carDetailModal');
   const body = document.getElementById('carDetailBody');
   const photo = document.getElementById('carPhotoArea');
@@ -102,26 +100,42 @@ function showCarDetail(car) {
   // Fallback foto utama
   const fotoUtama = car.foto ? `/storage/${car.foto}` : '/img/no-image.png';
 
-  // === Header modal ===
+  // === Header modal (tanpa redup dan tidak terpotong) ===
   photo.innerHTML = `
     <div class="main-photo-area">
-      <img id="mainCarPhoto" src="${fotoUtama}" alt="Foto Mobil" class="car-detail-banner">
-    </div>
-    <button class="close" onclick="closeDetailModal()">&times;</button>
-    <div class="modal-header">
-      <h2><i class="bi bi-car-front-fill"></i> Detail Mobil</h2>
+      <img id="mainCarPhoto" src="${fotoUtama}" alt="Foto Mobil" 
+           class="car-detail-banner" style="
+             width: 100%;
+             height: auto;
+             object-fit: contain;
+             background: transparent;
+             display: block;
+             margin: 0 auto;
+           ">
+      <button class="close" onclick="closeDetailModal()">&times;</button>
+      <div class="modal-header">
+        <h2><i class="bi bi-car-front-fill"></i> Detail Mobil</h2>
+      </div>
     </div>
   `;
 
-  // === Galeri foto tambahan ===
-  let galleryHTML = '';
+  // === Kumpulkan semua foto: utama + tambahan ===
+  let allPhotos = [];
+  if (car.foto) allPhotos.push({ path: car.foto });
   if (car.photos && car.photos.length > 0) {
+    allPhotos = allPhotos.concat(car.photos);
+  }
+
+  // === Galeri foto ===
+  let galleryHTML = '';
+  if (allPhotos.length > 0) {
     galleryHTML = `
       <div class="photo-gallery">
-        ${car.photos.map(p => `
-          <img src="/storage/${p.path}" 
-               class="thumb-photo" 
-               onclick="changeMainPhoto('/storage/${p.path}', this)">
+        ${allPhotos.map((p, i) => `
+          <img 
+            src="/storage/${p.path}" 
+            class="thumb-photo ${i === 0 ? 'active' : ''}" 
+            onclick="changeMainPhoto('/storage/${p.path}', this)">
         `).join('')}
       </div>
     `;
@@ -154,6 +168,7 @@ function showCarDetail(car) {
 
   modal.classList.add('active');
 }
+
 
 function changeMainPhoto(src, el) {
   document.getElementById('mainCarPhoto').src = src;
