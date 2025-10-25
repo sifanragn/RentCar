@@ -77,7 +77,7 @@ class InvoiceController extends Controller
                 'admin_id'            => Auth::id(),
             ]);
 
-            $amountToCharge = $denda > 0 ? $denda : $total_akhir;
+            $amountToCharge = $denda;
             $merchantOrderId = 'INV' . $rental->rental_id . '-' . strtoupper(uniqid());
 
             // 💳 Buat payment
@@ -108,7 +108,8 @@ class InvoiceController extends Controller
 
         // 🚀 Kirim ke Duitku
         try {
-            $this->createDuitkuPayment($rental, $payment, $invoice->invoice_id, $duitkuMethod, $total_akhir, 'INVOICE');
+            $this->createDuitkuPayment($rental, $payment, $invoice->invoice_id, $duitkuMethod, $amountToCharge, 'CHARGE');
+
         } catch (\Throwable $e) {
             Log::error('❌ Gagal kirim ke Duitku: ' . $e->getMessage());
         }
