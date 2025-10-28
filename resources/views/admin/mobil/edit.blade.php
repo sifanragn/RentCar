@@ -57,6 +57,7 @@
     {{-- Data Umum Mobil --}}
     <div class="form-group"><label>Tahun</label><input type="number" name="tahun" value="{{ old('tahun', $car->tahun) }}" required></div>
     <div class="form-group"><label>Warna</label><input type="text" name="warna" value="{{ old('warna', $car->warna) }}" required></div>
+
     <div class="form-group">
       <label>Tipe Transmisi</label>
       <select name="tipe_transmisi" required>
@@ -86,7 +87,18 @@
       </select>
     </div>
 
-    <div class="form-group"><label>Harga Sewa per Hari (Rp)</label><input type="number" name="harga_sewa_per_hari" value="{{ old('harga_sewa_per_hari', $car->harga_sewa_per_hari) }}" required></div>
+    {{-- 🔹 Harga Sewa per Jam --}}
+    <div class="form-group">
+      <label>Harga Sewa per Jam (Rp)</label>
+      <input 
+      type="number" 
+      step="0.01" 
+      name="harga_sewa_per_jam" 
+      value="{{ old('harga_sewa_per_jam', $car->harga_sewa_per_jam) }}" 
+      required>
+    <small class="hint-text">Minimal sewa 6 jam.</small>
+    </div>
+
     <div class="form-group"><label>Lokasi</label><input type="text" name="lokasi" value="{{ old('lokasi', $car->lokasi) }}" required></div>
     <div class="form-group"><label>Kilometer</label><input type="number" name="kilometer" value="{{ old('kilometer', $car->kilometer) }}" required></div>
     <div class="form-group"><label>Kapasitas Tangki (Liter)</label><input type="number" name="liter_tangki" value="{{ old('liter_tangki', $car->liter_tangki) }}" required></div>
@@ -155,8 +167,9 @@
   </div>
 </form>
 
-{{-- ===================== SCRIPT ===================== --}}
+{{-- Script tetap sama --}}
 <script>
+ {{-- ===================== SCRIPT ===================== --}}
 // === LOAD MODEL DARI BRAND ===
 function loadModels() {
   const brandSelect = document.getElementById('brand');

@@ -11,7 +11,10 @@
     <tr><td><strong>Transmisi:</strong></td><td>{{ ucfirst($car->tipe_transmisi) }}</td></tr>
     <tr><td><strong>Kapasitas:</strong></td><td>{{ $car->capacity->jumlah_orang ?? '-' }} Orang</td></tr>
     <tr><td><strong>Bahan Bakar:</strong></td><td>{{ ucfirst($car->bahan_bakar) }}</td></tr>
-    <tr><td><strong>Harga Sewa per Hari:</strong></td><td>Rp{{ number_format($car->harga_sewa_per_hari, 0, ',', '.') }}</td></tr>
+    <tr>
+    <td><strong>Harga Sewa per Jam:</strong></td>
+    <td>Rp{{ number_format($car->harga_sewa_per_jam, 0, ',', '.') }}</td>
+    </tr>
     <tr><td><strong>Status:</strong></td><td>{{ ucfirst($car->status) }}</td></tr>
     <tr><td><strong>Lokasi:</strong></td><td>{{ $car->lokasi }}</td></tr>
     <tr><td><strong>Kilometer:</strong></td><td>{{ $car->kilometer }}</td></tr>

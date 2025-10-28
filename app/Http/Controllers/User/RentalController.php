@@ -34,6 +34,7 @@ class RentalController extends Controller
         // 🚘 Ambil data mobil beserta brand-nya
         $car = Car::with('brand')->findOrFail($car_id);
 
+<<<<<<< HEAD
         // 👨‍✈️ Ambil semua driver aktif & sudah diverifikasi
         $drivers = Driver::where('status', 'aktif')
             ->where('status_verifikasi', 'disetujui')
@@ -48,6 +49,13 @@ class RentalController extends Controller
                 'deskripsi',
                 'status_verifikasi'
             ]);
+=======
+    // 👨‍✈️ Ambil semua driver aktif & sudah diverifikasi
+    $drivers = \App\Models\Driver::where('status', 'aktif')
+        ->where('status_verifikasi', 'disetujui')
+        ->orderBy('nama', 'asc')
+        ->get(['driver_id', 'nama', 'foto', 'harga_per_jam', 'lokasi', 'pengalaman', 'deskripsi', 'status_verifikasi']);
+>>>>>>> 2709c9b41fb578e552895bbfe01de383b7ed3013
 
         // 📦 Ambil user login
         $user = auth()->user()->refresh();
@@ -110,15 +118,11 @@ class RentalController extends Controller
     $tanggalSelesai = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tanggal_selesai'], $timezone);
 
     // 🔹 Validasi jam operasional (08–22 WIB)
-    $jamMulai   = (int) $tanggalMulai->format('H');
-    $jamSelesai = (int) $tanggalSelesai->format('H');
-    if ($jamMulai < 8 || $jamMulai > 22 || $jamSelesai < 8 || $jamSelesai > 22) {
-        return response()->json([
-            'success' => false,
-            'message' => '⚠️ Jam penyewaan hanya diperbolehkan antara 08:00 hingga 22:00 WIB.',
-        ], 422);
-    }
+    // 🔹 Validasi jam operasional hanya untuk pickup & return
+$jamMulai   = (int) $tanggalMulai->format('H');
+$jamSelesai = (int) $tanggalSelesai->format('H');
 
+<<<<<<< HEAD
     // 🔹 Hitung durasi (per jam)
     $durasiJam = $tanggalMulai->diffInHours($tanggalSelesai);
     if ($durasiJam < 6) {
@@ -148,6 +152,54 @@ class RentalController extends Controller
 
     // 🔹 Total keseluruhan
     $total = $biayaMobil + $hargaDriver;
+=======
+// Pengambilan (mulai) harus di jam buka
+if ($jamMulai < 8 || $jamMulai > 22) {
+    return response()->json([
+        'success' => false,
+        'message' => '⚠️ Pengambilan mobil hanya bisa antara pukul 08:00 - 22:00 WIB.',
+    ], 422);
+}
+
+// Pengembalian boleh lewat tengah malam, tapi kalau masih di hari yang sama → wajib <= 22:00
+if ($tanggalMulai->isSameDay($tanggalSelesai) && $jamSelesai > 22) {
+    return response()->json([
+        'success' => false,
+        'message' => '⚠️ Pengembalian di hari yang sama maksimal pukul 22:00 WIB.',
+    ], 422);
+}
+
+   // 🔹 Hitung durasi dan total biaya (per jam, minimal 6 jam)
+$durasiJam = $tanggalMulai->diffInHours($tanggalSelesai);
+if ($durasiJam < 6) {
+    $durasiJam = 6; // minimal 6 jam
+}
+
+$hargaDriver = 0;
+$driver = null;
+
+// 💰 Jika pakai driver, ambil data dari tabel driver (harga disesuaikan per jam)
+if ($validated['driver'] === 'ya' && $validated['driver_id']) {
+    $driver = Driver::where('status', 'aktif')
+        ->where('status_verifikasi', 'disetujui')
+        ->find($validated['driver_id']);
+
+    if ($driver) {
+    // 💰 Ambil harga driver per jam langsung dari database
+    $hargaPerJamDriver = $driver->harga_per_jam ?? 0;
+    $hargaDriver = $hargaPerJamDriver * $durasiJam;
+}
+}
+
+// 💰 Harga mobil per jam (gunakan langsung kolom harga_sewa_per_jam)
+$hargaPerJamMobil = $car->harga_sewa_per_jam ?? 0;
+$total = ($hargaPerJamMobil * $durasiJam) + $hargaDriver;
+
+// 🔹 Pastikan total minimal 10.000 (biar diterima Duitku)
+if ($total < 10000) {
+    $total = 10000;
+}
+>>>>>>> 2709c9b41fb578e552895bbfe01de383b7ed3013
 
     // 🔹 Status awal
     $statusAwal = ($user->status_verifikasi === 'disetujui')
@@ -162,7 +214,11 @@ class RentalController extends Controller
         'car_id'          => $car->car_id,
         'tanggal_mulai'   => $tanggalMulai,
         'tanggal_selesai' => $tanggalSelesai,
+<<<<<<< HEAD
         'durasi_jam'      => $durasiJam, // ubah dari durasi_hari → durasi_jam
+=======
+        'durasi_jam'      => $durasiJam,
+>>>>>>> 2709c9b41fb578e552895bbfe01de383b7ed3013
         'driver'          => $validated['driver'],
         'driver_id'       => $driver?->driver_id,
         'metode_pickup'   => $validated['metode_pickup'],

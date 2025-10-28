@@ -179,6 +179,19 @@
         })
         .catch(err => console.error('Error cek status:', err));
     }, 10000); // tiap 10 detik
+
+    setInterval(() => {
+  fetch('/user/payments/status-list')
+    .then(res => res.json())
+    .then(list => {
+      list.forEach(p => {
+        if (p.status_pembayaran !== 'pending') {
+          window.location.href = '/user/payments'; // redirect jika sudah sukses/gagal
+        }
+      });
+    });
+}, 5000); // cek setiap 5 detik
+
   </script>
 </body>
 </html>

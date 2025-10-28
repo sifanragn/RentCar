@@ -55,7 +55,7 @@ class PaymentGatewayController extends Controller
 
         // === Setup Duitku ===
         $merchantCode = 'DS25394'; // contoh sandbox
-        $apiKey = ''; // ubah sesuai key sandbox kamu
+        $apiKey = '06a924ce717ea70f6522e5c51241ccc6'; // ubah sesuai key sandbox kamu
         $merchantOrderId = 'INV-' . time();
         $amount = $rental->total_biaya;
 
@@ -94,17 +94,19 @@ class PaymentGatewayController extends Controller
         // Simpan ke DB
         DB::transaction(function () use ($rental, $request, $result, $paymentMethod, $merchantOrderId, &$payment) {
             $payment = Payment::create([
-                'rental_id' => $rental->rental_id,
-                'gateway' => 'Duitku',
-                'metode' => $paymentMethod,
-                'total_bayar' => $rental->total_biaya,
-                'status_pembayaran' => 'pending',
-                'gateway_reference' => $merchantOrderId,
-                'payment_token' => $result['reference'] ?? null,
-                'callback_status' => 'waiting',
-                'tanggal_bayar' => now(),
-            ]);
-
+            'rental_id'         => $rental->rental_id,
+            'gateway'           => 'Duitku',
+            'metode'            => $r->metode,
+            'payment_type'      => 'main',
+            'total_bayar'       => $rental->total_biaya,
+            'status_pembayaran' => 'pending',
+            'gateway_reference' => $res['reference'] ?? ('MAN-' . rand(100000, 999999)),
+            'payment_token'     => $res['paymentUrl'],
+            'merchant_order_id' => $tempOrder, // 🔹 tambahkan ini
+            'callback_status'   => 'waiting',
+            'tanggal_bayar'     => now(),
+            'expired_at'        => now()->addMinutes(30),
+        ]);
             $rental->update(['status_rental' => 'menunggu_pembayaran']);
         });
 

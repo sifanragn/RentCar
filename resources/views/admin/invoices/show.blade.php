@@ -132,21 +132,27 @@
       <div class="value">{{ $invoice->tanggal_cetak }}</div>
     </div>
 
-    {{-- 🔁 Retry Payment --}}
-    @if(isset($invoice->status_invoice) && in_array(strtolower($invoice->status_invoice), ['cancel', 'dibatalkan']))
-      <form method="POST" action="{{ route('admin.invoices.retryPayment', $invoice->invoice_id) }}" class="form-inline">
-        @csrf
-        <label for="payment_method">Metode:</label>
-        <select name="payment_method" id="payment_method" required>
-          <option value="qris">QRIS</option>
-          <option value="bca">BCA Virtual Account</option>
-          <option value="bri">BRI Virtual Account</option>
-          <option value="bni">BNI Virtual Account</option>
-          <option value="mandiri">Mandiri Virtual Account</option>
-        </select>
-        <button type="submit" class="btn btn-warning">🔁 Kirim Ulang Pembayaran</button>
-      </form>
-    @endif
+    {{-- 🔁 Kirim ulang pembayaran (hanya muncul kalau invoice dibatalkan) --}}
+@if(strtolower($invoice->status_invoice) === 'dibatalkan')
+  <form method="POST" 
+        action="{{ route('admin.invoices.retry-payment', $invoice->invoice_id) }}" 
+        class="form-inline"
+        onsubmit="return confirm('Yakin ingin mengirim ulang pembayaran untuk invoice ini?')">
+      @csrf
+
+      <label for="payment_method">Metode:</label>
+      <select name="payment_method" id="payment_method" required>
+        <option value="qris">QRIS</option>
+        <option value="bca">BCA Virtual Account</option>
+        <option value="bri">BRI Virtual Account</option>
+        <option value="bni">BNI Virtual Account</option>
+        <option value="mandiri">Mandiri Virtual Account</option>
+      </select>
+
+      <button type="submit" class="btn btn-warning">🔁 Kirim Ulang Pembayaran</button>
+  </form>
+@endif
+
 
     {{-- 🛑 Batalkan Invoice --}}
     @if(!in_array(strtolower($invoice->status_invoice), ['cancel', 'dibatalkan', 'selesai']))

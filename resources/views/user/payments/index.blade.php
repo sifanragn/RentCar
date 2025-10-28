@@ -491,6 +491,7 @@ button.btn:focus-visible {
   @endif
 </div>
 
+
 <!-- 🧾 Modal -->
 <div id="receiptModal" class="modal-overlay">
   <div class="modal-box">

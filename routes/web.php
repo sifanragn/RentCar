@@ -102,7 +102,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/rentals/cancel-latest', [RentalController::class, 'cancelLatest'])->name('rentals.cancelLatest');
     Route::get('/rentals/{id}', [RentalController::class, 'show'])->name('rentals.show');
 
-    // Pembayaran
+    // 💳 Pembayaran
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/detail-rental/{rental_id}', [PaymentController::class, 'detailRental'])->name('payments.detailRental');
     Route::post('/payments/start/{rental_id}', [PaymentController::class, 'startProcess'])->name('payments.start');
@@ -153,10 +153,10 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
     Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('rentals.show');
     Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('rentals.updateStatus');
 
-    // Payments
+    // Payments (Admin)
     Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])->name('payments.refresh');
 
-    // Invoices
+    // Invoices (Admin)
     Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('/invoices/{rental_id}/create', [InvoiceController::class, 'create'])->name('invoices.create');
     Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('invoices.store');
@@ -164,7 +164,7 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
     Route::post('/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
     Route::post('/invoices/{id}/manual-update', [InvoiceController::class, 'manualUpdate'])->name('invoices.manualUpdate');
     Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
-    Route::post('/invoices/{invoice}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('invoices.retryPayment');
+    Route::post('/invoices/{id}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('invoices.retryPayment');
 
     // Drivers
     Route::resource('drivers', DriverAdminController::class);
@@ -173,3 +173,8 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
 });
+
+// ===== CALLBACK PAYMENT (DUITKU / SANDBOX) ===== //
+Route::post('/api/payment/callback', [PaymentController::class, 'callback'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+    ->name('payment.callback');

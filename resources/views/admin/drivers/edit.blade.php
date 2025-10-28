@@ -109,8 +109,90 @@
         <button type="submit" class="btn-save">💾 Simpan Perubahan</button>
         <a href="{{ route('admin.drivers.index') }}" class="btn-cancel">← Kembali</a>
       </div>
+<<<<<<< HEAD
     </form>
   </div>
+=======
+
+      {{-- Email --}}
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" value="{{ old('email', $driver->email) }}">
+      </div>
+
+      {{-- Foto --}}
+      <div class="form-group">
+        <label for="foto">Foto Driver</label>
+        @if ($driver->foto)
+          <div style="margin-bottom:8px;">
+            <img src="{{ asset('storage/' . $driver->foto) }}" alt="Foto {{ $driver->nama }}" width="100" style="border-radius:8px;object-fit:cover;">
+          </div>
+        @endif
+        <input type="file" name="foto" id="foto" accept="image/*">
+      </div>
+
+      {{-- Nomor SIM --}}
+      <div class="form-group">
+        <label for="sim_number">Nomor SIM</label>
+        <input type="text" name="sim_number" id="sim_number" value="{{ old('sim_number', $driver->sim_number) }}">
+      </div>
+
+      {{-- Harga per jam --}}
+      <div class="form-group">
+        <label for="harga_per_jam">Tarif / Jam (Rp)</label>
+        <input 
+          type="number" 
+          name="harga_per_jam" 
+          id="harga_per_jam" 
+          value="{{ old('harga_per_jam', $driver->harga_per_jam) }}" 
+          placeholder="Masukkan tarif per jam, misal 25000"
+          required>
+      </div>
+
+      {{-- Pengalaman --}}
+      <div class="form-group">
+        <label for="pengalaman">Pengalaman Mengemudi</label>
+        <input type="text" name="pengalaman" id="pengalaman" value="{{ old('pengalaman', $driver->pengalaman) }}">
+      </div>
+
+      {{-- Lokasi --}}
+      <div class="form-group">
+        <label for="lokasi">Lokasi</label>
+        <input type="text" name="lokasi" id="lokasi" value="{{ old('lokasi', $driver->lokasi) }}">
+      </div>
+
+      {{-- Deskripsi --}}
+      <div class="form-group full">
+        <label for="deskripsi">Deskripsi</label>
+        <textarea name="deskripsi" id="deskripsi" rows="4">{{ old('deskripsi', $driver->deskripsi) }}</textarea>
+      </div>
+
+      {{-- Status --}}
+      <div class="form-group">
+        <label for="status">Status Driver</label>
+        <select name="status" id="status">
+          <option value="aktif" {{ old('status', $driver->status) == 'aktif' ? 'selected' : '' }}>Aktif</option>
+          <option value="nonaktif" {{ old('status', $driver->status) == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+        </select>
+      </div>
+
+      {{-- Verifikasi --}}
+      <div class="form-group">
+        <label for="status_verifikasi">Status Verifikasi</label>
+        <select name="status_verifikasi" id="status_verifikasi">
+          <option value="disetujui" {{ old('status_verifikasi', $driver->status_verifikasi) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+          <option value="menunggu" {{ old('status_verifikasi', $driver->status_verifikasi) == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
+          <option value="ditolak" {{ old('status_verifikasi', $driver->status_verifikasi) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-save">💾 Simpan Perubahan</button>
+      <a href="{{ route('admin.drivers.index') }}" class="btn-cancel">← Kembali</a>
+    </div>
+  </form>
+>>>>>>> 2709c9b41fb578e552895bbfe01de383b7ed3013
 </div>
 
 <style>

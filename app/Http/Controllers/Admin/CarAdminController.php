@@ -51,21 +51,22 @@ public function show($id)
 public function store(Request $request)
 {
     $request->validate([
-        'brand_id' => 'required|exists:car_brands,brand_id',
-        'model' => 'required|string|max:100',
-        'tahun' => 'required|integer|min:1900|max:' . date('Y'),
-        'warna' => 'required|string|max:50',
-        'tipe_transmisi' => 'required|in:manual,otomatis',
-        'capacity_id' => 'required|exists:car_capacities,capacity_id',
-        'bahan_bakar' => 'required|in:bensin,diesel,hybrid',
-        'harga_sewa_per_hari' => 'required|numeric|min:0',
-        'lokasi' => 'required|string|max:100',
-        'kilometer' => 'required|integer|min:0',
-        'liter_tangki' => 'required|integer|min:1',
-        'deskripsi' => 'nullable|string',
-        'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        'gallery.*' => 'image|mimes:jpeg,png,jpg|max:2048',
-    ]);
+    'brand_id' => 'required|exists:car_brands,brand_id',
+    'model' => 'required|string|max:100',
+    'tahun' => 'required|integer|min:1900|max:' . date('Y'),
+    'warna' => 'required|string|max:50',
+    'tipe_transmisi' => 'required|in:manual,otomatis',
+    'capacity_id' => 'required|exists:car_capacities,capacity_id',
+    'bahan_bakar' => 'required|in:bensin,diesel,hybrid',
+    'harga_sewa_per_jam' => 'required|numeric|min:0',
+    'lokasi' => 'required|string|max:100',
+    'kilometer' => 'required|integer|min:0',
+    'liter_tangki' => 'required|integer|min:1',
+    'deskripsi' => 'nullable|string',
+    'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    'gallery.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+]);
+
 
     // Simpan foto utama
     $path = $request->file('foto')->store('cars', 'public');
@@ -79,7 +80,7 @@ public function store(Request $request)
         'tipe_transmisi' => $request->tipe_transmisi,
         'capacity_id' => $request->capacity_id,
         'bahan_bakar' => $request->bahan_bakar,
-        'harga_sewa_per_hari' => $request->harga_sewa_per_hari,
+        'harga_sewa_per_jam' => $request->harga_sewa_per_jam,
         'status' => 'tersedia',
         'lokasi' => $request->lokasi,
         'kilometer' => $request->kilometer,
@@ -116,20 +117,21 @@ public function store(Request $request)
         $car = Car::findOrFail($id);
 
         $request->validate([
-            'brand_id' => 'required|exists:car_brands,brand_id',
-            'model' => 'required|string|max:100',
-            'tahun' => 'required|integer|min:1900|max:' . date('Y'),
-            'warna' => 'required|string|max:50',
-            'tipe_transmisi' => 'required|in:manual,otomatis',
-            'capacity_id' => 'required|exists:car_capacities,capacity_id',
-            'bahan_bakar' => 'required|in:bensin,diesel,hybrid',
-            'harga_sewa_per_hari' => 'required|numeric|min:0',
-            'lokasi' => 'required|string|max:100',
-            'kilometer' => 'required|integer|min:0',
-            'liter_tangki' => 'required|integer|min:1',
-            'deskripsi' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        'brand_id' => 'required|exists:car_brands,brand_id',
+        'model' => 'required|string|max:100',
+        'tahun' => 'required|integer|min:1900|max:' . date('Y'),
+        'warna' => 'required|string|max:50',
+        'tipe_transmisi' => 'required|in:manual,otomatis',
+        'capacity_id' => 'required|exists:car_capacities,capacity_id',
+        'bahan_bakar' => 'required|in:bensin,diesel,hybrid',
+        'harga_sewa_per_jam' => 'required|numeric|min:0',
+        'lokasi' => 'required|string|max:100',
+        'kilometer' => 'required|integer|min:0',
+        'liter_tangki' => 'required|integer|min:1',
+        'deskripsi' => 'nullable|string',
+        'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'gallery.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+    ]);
 
         $path = $car->foto;
         if ($request->hasFile('foto')) {
@@ -147,7 +149,8 @@ public function store(Request $request)
             'tipe_transmisi' => $request->tipe_transmisi,
             'capacity_id' => $request->capacity_id,
             'bahan_bakar' => $request->bahan_bakar,
-            'harga_sewa_per_hari' => $request->harga_sewa_per_hari,
+            'harga_sewa_per_jam' => $request->harga_sewa_per_jam,
+            'status' => 'tersedia',
             'lokasi' => $request->lokasi,
             'kilometer' => $request->kilometer,
             'liter_tangki' => $request->liter_tangki,
