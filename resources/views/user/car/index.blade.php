@@ -58,7 +58,7 @@
 }
 .btn-search:hover { background-color: #16a34a; }
 
-/* ===== Card Mobil (disamakan dengan Home) ===== */
+/* ===== Card Mobil ===== */
 .car-list {
   display: flex;
   flex-direction: column;
@@ -176,21 +176,21 @@
   height: 13px;
 }
 
+/* 🔹 Tombol “Lihat Mobil Lain” – Hitam elegan */
 .btn-see-other {
   display: inline-block;
-  background-color: #007bff; /* biru */
-  color: #fff; /* teks putih */
-  padding: 5px 10px; /* lebih kecil dari sebelumnya */
-  border: 2px solid #000; /* garis hitam di pinggir */
+  background-color: #000;  /* hitam utama */
+  color: #fff;             /* teks putih */
+  padding: 5px 10px;
+  border: 2px solid #000;  /* outline hitam */
   border-radius: 6px;
   text-decoration: none;
   font-size: 12px;
   transition: 0.3s ease;
   margin-left: 40px;
 }
-
 .btn-see-other:hover {
-  background-color: #0056b3; /* biru lebih gelap saat hover */
+  background-color: #222;  /* abu gelap saat hover */
   transform: scale(1.05);
 }
 
@@ -206,6 +206,7 @@
 }
 </style>
 @endsection
+
 
 @section('content')
 

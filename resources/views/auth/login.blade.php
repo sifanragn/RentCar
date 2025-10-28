@@ -194,5 +194,4 @@
       Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
     </p>
   </form>
-  @include('partials.bottom-navbar')
 @endsection

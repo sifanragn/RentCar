@@ -216,6 +216,4 @@
       Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
     </p>
   </form>
-
-  @include('partials.bottom-navbar')
 @endsection

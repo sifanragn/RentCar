@@ -31,7 +31,6 @@
 
 </div>
 
-@include('partials.bottom-navbar')
 @endsection
 
 @section('styles')

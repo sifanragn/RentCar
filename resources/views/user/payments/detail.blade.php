@@ -50,8 +50,8 @@
   }
 
   .m.active {
-    border-color: #00AEEF;
-    background: #F0F9FF;
+    border-color: #000;
+    background: #f5f5f5;
   }
 
   .metode-img {
@@ -75,10 +75,11 @@
     font-weight: 600;
   }
 
+  /* 🔹 Tombol utama (Hitam) */
   .btn {
     display: block;
     width: 100%;
-    background: #00C853;
+    background: #000;
     color: #fff;
     padding: 9px;
     font-weight: 600;
@@ -93,9 +94,10 @@
   }
 
   .btn:hover {
-    background: #009E47;
+    background: #222;
   }
 
+  /* 🔹 Tombol kembali (abu tetap) */
   .btn-kembali {
     display: block;
     width: 100%;
@@ -163,73 +165,87 @@
       </table>
     </div>
 
-    {{-- ========================== STEP 3: DETAIL PESANAN ========================== --}}
-    <div class="step-section">
-      <h3 class="step-title">3. Detail Pesanan</h3>
-      <table>
-        <tr>
-          <td>Nama Mobil</td>
-          <td>: {{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '-' }}</td>
-        </tr>
-        <tr>
-          <td>Tahun Mobil</td>
-          <td>: {{ $rental->car->tahun ?? '-' }}</td>
-        </tr>
-        <tr>
-          <td>Harga Sewa</td>
-          <td>: Rp{{ number_format($rental->car->harga_sewa_per_hari ?? 0, 0, ',', '.') }} / Hari</td>
-        </tr>
-        <tr>
-          <td>Kapasitas</td>
-          <td>: {{ $rental->car->capacity->jumlah_orang ?? '-' }} Orang</td>
-        </tr>
-        <tr>
-          <td>Durasi</td>
-          <td>: {{ $rental->durasi_hari }} Hari</td>
-        </tr>
+{{-- ========================== STEP 3: DETAIL PESANAN ========================== --}}
+<div class="step-section">
+  <h3 class="step-title">3. Detail Pesanan</h3>
+  <table>
+    <tr>
+      <td>Nama Mobil</td>
+      <td>: {{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '-' }}</td>
+    </tr>
+    <tr>
+      <td>Tahun Mobil</td>
+      <td>: {{ $rental->car->tahun ?? '-' }}</td>
+    </tr>
+    <tr>
+      <td>Harga Sewa Mobil</td>
+      <td>: Rp{{ number_format($rental->car->harga_sewa_per_hari ?? 0, 0, ',', '.') }} / Jam</td>
+    </tr>
+    <tr>
+      <td>Kapasitas</td>
+      <td>: {{ $rental->car->capacity->jumlah_orang ?? '-' }} Orang</td>
+    </tr>
+    <tr>
+      <td>Durasi</td>
+      <td>: {{ $rental->durasi_jam }} Jam</td>
+    </tr>
 
-        @php
-          $driverTarif = 0;
-          if ($rental->driver && $rental->driver === 'ya' && $rental->driverData) {
-              $driverTarif = $rental->driverData->harga_per_hari * $rental->durasi_hari;
-          }
-          $mobilTarif = ($rental->car->harga_sewa_per_hari ?? 0) * $rental->durasi_hari;
-          $totalKeseluruhan = $mobilTarif + $driverTarif;
-        @endphp
+    @php
+      // 👉 Ubah semua perhitungan frontend ke basis jam (tapi tetap pakai data backend)
+      $driverTarif = 0;
+      if ($rental->driver === 'ya' && $rental->driverData) {
+          // konversi harga sopir per jam hanya di tampilan (tidak ubah DB)
+          $hargaDriverPerJam = $rental->driverData->harga_per_hari / 24;
+          $driverTarif = $hargaDriverPerJam * $rental->durasi_jam;
+      }
 
-        <tr>
-          <td>Pakai Sopir</td>
-          <td>
-            @if($rental->driver === 'ya' && $rental->driverData)
-              Ya — {{ $rental->driverData->nama }}
-              (Rp{{ number_format($rental->driverData->harga_per_hari,0,',','.') }}/hari × {{ $rental->durasi_hari }} hari =
-              <b>Rp{{ number_format($driverTarif,0,',','.') }}</b>)
-            @else
-              Tidak
-            @endif
-          </td>
-        </tr>
+      $mobilTarif = ($rental->car->harga_sewa_per_hari ?? 0) * $rental->durasi_jam;
+      $totalKeseluruhan = $mobilTarif + $driverTarif;
+    @endphp
 
-        <tr>
-          <td>Dari - Sampai</td>
-          <td>: {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m/Y') }} s.d {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m/Y') }}</td>
-        </tr>
+    <tr>
+      <td>Pakai Sopir</td>
+      <td>
+        @if($rental->driver === 'ya' && $rental->driverData)
+          Ya — {{ $rental->driverData->nama }}
+          (Rp{{ number_format($rental->driverData->harga_per_hari / 24,0,',','.') }}/jam × {{ $rental->durasi_jam }} jam =
+          <b>Rp{{ number_format($driverTarif,0,',','.') }}</b>)
+        @else
+          Tidak
+        @endif
+      </td>
+    </tr>
 
-        <tr>
-          <td>Total Biaya Sewa</td>
-          <td>
-            : <b>Rp{{ number_format($totalKeseluruhan,0,',','.') }}</b>
-            @if($driverTarif > 0)
-              <br><small>(Mobil: Rp{{ number_format($mobilTarif,0,',','.') }} + Sopir: Rp{{ number_format($driverTarif,0,',','.') }})</small>
-            @endif
-          </td>
-        </tr>
-        <tr>
-          <td>Lokasi Pengambilan</td>
-          <td>: {{ $rental->car->lokasi ?? 'Lokasi belum ditentukan' }}</td>
-        </tr>
-      </table>
-    </div>
+    <tr>
+      <td>Dari - Sampai</td>
+      <td>
+        : {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m/Y H:i') }}
+        s.d
+        {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m/Y H:i') }}
+      </td>
+    </tr>
+
+    <tr>
+      <td>Total Biaya Sewa</td>
+      <td>
+        : <b>Rp{{ number_format($totalKeseluruhan,0,',','.') }}</b>
+        <br>
+        <small>
+          (Mobil: Rp{{ number_format($mobilTarif,0,',','.') }}
+          @if($driverTarif > 0)
+            + Sopir: Rp{{ number_format($driverTarif,0,',','.') }}
+          @endif
+          )
+        </small>
+      </td>
+    </tr>
+
+    <tr>
+      <td>Lokasi Pengambilan</td>
+      <td>: {{ $rental->car->lokasi ?? 'Lokasi belum ditentukan' }}</td>
+    </tr>
+  </table>
+</div>
 
     {{-- ========================== STEP 4: PEMBAYARAN ========================== --}}
     <form action="{{ route('user.payments.start', $rental->rental_id) }}" method="POST" id="startForm">

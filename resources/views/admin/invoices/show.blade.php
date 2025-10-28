@@ -158,7 +158,7 @@
     @endif
     {{-- 🔧 Update Status Manual --}}
 <div class="manual-update-wrapper">
-  <form method="POST" action="{{ route('admin.invoices.manualUpdate', $invoice->invoice_id) }}" class="form-inline">
+  <form method="POST" action="{{ route('admin.invoices.manualUpdate', $invoice->invoice_id) }}" class="form-inline" id="manualUpdateForm">
     @csrf
     <label for="status_invoice">🔧 Update Status Invoice:</label>
     <select name="status_invoice" id="status_invoice" required>
@@ -169,7 +169,10 @@
     </select>
     <button type="submit" class="btn btn-secondary">💾 Simpan</button>
   </form>
+
+  <div id="statusMessage" style="margin-top:10px;"></div>
 </div>
+
 
     <div class="back-wrapper">
       <a href="{{ route('admin.invoices.index') }}" class="btn-back">← Kembali ke Daftar</a>

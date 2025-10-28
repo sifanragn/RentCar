@@ -45,15 +45,15 @@ input, select, textarea {
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: #70D972;
-  box-shadow: 0 0 0 2px rgba(112,217,114,0.25);
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.25);
   outline: none;
 }
 
 /* ===== Button ===== */
 button { 
-  background: #70D972;
-  color: #000;
+  background: #000;
+  color: #fff;
   font-weight: 600;
   padding: 12px 16px;
   border: none;
@@ -63,7 +63,7 @@ button {
   transition: all 0.3s ease;
   width: 100%;
 }
-button:hover { background: #5AC260; transform: scale(1.03); }
+button:hover { background: #222; transform: scale(1.03); }
 
 /* ===== Back Link ===== */
 .back-link {
@@ -74,8 +74,8 @@ button:hover { background: #5AC260; transform: scale(1.03); }
 
 /* ===== Info Box ===== */
 .price-box {
-  background: #f1fdf1;
-  border-left: 4px solid #70D972;
+  background: #f1f1f1;
+  border-left: 4px solid #000;
   padding: 12px 15px;
   border-radius: 6px;
   margin-top: 15px;
@@ -142,13 +142,13 @@ button:hover { background: #5AC260; transform: scale(1.03); }
   cursor: pointer;
   transition: 0.2s;
 }
-.driver-dropdown .selected:hover { background-color: #f5fff5; }
+.driver-dropdown .selected:hover { background-color: #f5f5f5; }
 .driver-dropdown .selected span img {
   width: 35px;
   height: 35px;
   border-radius: 8px;
   object-fit: cover;
-  border: 1.5px solid #70D972;
+  border: 1.5px solid #000;
   margin-right: 8px;
   vertical-align: middle;
 }
@@ -175,28 +175,29 @@ button:hover { background: #5AC260; transform: scale(1.03); }
   cursor: pointer;
   transition: 0.2s;
 }
-.driver-dropdown .option:hover { background: #f3fdf3; }
+.driver-dropdown .option:hover { background: #f2f2f2; }
 .driver-dropdown .option img {
   width: 40px;
   height: 40px;
   border-radius: 10px;
   object-fit: cover;
   margin-right: 10px;
-  border: 1.5px solid #70D972;
+  border: 1.5px solid #000;
 }
 
 .driver-selected {
   display: none;
-  margin-top: 8px; /* ⬅ dari 18px jadi 8px biar lebih dekat */
-  padding-top: 0;  /* ⬅ hapus jarak dalam atas */
+  margin-top: 8px;
+  padding-top: 0;
   text-align: center;
   background: transparent;
   border: none;
   box-shadow: none;
 }
 
+/* Tombol lihat detail driver → hitam */
 .driver-selected button {
-  background: #007bff;
+  background: #000;
   color: #fff;
   font-weight: 600;
   padding: 8px 14px;
@@ -206,12 +207,12 @@ button:hover { background: #5AC260; transform: scale(1.03); }
   transition: all 0.25s ease;
 }
 .driver-selected button:hover {
-  background: #0069d9;
+  background: #222;
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-/* ===== Modal Detail Driver (Final Clean & Modern) ===== */
+/* ===== Modal Detail Driver ===== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -262,7 +263,7 @@ button:hover { background: #5AC260; transform: scale(1.03); }
   height: 110px;
   border-radius: 14px;
   object-fit: cover;
-  border: 2px solid #70D972;
+  border: 2px solid #000;
   margin: 10px auto 14px auto;
   box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
@@ -288,10 +289,7 @@ button:hover { background: #5AC260; transform: scale(1.03); }
   background: #fafafa;
 }
 
-/* Spasi antar item */
-.modal-box p + p {
-  margin-top: 6px;
-}
+.modal-box p + p { margin-top: 6px; }
 
 /* ===== Popup Menunggu ===== */
 #popup-menunggu {
@@ -350,7 +348,7 @@ button:hover { background: #5AC260; transform: scale(1.03); }
 #popup-alert h3 { margin-bottom: 10px; color: #333; font-size: 18px; }
 #popup-alert p { font-size: 15px; color: #444; margin-bottom: 20px; }
 #popup-alert button {
-  background: #70D972;
+  background: #000;
   border: none;
   border-radius: 10px;
   padding: 10px 18px;
@@ -358,13 +356,15 @@ button:hover { background: #5AC260; transform: scale(1.03); }
   cursor: pointer;
   width: 100%;
   transition: .2s;
+  color: #fff;
 }
-#popup-alert button:hover { background:#5AC260; }
+#popup-alert button:hover { background:#222; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
+
 </style>
 @endsection
 
@@ -391,7 +391,7 @@ button:hover { background: #5AC260; transform: scale(1.03); }
     <h2>Form Penyewaan Mobil</h2>
 
     <h3>{{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
-    <p><strong>Harga per hari:</strong> Rp{{ number_format($car->harga_sewa_per_hari, 0, ',', '.') }}</p>
+    <p><strong>Harga per jam:</strong> Rp{{ number_format($car->harga_sewa_per_hari, 0, ',', '.') }}</p>
 
     <form id="rentalForm" action="{{ route('user.rentals.store', $car->car_id) }}" method="POST">
       @csrf
@@ -524,7 +524,9 @@ window.addEventListener('load', function() {
   const hasilOngkir = document.getElementById('hasilOngkir');
   const mulai = document.getElementById('tanggal_mulai');
   const selesai = document.getElementById('tanggal_selesai');
+  const priceBox = document.querySelector('.price-box p');
 
+  const hargaPerJam = {{ $car->harga_sewa_per_hari }};
   const hasDocuments = {{ $hasDocuments ? 'true' : 'false' }};
   const isVerified   = {{ $isVerified ? 'true' : 'false' }};
 
@@ -547,10 +549,36 @@ window.addEventListener('load', function() {
 
   mulai.addEventListener('change', function () {
     const startDate = new Date(mulai.value);
-    const minEndDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
+    const minEndDate = new Date(startDate.getTime() + 6 * 60 * 60 * 1000); // minimal 6 jam
     selesai.min = minEndDate.toISOString().slice(0, 16);
     if (selesai.value && new Date(selesai.value) < minEndDate) selesai.value = '';
+    hitungTotal();
   });
+
+  selesai.addEventListener('change', function () {
+    hitungTotal();
+  });
+
+  /* ==================== HITUNG TOTAL BIAYA ==================== */
+  function hitungTotal() {
+    if (!mulai.value || !selesai.value) return;
+    const start = new Date(mulai.value);
+    const end   = new Date(selesai.value);
+    const diffMs = end - start;
+    if (diffMs <= 0) return;
+
+    const diffJam = diffMs / (1000 * 60 * 60);
+    if (diffJam < 6) {
+      priceBox.innerHTML = `<strong>❗Minimal sewa 6 jam</strong>`;
+      return;
+    }
+
+    const totalHarga = hargaPerJam * diffJam;
+    priceBox.innerHTML = `
+      <strong>Total Estimasi:</strong> Rp${totalHarga.toLocaleString('id-ID')} 
+      <br><small>(${diffJam.toFixed(1)} jam × Rp${hargaPerJam.toLocaleString('id-ID')}/jam)</small>
+    `;
+  }
 
   /* ==================== PICKUP TOGGLE ==================== */
   function togglePickup() {
@@ -606,10 +634,8 @@ window.addEventListener('load', function() {
     const driverSelectedBox = document.getElementById('driverSelected');
     const lihatDetailBtn = document.getElementById('lihatDetailBtn');
 
-    // ✅ tampilkan foto + nama di pilihan
     selected.innerHTML = `<img src="${el.dataset.foto}" style="width:30px;height:30px;border-radius:8px;object-fit:cover;margin-right:6px;vertical-align:middle;border:1px solid #70D972;"> ${el.dataset.nama}`;
     hiddenInput.value = el.dataset.id;
-
     driverSelectedBox.style.display = 'flex';
     lihatDetailBtn.style.display = 'inline-block';
     dropdown.classList.remove('open');
@@ -652,7 +678,6 @@ window.addEventListener('load', function() {
     document.getElementById('driverModal').style.display = 'none';
   }
 
-  // biar fungsi dipanggil global dari HTML
   window.toggleDropdown = toggleDropdown;
   window.selectDriver = selectDriver;
   window.toggleDriverList = toggleDriverList;
@@ -667,8 +692,8 @@ window.addEventListener('load', function() {
 
     const startDate = new Date(mulai.value);
     const endDate = new Date(selesai.value);
-    const minEndDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
-    if (endDate < minEndDate) return showAlert('Durasi sewa minimal 24 jam dari waktu mulai.');
+    const diffJam = (endDate - startDate) / (1000 * 60 * 60);
+    if (diffJam < 6) return showAlert('Durasi sewa minimal 6 jam.');
     if (startDate >= endDate) return showAlert('Tanggal selesai harus lebih besar dari tanggal mulai.');
 
     fetch(this.action, {
@@ -692,5 +717,5 @@ window.addEventListener('load', function() {
   document.getElementById('close-popup').addEventListener('click', () => popup.style.display = 'none');
 });
 </script>
-
 @endsection
+

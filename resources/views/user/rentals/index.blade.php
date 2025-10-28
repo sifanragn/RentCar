@@ -104,7 +104,7 @@ h2 {
 .btn-detail {
   text-decoration: none;
   text-align: center;
-  background: #0d6efd;
+  background: #000;
   color: #fff;
   padding: 10px 0;
   border-radius: 0 0 10px 10px;
@@ -113,7 +113,7 @@ h2 {
   transition: 0.25s;
 }
 .btn-detail:hover {
-  background: #0b5ed7;
+  background: #404040;
 }
 
 /* ===== EMPTY STATE ===== */

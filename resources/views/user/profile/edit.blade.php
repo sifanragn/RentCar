@@ -97,14 +97,18 @@ form {
   align-items: center;
   justify-content: center;
 }
+
+/* 🔧 Ganti tombol biru jadi hitam */
 .btn-primary {
-  background: #0d6efd;
+  background: #000;
   color: #fff;
   border: none;
 }
 .btn-primary:hover {
-  background: #0b5ed7;
+  background: #333;
 }
+
+/* Outline merah tetap */
 .btn-outline-danger {
   border: 1px solid #dc3545;
   color: #dc3545;
@@ -113,6 +117,8 @@ form {
   background: #dc3545;
   color: #fff;
 }
+
+/* Tombol merah utama */
 .btn-danger {
   background: #c91d2e;
   border: none;
@@ -123,6 +129,34 @@ form {
   background: #a31522;
 }
 
+/* 🚫 Hilangkan warna biru saat tombol diklik di semua browser */
+.btn,
+button.btn,
+a.btn,
+button,
+input[type="button"],
+input[type="submit"] {
+  -webkit-tap-highlight-color: transparent !important; /* Chrome/Safari */
+  -webkit-focus-ring-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  user-select: none;
+}
+
+.btn:focus,
+.btn:active,
+button:focus,
+button:active {
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: #000 !important; /* tetap hitam saat diklik */
+  color: #fff !important;
+}
+
+/* Firefox khusus */
+button.btn::-moz-focus-inner {
+  border: 0;
+}
 
 /* ===== PASSWORD FIELD ===== */
 .input-group {
@@ -202,25 +236,7 @@ form {
   font-size: 13.5px;
   line-height: 1.4;
 }
-.modal-footer {
-  border-top: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-  padding-bottom: 22px;
-}
-.modal-footer .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 42px;
-  min-width: 120px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 14.2px;
-  transition: 0.25s ease;
-}
+/* Tombol di modal juga ikut hitam */
 .modal-footer .btn-outline-secondary {
   border-color: #d1d5db;
   color: #374151;

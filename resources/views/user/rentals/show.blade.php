@@ -17,7 +17,7 @@ body {
 /* ===== TITLE ===== */
 h2 {
   text-align: center;
-  color: #0f172a;
+  color: #111;
   font-weight: 600;
   font-size: 22px;
   margin-bottom: 22px;
@@ -39,7 +39,7 @@ h2 {
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
-/* ===== DETAIL ROW (2 kolom sejajar rapat) ===== */
+/* ===== DETAIL ROW ===== */
 .detail-row {
   display: grid;
   grid-template-columns: 150px 1fr;
@@ -81,29 +81,29 @@ h2 {
   content: '●';
   font-size: 10px;
 }
-.status.menunggu { background: #fff3cd; color: #856404; }
-.status.berjalan { background: #dcfce7; color: #166534; }
-.status.selesai { background: #e0f2fe; color: #075985; }
+.status.menunggu   { background: #fff3cd; color: #856404; }
+.status.berjalan   { background: #dcfce7; color: #166534; }
+.status.selesai    { background: #d4edda; color: #155724; } /* 💚 hijau lembut */
 .status.dibatalkan { background: #fee2e2; color: #991b1b; }
 
 /* ===== LOKASI PICKUP ===== */
 .highlight {
-  background: #eef2ff;
+  background: #e5e5e5;
   padding: 6px 10px;
   border-radius: 8px;
-  color: #1d4ed8;
+  color: #000;
   font-size: 13.5px;
   font-weight: 500;
   display: inline-block;
   margin-top: 3px;
 }
 
-/* ===== BUTTON ===== */
+/* ===== BUTTON (ubah biru → item) ===== */
 .back-btn {
   display: block;
   width: 100%;
   text-align: center;
-  background: linear-gradient(135deg, #2563eb, #1e40af);
+  background: #000;
   color: #fff;
   padding: 10px 0;
   border-radius: 10px;
@@ -115,7 +115,7 @@ h2 {
   letter-spacing: 0.3px;
 }
 .back-btn:hover {
-  background: linear-gradient(135deg, #1e40af, #1d4ed8);
+  background: #333;
   transform: translateY(-1px);
 }
 
