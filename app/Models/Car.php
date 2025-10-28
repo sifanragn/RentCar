@@ -9,21 +9,22 @@ class Car extends Model
     protected $table = 'cars';
     protected $primaryKey = 'car_id';
     protected $fillable = [
-        'brand_id',
-        'model',
-        'tahun',
-        'warna',
-        'tipe_transmisi',
-        'capacity_id',
-        'bahan_bakar',
-        'harga_sewa_per_hari',
-        'status',
-        'lokasi',
-        'kilometer',
-        'liter_tangki',
-        'deskripsi',
-        'foto'
-    ];
+  'brand_id',
+  'model',
+  'tahun',
+  'warna',
+  'tipe_transmisi',
+  'capacity_id',
+  'bahan_bakar',
+  'harga_sewa_per_jam',
+  'status',
+  'lokasi',
+  'kilometer',
+  'liter_tangki',
+  'deskripsi',
+  'foto'
+];
+
 
     // ==================== RELASI ====================
 
@@ -36,9 +37,12 @@ class Car extends Model
     {
         return $this->belongsTo(CarCapacity::class, 'capacity_id', 'capacity_id');
     }
-   public function photos()
-{
-    return $this->hasMany(CarPhoto::class, 'car_id');
-}
-
+    public function photos()
+    {
+        return $this->hasMany(CarPhoto::class, 'car_id');
+    }
+    public function getHargaFormattedAttribute()
+    {
+        return 'Rp' . number_format($this->harga_sewa_per_jam ?? 0, 0, ',', '.') . ' / jam';
+    }
 }

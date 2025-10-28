@@ -199,25 +199,24 @@
       <tbody>
       @foreach($payments as $i => $p)
         @php
-          $exp = now()->diffInSeconds(\Carbon\Carbon::parse($p->created_at)->addMinutes(30), false);
+          $exp = now()->diffInSeconds($p->expired_at, false);   // ⬅️ pakai expired_at, bukan created_at
           $jenis = match(true) {
-    $p->payment_type === 'main' => 'Kuitansi Utama',
-    $p->payment_type === 'charge' => 'Kuitansi Tambahan',
-    // jika invoice tapi total_bayar sama dengan denda tambahan
-    $p->payment_type === 'invoice' && $p->rental->invoice?->denda_tambahan > 0 
-        && $p->total_bayar == $p->rental->invoice->denda_tambahan => 'Kuitansi Tambahan',
-    $p->payment_type === 'final' => 'Kuitansi Akhir',
-    default => ucfirst($p->payment_type),
-};
-          $warna = match(true) {
-    $p->payment_type === 'main' => '#0d6efd',
-    $p->payment_type === 'charge' 
-        || ($p->payment_type === 'invoice' && $p->rental->invoice?->denda_tambahan > 0 && $p->total_bayar == $p->rental->invoice->denda_tambahan)
-        => '#e67e22',
-    $p->payment_type === 'final' => '#28a745',
-    default => '#555',
-};
-
+          $p->payment_type === 'main' => 'Kuitansi Utama',
+          $p->payment_type === 'charge' => 'Kuitansi Tambahan',
+          // jika invoice tapi total_bayar sama dengan denda tambahan
+          $p->payment_type === 'invoice' && $p->rental->invoice?->denda_tambahan > 0 
+              && $p->total_bayar == $p->rental->invoice->denda_tambahan => 'Kuitansi Tambahan',
+          $p->payment_type === 'final' => 'Kuitansi Akhir',
+          default => ucfirst($p->payment_type),
+      };
+                $warna = match(true) {
+          $p->payment_type === 'main' => '#0d6efd',
+          $p->payment_type === 'charge' 
+              || ($p->payment_type === 'invoice' && $p->rental->invoice?->denda_tambahan > 0 && $p->total_bayar == $p->rental->invoice->denda_tambahan)
+              => '#e67e22',
+          $p->payment_type === 'final' => '#28a745',
+          default => '#555',
+      };
         @endphp
         <tr>
           <td>{{ $i+1 }}</td>
@@ -241,27 +240,23 @@
               @endif
             </span>
           </td>
-          <td>
+                    <td>
             @if($p->status_pembayaran === 'pending')
               <a class="btn" href="{{ route('user.payments.continue', $p->payment_id) }}">Lanjutkan</a>
-              @if($p->status_pembayaran === 'pending')
-  <a class="btn" href="{{ route('user.payments.continue', $p->payment_id) }}">Lanjutkan</a>
 
-  @php
-    // deteksi kuitansi tambahan (baik charge maupun invoice denda)
-    $isKuitansiTambahan = $p->payment_type === 'charge' ||
-      ($p->payment_type === 'invoice' &&
-       $p->rental->invoice?->denda_tambahan > 0 &&
-       $p->total_bayar == $p->rental->invoice->denda_tambahan);
-  @endphp
+              @php
+                $isKuitansiTambahan = $p->payment_type === 'charge' ||
+                  ($p->payment_type === 'invoice' &&
+                  $p->rental->invoice?->denda_tambahan > 0 &&
+                  $p->total_bayar == $p->rental->invoice->denda_tambahan);
+              @endphp
 
-  @if(!$isKuitansiTambahan)
-    <form action="{{ route('user.payments.cancelSoft', $p->payment_id) }}" method="POST" onsubmit="return confirm('Batalkan pembayaran ini?')">
-      @csrf
-      <button type="submit" class="btn btn-danger">Batalkan</button>
-    </form>
-  @endif
-@endif
+              @if(!$isKuitansiTambahan)
+                <form action="{{ route('user.payments.cancelSoft', $p->payment_id) }}" method="POST" onsubmit="return confirm('Batalkan pembayaran ini?')">
+                  @csrf
+                  <button type="submit" class="btn btn-danger">Batalkan</button>
+                </form>
+              @endif
             @else
               <button class="btn" onclick="openReceipt({{ $p->payment_id }})">
                 {{ $p->status_pembayaran === 'success' ? 'Lihat Kuitansi' : 'Lihat Info' }}
@@ -280,6 +275,7 @@
 
   <a href="{{ route('user.dashboard') }}" class="btn-back">← Kembali ke Dashboard</a>
 </div>
+
 
 <!-- 🧾 Modal -->
 <div id="receiptModal" class="modal-overlay">

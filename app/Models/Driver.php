@@ -23,7 +23,7 @@ class Driver extends Model
         'sim_number',
         'status_verifikasi',
         'status',
-        'harga_per_hari',
+        'harga_per_jam',
         'pengalaman',
         'lokasi',
         'deskripsi',
@@ -84,9 +84,12 @@ class Driver extends Model
     }
 
     public function getHargaFormattedAttribute()
-    {
-        return 'Rp' . number_format($this->harga_per_hari, 0, ',', '.');
+{
+    if (isset($this->harga_per_jam)) {
+        return 'Rp' . number_format($this->harga_per_jam, 0, ',', '.'). ' / jam';
     }
+    return '-';
+}
 
     public function getPengalamanFormattedAttribute()
     {

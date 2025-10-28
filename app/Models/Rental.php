@@ -17,7 +17,7 @@ class Rental extends Model
         'car_id',
         'tanggal_mulai',
         'tanggal_selesai',
-        'durasi_hari',
+        'durasi_jam',
         'metode_pickup',
         'driver',
         'driver_id',  // ✅ tambahkan ini

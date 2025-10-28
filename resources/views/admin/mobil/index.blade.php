@@ -156,7 +156,12 @@ function showCarDetail(car) {
       <div class="car-detail-item"><div class="car-detail-label">Transmisi</div><div class="car-detail-value">${car.tipe_transmisi}</div></div>
       <div class="car-detail-item"><div class="car-detail-label">Kapasitas</div><div class="car-detail-value">${capacity} Orang</div></div>
       <div class="car-detail-item"><div class="car-detail-label">Bahan Bakar</div><div class="car-detail-value">${car.bahan_bakar}</div></div>
-      <div class="car-detail-item"><div class="car-detail-label">Harga Sewa</div><div class="car-detail-value">Rp${harga}</div></div>
+      <div class="car-detail-item">
+      <div class="car-detail-label">Harga Sewa</div>
+      <div class="car-detail-value">
+        Rp{{ number_format($car->harga_sewa_per_jam ?? 0, 0, ',', '.') }}
+      </div>
+    </div>
       <div class="car-detail-item"><div class="car-detail-label">Status</div><div class="car-detail-value">${car.status}</div></div>
       <div class="car-detail-item"><div class="car-detail-label">Lokasi</div><div class="car-detail-value">${car.lokasi}</div></div>
       <div class="car-detail-item" style="grid-column: 1 / -1">

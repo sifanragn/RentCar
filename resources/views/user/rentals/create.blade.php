@@ -247,20 +247,23 @@
     </div>
   @endif
 
-  <h3>{{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
-  <p><strong>Harga per hari:</strong> Rp{{ number_format($car->harga_sewa_per_hari, 0, ',', '.') }}</p>
+ {{-- Harga mobil --}}
+<h3>{{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
+<p><strong>Harga per jam:</strong> Rp{{ number_format($car->harga_sewa_per_jam ?? 0, 0, ',', '.') }}</p>
 
   <form id="rentalForm" action="{{ route('user.rentals.store', $car->car_id) }}" method="POST">
     @csrf
 
     {{-- 🔹 input tanggal + jam mulai --}}
     <label for="tanggal_mulai">Tanggal & Jam Mulai</label>
-    <input type="datetime-local" name="tanggal_mulai" id="tanggal_mulai" required>
+    <input type="datetime-local" name="tanggal_mulai" id="tanggal_mulai" required 
+          placeholder="Pilih tanggal dan jam mulai (min 6 jam)">
+    <small style="color:#555;">Minimal sewa 6 jam.</small>
 
-    {{-- 🔹 input tanggal + jam selesai --}}
     <label for="tanggal_selesai">Tanggal & Jam Selesai</label>
-    <input type="datetime-local" name="tanggal_selesai" id="tanggal_selesai" required>
-
+    <input type="datetime-local" name="tanggal_selesai" id="tanggal_selesai" required 
+          placeholder="Pilih tanggal dan jam selesai">
+          
     <div class="driver-section">
   <label for="driver">Butuh Driver?</label>
   <select name="driver" id="driver" required onchange="toggleDriverList(this)">
@@ -272,22 +275,21 @@
   <div id="driverList" class="driver-list">
     <label for="driver_id" style="margin-top:10px;">Pilih Driver</label>
     <select id="driver_id" name="driver_id" onchange="showDriverCard(this)">
-      <option value="">-- Pilih Driver --</option>
-      @foreach($drivers as $driver)
-        <option 
-          value="{{ $driver->driver_id }}"
-          data-foto="{{ asset('storage/' . $driver->foto) }}"
-          data-nama="{{ $driver->nama }}"
-          data-lokasi="{{ $driver->lokasi ?? 'Tidak diketahui' }}"
-          data-harga="{{ number_format($driver->harga_per_hari,0,',','.') }}"
-          data-pengalaman="{{ $driver->pengalaman ?? 'Tidak diketahui' }}"
-          data-verifikasi="{{ ucfirst($driver->status_verifikasi) }}"
-          data-deskripsi="{{ $driver->deskripsi ?? 'Tidak ada deskripsi.' }}">
-          {{ $driver->nama }}
-        </option>
-      @endforeach
-    </select>
-
+    <option value="">-- Pilih Driver --</option>
+    @foreach($drivers as $driver)
+      <option 
+        value="{{ $driver->driver_id }}"
+        data-foto="{{ asset('storage/' . $driver->foto) }}"
+        data-nama="{{ $driver->nama }}"
+        data-lokasi="{{ $driver->lokasi ?? 'Tidak diketahui' }}"
+        data-harga="{{ number_format($driver->harga_per_jam ?? 0, 0, ',', '.') }}"
+        data-pengalaman="{{ $driver->pengalaman ?? 'Tidak diketahui' }}"
+        data-verifikasi="{{ ucfirst($driver->status_verifikasi) }}"
+        data-deskripsi="{{ $driver->deskripsi ?? 'Tidak ada deskripsi.' }}">
+        {{ $driver->nama }}
+      </option>
+    @endforeach
+  </select>
     <div id="driverSelected" class="driver-selected">
       <strong id="selectedDriverName"></strong><br>
       <button type="button" class="btn btn-sm" style="margin-top:6px;background:#0d6efd;color:#fff;padding:6px 10px;border:none;border-radius:6px;" onclick="showDriverDetail()">Lihat Detail Driver</button>
@@ -502,7 +504,7 @@ function showDriverDetail() {
   document.getElementById('modalDriverNama').textContent = opt.dataset.nama;
   document.getElementById('modalDriverVerifikasi').textContent = '✅ ' + opt.dataset.verifikasi;
   document.getElementById('modalDriverLokasi').textContent = '📍 Lokasi: ' + opt.dataset.lokasi;
-  document.getElementById('modalDriverHarga').textContent = '💰 Tarif: Rp' + opt.dataset.harga + ' /hari';
+  document.getElementById('modalDriverHarga').textContent = '💰 Tarif: Rp' + opt.dataset.harga + ' /jam';
   document.getElementById('modalDriverPengalaman').textContent = '🕓 Pengalaman: ' + opt.dataset.pengalaman;
   document.getElementById('modalDriverDeskripsi').textContent = opt.dataset.deskripsi;
 }

@@ -69,10 +69,18 @@
         <input type="text" id="sim_number" name="sim_number" value="{{ old('sim_number') }}">
       </div>
 
-      {{-- Harga per hari --}}
+      {{-- Harga per jam --}}
       <div class="form-group">
-        <label for="harga_per_hari">Tarif / Hari (Rp)</label>
-        <input type="number" id="harga_per_hari" name="harga_per_hari" value="{{ old('harga_per_hari', 150000) }}" min="0" required>
+        <label for="harga_per_jam">Tarif / Jam (Rp)</label>
+        <input 
+          type="number" 
+          id="harga_per_jam" 
+          name="harga_per_jam" 
+          value="{{ old('harga_per_jam', 25000) }}" 
+          min="0" 
+          step="1000"
+          placeholder="Contoh: 25000"
+          required>
       </div>
 
       {{-- Lokasi --}}

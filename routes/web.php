@@ -66,8 +66,6 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/rentals/cancel-latest', [RentalController::class, 'cancelLatest'])->name('rentals.cancelLatest');
     Route::get('/rentals/{id}', [RentalController::class, 'show'])->name('rentals.show');
 
-
-
     // 💳 Pembayaran
     Route::get('/payments/{id}/json', [PaymentController::class, 'json'])->name('payments.json');
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
@@ -103,18 +101,16 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/verifikasi/store', [UserVerifikasiController::class, 'store'])->name('verifikasi.store');
 });
 
-
 // ==================== ADMIN AREA ==================== //
 Route::prefix('admin')->middleware('admin.session')->group(function () {
- Route::post('/invoices/{invoice}/retry-payment', [App\Http\Controllers\Admin\InvoiceController::class, 'retryPayment'])
-    ->name('admin.invoices.retryPayment');
+ // 💳 Invoice
     Route::get('/invoices', [InvoiceController::class, 'index'])->name('admin.invoices.index');
     Route::get('/invoices/{rental_id}/create', [InvoiceController::class, 'create'])->name('admin.invoices.create');
     Route::post('/invoices/{rental_id}/store', [InvoiceController::class, 'store'])->name('admin.invoices.store');
     Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('admin.invoices.show');
-    Route::post('/admin/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
-    Route::post('/invoices/{id}/manual-update', [App\Http\Controllers\Admin\InvoiceController::class, 'manualUpdate'])
-    ->name('admin.invoices.manualUpdate');
+    Route::post('/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('admin.invoices.cancel');
+    Route::post('/invoices/{id}/manual-update', [InvoiceController::class, 'manualUpdate'])->name('admin.invoices.manualUpdate');
+    Route::post('/invoices/{id}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('admin.invoices.retry-payment');
 
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])
@@ -136,10 +132,6 @@ Route::delete('cars/brands/{id}', [CarAdminController::class, 'brandDestroy'])->
     Route::get('cars/models', [CarAdminController::class, 'modelIndex'])->name('cars.models');
     Route::post('cars/models', [CarAdminController::class, 'modelStore'])->name('cars.models.store');
 
-
-
-
-
     Route::get('api/models/{brand_id}', [CarAdminController::class, 'getModelsByBrand']);
     Route::resource('cars', CarAdminController::class);
 
@@ -153,14 +145,12 @@ Route::delete('cars/brands/{id}', [CarAdminController::class, 'brandDestroy'])->
     Route::get('/rentals/{id}', [RentalAdminController::class, 'show'])->name('admin.rentals.show');
     Route::post('/rentals/{id}/update-status', [RentalAdminController::class, 'updateStatus'])->name('admin.rentals.updateStatus');
 
-    
-
-Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])
-    ->name('admin.payments.refresh');
-    Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])
-    ->name('admin.invoices.updateStatus');
-    Route::post('/admin/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])
-    ->name('admin.payments.manualUpdate');
+    Route::post('/payments/refresh/{id}', [AdminPaymentController::class, 'refresh'])
+        ->name('admin.payments.refresh');
+        Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])
+        ->name('admin.invoices.updateStatus');
+        Route::post('/admin/invoices/manual-update/{id}', [InvoiceController::class, 'manualUpdate'])
+        ->name('admin.payments.manualUpdate');
 
     Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('admin.laporan.index');
 Route::get('/laporan/cetak', [App\Http\Controllers\Admin\LaporanController::class, 'cetak'])->name('admin.laporan.cetak');
@@ -170,4 +160,7 @@ Route::resource('drivers', \App\Http\Controllers\Admin\DriverAdminController::cl
 ]);
 
 });
+Route::post('/api/payment/callback', [PaymentController::class, 'callback'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+    ->name('payment.callback');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

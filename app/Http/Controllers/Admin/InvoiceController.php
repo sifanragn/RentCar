@@ -299,4 +299,86 @@ class InvoiceController extends Controller
 
         return back()->with('success', '✅ Status invoice berhasil diperbarui dan disinkron ke pembayaran.');
     }
+
+    /**
+ * 🔁 Kirim ulang pembayaran (retry) untuk invoice yang pending
+ */
+public function retryPayment(Request $request, $id)
+{
+    $invoice = Invoice::with(['rental.car.brand', 'rental.user', 'rental.payments'])->findOrFail($id);
+    $rental = $invoice->rental;
+
+    // 💬 Validasi awal
+    if (!$rental || $rental->status_rental !== 'selesai') {
+        return back()->with('error', 'Penyewaan belum selesai, tidak bisa kirim ulang pembayaran.');
+    }
+
+    if (!in_array($invoice->status_invoice, ['dibatalkan', 'pending'])) {
+        return back()->with('error', 'Invoice ini tidak dapat dikirim ulang karena statusnya sudah selesai.');
+    }
+
+    $method = strtolower($request->input('payment_method', 'qris'));
+    $mapMetode = [
+        'qris' => 'QRIS',
+        'bca' => 'BC',
+        'bri' => 'BR',
+        'bni' => 'N2',
+        'mandiri' => 'M2',
+    ];
+    $duitkuMethod = $mapMetode[$method] ?? 'QRIS';
+
+    // cari payment denda terakhir (charge)
+    $lastCharge = $rental->payments()
+        ->where('payment_type', 'charge')
+        ->latest('created_at')
+        ->first();
+
+    if ($lastCharge && $lastCharge->status_pembayaran === 'success') {
+        return back()->with('info', 'Denda sudah dibayar, tidak perlu kirim ulang.');
+    }
+
+    // nominal denda
+    $amount = (int) $invoice->denda_tambahan;
+    if ($amount <= 0) {
+        return back()->with('error', 'Invoice ini tidak memiliki denda untuk dibayarkan.');
+    }
+
+    try {
+        // buat ulang payment baru hanya untuk denda
+        $payment = Payment::create([
+            'rental_id' => $rental->rental_id,
+            'gateway' => 'Duitku',
+            'metode' => $method,
+            'payment_type' => 'charge',
+            'total_bayar' => $amount,
+            'status_pembayaran' => 'pending',
+            'gateway_reference' => 'INV-CHG-' . strtoupper(uniqid()),
+            'merchant_order_id' => 'CHG' . $invoice->invoice_id . '-' . strtoupper(uniqid()),
+            'payment_token' => null,
+            'callback_status' => 'waiting',
+            'tanggal_bayar' => now(),
+            'expired_at' => now()->addMinutes(30),
+        ]);
+
+        // panggil fungsi kirim duitku
+        $this->createDuitkuPayment(
+            $rental,
+            $payment,
+            $invoice->invoice_id,
+            $duitkuMethod,
+            $amount,
+            'RETRY'
+        );
+
+        // ubah status invoice jadi pending ulang
+        $invoice->update(['status_invoice' => 'pending']);
+
+        Log::info('🔁 Retry pembayaran denda berhasil dibuat.', ['invoice_id' => $invoice->invoice_id, 'payment_id' => $payment->id]);
+
+        return back()->with('success', '✅ Pembayaran denda berhasil dikirim ulang ke Duitku.');
+    } catch (\Throwable $e) {
+        Log::error('❌ Gagal membuat ulang pembayaran: ' . $e->getMessage());
+        return back()->with('error', 'Gagal membuat ulang pembayaran.');
+    }
+}
 }

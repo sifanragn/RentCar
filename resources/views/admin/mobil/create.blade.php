@@ -110,9 +110,10 @@
     </div>
 
     <div class="form-group">
-      <label>Harga Sewa per Hari (Rp)</label>
-      <input type="number" step="0.01" name="harga_sewa_per_hari" value="{{ old('harga_sewa_per_hari') }}" required>
-    </div>
+  <label>Harga Sewa per Jam (Rp)</label>
+  <input type="number" step="0.01" name="harga_sewa_per_jam" required>
+  <small class="hint-text">Minimal sewa 6 jam.</small>
+</div>
 
     <div class="form-group">
       <label>Lokasi</label>

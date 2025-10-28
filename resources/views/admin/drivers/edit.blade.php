@@ -56,10 +56,16 @@
         <input type="text" name="sim_number" id="sim_number" value="{{ old('sim_number', $driver->sim_number) }}">
       </div>
 
-      {{-- Harga per hari --}}
+      {{-- Harga per jam --}}
       <div class="form-group">
-        <label for="harga_per_hari">Harga Sewa / Hari</label>
-        <input type="number" name="harga_per_hari" id="harga_per_hari" value="{{ old('harga_per_hari', $driver->harga_per_hari) }}" required>
+        <label for="harga_per_jam">Tarif / Jam (Rp)</label>
+        <input 
+          type="number" 
+          name="harga_per_jam" 
+          id="harga_per_jam" 
+          value="{{ old('harga_per_jam', $driver->harga_per_jam) }}" 
+          placeholder="Masukkan tarif per jam, misal 25000"
+          required>
       </div>
 
       {{-- Pengalaman --}}
