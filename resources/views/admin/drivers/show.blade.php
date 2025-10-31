@@ -21,14 +21,8 @@
       <p><strong>Nomor SIM:</strong> {{ $driver->sim_number ?? '-' }}</p>
       <p><strong>Lokasi:</strong> {{ $driver->lokasi ?? '-' }}</p>
       <p><strong>Pengalaman:</strong> {{ $driver->pengalaman ?? '-' }}</p>
-<<<<<<< HEAD
-      <p><strong>Tarif / Hari:</strong> Rp{{ number_format($driver->harga_per_hari, 0, ',', '.') }}</p>
-
-      <p><strong>Status Verifikasi:</strong>
-=======
       <p><strong>Tarif / Jam:</strong> Rp{{ number_format($driver->harga_per_jam, 0, ',', '.') }}</p>
       <p><strong>Status Verifikasi:</strong> 
->>>>>>> 2709c9b41fb578e552895bbfe01de383b7ed3013
         <span class="badge {{ $driver->status_verifikasi == 'disetujui' ? 'verified' : 'pending' }}">
           {{ ucfirst($driver->status_verifikasi) }}
         </span>
