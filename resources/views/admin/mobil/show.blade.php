@@ -51,7 +51,7 @@
 </table>
 
 <br>
-<a href="{{ route('cars.index') }}" 
+<a href="{{ route('admin.cars.index') }}" 
    style="background:#555; color:#fff; padding:8px 14px; text-decoration:none; border-radius:6px;">
    ← Kembali ke Daftar Mobil
 </a>

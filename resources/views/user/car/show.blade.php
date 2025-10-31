@@ -38,6 +38,11 @@
     font-size:13px;
     margin:8px 0;
   }
+  .car-info .price small {
+    color:#555;
+    font-size:11px;
+    font-weight:500;
+  }
   .tag-grid {
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
@@ -121,7 +126,13 @@
   {{-- 🧾 Informasi Mobil --}}
   <div class="car-info">
     <h2>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }} – {{ ucfirst($car->warna) }}</h2>
-    <div class="price">Rp {{ number_format($car->harga_sewa_per_hari,0,',','.') }}</div>
+    
+    {{-- 💰 Harga per jam --}}
+    <div class="price">
+      Rp {{ number_format($car->harga_sewa_per_jam ?? 0, 0, ',', '.') }}
+      <small>/ jam</small>
+    </div>
+
     <p>{{ $car->deskripsi ?? '-' }}</p>
 
     {{-- Spesifikasi --}}

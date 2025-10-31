@@ -180,7 +180,7 @@ public function store(Request $request)
 
     $car->delete();
 
-    return redirect()->route('cars.index')->with('success', 'Mobil dan semua foto berhasil dihapus.');
+    return redirect()->route('admin.cars.index')->with('success', 'Mobil dan semua foto berhasil dihapus.');
 }
 
 

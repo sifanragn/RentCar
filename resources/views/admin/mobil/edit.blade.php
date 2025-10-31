@@ -16,7 +16,7 @@
   </div>
 @endif
 
-<form action="{{ route('cars.update', $car->car_id) }}" method="POST" enctype="multipart/form-data" class="car-form">
+<form action="{{ route('admin.cars.update', $car->car_id) }}" method="POST" enctype="multipart/form-data" class="car-form">
   @csrf
   @method('PUT')
 
@@ -34,7 +34,7 @@
             </option>
           @endforeach
         </select>
-        <a href="{{ route('cars.brands') }}" class="link-add">+ Tambah Merek</a>
+        <a href="{{ route('admin.cars.brands') }}" class="link-add">+ Tambah Merek</a>
       </div>
     </div>
 
@@ -50,7 +50,7 @@
             </option>
           @endforeach
         </select>
-        <a href="{{ route('cars.models') }}" class="link-add">+ Tambah Model</a>
+        <a href="{{ route('admin.cars.models') }}" class="link-add">+ Tambah Model</a>
       </div>
     </div>
 
@@ -163,7 +163,7 @@
 
   <div class="form-actions">
     <button type="submit" class="btn-submit">Perbarui</button>
-    <a href="{{ route('cars.index') }}" class="btn-cancel">Kembali</a>
+    <a href="{{ route('admin.cars.index') }}" class="btn-cancel">Kembali</a>
   </div>
 </form>
 
