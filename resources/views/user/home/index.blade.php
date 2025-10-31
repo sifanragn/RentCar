@@ -416,7 +416,7 @@
         <div class="card-content">
           <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
           <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
-          <p class="price">Rp {{ number_format($car->harga_sewa_per_hari, 0, ',', '.') }}</p>
+          <p class="price">Rp {{ number_format($car->harga_sewa_per_jam, 0, ',', '.') }}</p>
           <div class="info-tags">
             <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
             <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>

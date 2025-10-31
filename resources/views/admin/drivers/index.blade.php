@@ -32,7 +32,7 @@
             <th>Nama</th>
             <th>Nomor HP</th>
             <th>Lokasi</th>
-            <th>Tarif / Hari</th>
+            <th>Tarif / Jam</th>
             <th>Status</th>
             <th>Verifikasi</th>
             <th>Aksi</th>
