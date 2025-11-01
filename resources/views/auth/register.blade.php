@@ -223,7 +223,10 @@
       <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password Anda" required>
     </div>
 
-    <button type="submit" class="btn-register">Daftar</button>
+    <button type="submit" formaction="{{ route('register.sendOtp') }}" class="btn-register">
+  Kirim Kode OTP
+</button>
+
 
     <p class="login-text">
       Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
