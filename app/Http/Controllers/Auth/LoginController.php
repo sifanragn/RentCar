@@ -38,20 +38,21 @@ class LoginController extends Controller
 
             \Log::info('✅ Admin login berhasil', ['email' => $admin->email]);
 
-            return redirect()->intended('/admin/dashboard');
+return redirect()->route('admin.dashboard.index');
         }
 
         // 2️⃣ Kalau bukan admin, cek user biasa
         $user = User::where('email', $request->email)->first();
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user);
-            $request->session()->regenerate();
+if ($user && Hash::check($request->password, $user->password)) {
+    Auth::login($user);
+    $request->session()->regenerate();
 
-            \Log::info('✅ User login berhasil', ['email' => $user->email]);
+    \Log::info('✅ User login berhasil', ['email' => $user->email]);
 
-            return redirect()->intended('/user/dashboard');
-        }
+    // ⬇️ ubah ini
+return redirect()->route('user.home');
+}
 
         // 3️⃣ Kalau keduanya gagal
         \Log::warning('❌ Login gagal', ['email' => $request->email]);

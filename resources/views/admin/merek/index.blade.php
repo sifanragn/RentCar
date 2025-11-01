@@ -15,7 +15,7 @@
     @endif
 
     {{-- FORM TAMBAH MEREK --}}
-    <form action="{{ route('cars.brands.store') }}" method="POST" class="brand-form">
+    <form action="{{ route('admin.cars.brands.store') }}" method="POST" class="brand-form">
       @csrf
       <div class="form-grid">
         <div class="form-group">
@@ -26,7 +26,7 @@
 
       <div class="form-actions">
         <button type="submit" class="btn-submit">Tambah</button>
-        <a href="{{ route('cars.create') }}" class="btn-cancel">Kembali</a>
+        <a href="{{ route('admin.cars.create') }}" class="btn-cancel">Kembali</a>
       </div>
     </form>
   </div>
@@ -48,7 +48,7 @@
 
           {{-- Tombol hapus (muncul saat hover) --}}
           <form 
-            action="{{ route('cars.brands.destroy', $brand->brand_id) }}" 
+            action="{{ route('admin.cars.brands.destroy', $brand->brand_id) }}" 
             method="POST" 
             class="delete-brand-form"
             onsubmit="return confirm('Hapus merek {{ $brand->nama_merek }}?')"

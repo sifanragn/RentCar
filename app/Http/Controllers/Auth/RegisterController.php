@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Helpers\PhoneFormatter;
 
 class RegisterController extends Controller
 {
@@ -17,13 +18,14 @@ class RegisterController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_lengkap' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
-            'foto_ktp' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'foto_kk' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        'nama_lengkap' => 'required|string|max:255',
+        'username' => 'required|string|max:255|unique:users,username',
+        'email' => 'required|email|unique:users,email',
+        'no_hp' => 'required|min:10',
+        'password' => 'required|min:6|confirmed',
+        'foto_ktp' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'foto_kk' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
         // Upload KTP & KK (jika ada)
         $pathKtp = $request->hasFile('foto_ktp')
@@ -39,16 +41,16 @@ class RegisterController extends Controller
 
         // Simpan user
         User::create([
-            'nama_lengkap' => $request->nama_lengkap,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'foto_ktp' => $pathKtp,
-            'foto_kk' => $pathKk,
-            'status_verifikasi' => $statusVerifikasi,
-            'role' => 'user',
-        ]);
-
+        'nama_lengkap' => $request->nama_lengkap,
+        'username' => $request->username,
+        'email' => $request->email,
+        'no_hp' => PhoneFormatter::format($request->no_hp), // ✅ TAMBAH INI
+        'password' => Hash::make($request->password),
+        'foto_ktp' => $pathKtp,
+        'foto_kk' => $pathKk,
+        'status_verifikasi' => $statusVerifikasi,
+        'role' => 'user',
+    ]);
         return redirect()->route('login')->with('success', 'Pendaftaran berhasil. Silakan login.');
     }
 }

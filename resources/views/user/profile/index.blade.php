@@ -1,190 +1,322 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile - RentCar</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f8f9fa;
-      padding-bottom: 80px;
-    }
-    .container {
-      max-width: 430px;
-      margin: auto;
-      padding: 25px 15px;
-    }
-    .profile-header img {
-      width: 100px; height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #ddd;
-    }
-    .profile-header {
+@extends('partials.container')
+
+@section('title', 'Profile User')
+
+@section('styles')
+<style>
+/* === HEADER === */
+.profile-header {
   background: #000;
-  border-radius: 12px;
-  padding: 14px 16px;
+  border-radius: 14px;
+  padding: 10px 18px;
   display: flex;
   align-items: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  gap: 14px;
+  color: #fff;
+  width: 92%;
+  margin: 25px auto 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
-
 .profile-photo {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px; /* bukan bulat */
+  width: 58px;
+  height: 58px;
+  border-radius: 50px;
   object-fit: cover;
-  border: 2px solid #222;
+}
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.profile-info h5 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+.profile-info .username {
+  color: #ccc;
+  font-size: 13px;
+  margin-top: 3px;
 }
 
-.profile-header h5 {
+/* === MENU SECTION === */
+.menu-section {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  overflow: hidden;
+  margin: 20px auto 0;
+  width: 92%;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+  transition: background 0.25s ease, transform 0.1s ease;
+  cursor: pointer;
+}
+.menu-item:hover {
+  background: #f9f9f9;
+  transform: scale(1.01);
+}
+.menu-item:last-child {
+  border-bottom: none;
+}
+.menu-item-left {
+  display: flex;
+  align-items: center;
+}
+.menu-item-left i {
+  background: #000;
+  color: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+  font-size: 15px;
+}
+.menu-text span {
   font-weight: 600;
+  font-size: 15px;
+  color: #222;
+}
+.menu-text small {
+  display: block;
+  color: #666;
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+.menu-item .fa-chevron-right {
+  color: #000;
+  font-size: 15px;
+}
+
+/* === LOGOUT SECTION === */
+.logout-section {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin: 20px auto 80px;
+  width: 92%;
+}
+
+/* === MODAL LOGOUT === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(3px);
+}
+.modal-overlay.active { display: flex; }
+
+.modal-box {
+  background: #fff;
+  border-radius: 18px;
+  width: 90%;
+  max-width: 340px;
+  padding: 26px 24px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  transform: scale(0.95);
+  opacity: 0;
+  transition: all 0.25s ease;
+}
+.modal-box.active {
+  transform: scale(1);
+  opacity: 1;
+}
+.modal-box i {
+  font-size: 42px;
+  color: #ffc107;
+  margin-bottom: 12px;
+}
+.modal-box h4 {
+  color: #000;
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.modal-box p {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 22px;
+  line-height: 1.4;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.modal-buttons button {
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 0;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.btn-cancel {
+  background: #f1f1f1;
+  color: #333;
+}
+.btn-cancel:hover { background: #e4e4e4; }
+.btn-logout {
+  background: #dc3545;
   color: #fff;
 }
+.btn-logout:hover { background: #b02a37; }
 
-.profile-header .username {
-  font-size: 13px;
-  color: #ccc;
+/* === RESPONSIVE === */
+@media (max-width: 480px) {
+  .profile-header { width: 94%; padding: 8px 14px; gap: 12px; }
+  .profile-photo { width: 50px; height: 50px; border-radius: 10px; }
+  .profile-info h5 { font-size: 15px; }
+  .profile-info .username { font-size: 12.5px; }
+  .menu-section, .logout-section { width: 94%; margin-top: 18px; }
+  .menu-item { padding: 12px 14px; }
+  .menu-item-left i { width: 32px; height: 32px; font-size: 14px; margin-right: 12px; }
+  .menu-text span { font-size: 14px; }
+  .menu-text small { font-size: 12px; }
+  .fa-chevron-right { font-size: 13px; }
 }
+</style>
 
-    .menu-section { margin-top: 25px; }
-    .menu-item {
-      background: #fff;
-      padding: 14px 18px;
-      border-radius: 10px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      cursor: pointer;
-      text-align: left;
-      transition: transform .2s;
-    }
-    .menu-item:hover { transform: scale(1.01); }
-    .menu-item span { display: block; font-weight: 600; font-size: 15px; color: #111; }
-    .menu-item small { color: #777; font-size: 13px; }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@endsection
 
-    /* ========== RIWAYAT SEWA ========== */
-    .rental-history {
-      background: #fff;
-      border-radius: 10px;
-      padding: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      margin-top: 20px;
-    }
-    .rental-item {
-      border-bottom: 1px solid #eee;
-      padding: 10px 0;
-    }
-    .rental-item:last-child { border-bottom: none; }
-    .rental-item h6 { margin: 0; font-size: 15px; font-weight: 600; color: #0d6efd; }
-    .rental-item small { display: block; color: #555; }
-    .status {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      margin-top: 5px;
-    }
-    .status.menunggu { background:#fff3cd; color:#856404; }
-    .status.berjalan { background:#d1e7dd; color:#0f5132; }
-    .status.selesai { background:#cfe2ff; color:#084298; }
-    .status.dibatalkan { background:#f8d7da; color:#842029; }
+@section('content')
+@php
+  $foto = $user->foto_profil && file_exists(public_path('storage/'.$user->foto_profil))
+    ? asset('storage/'.$user->foto_profil)
+    : asset('images/guest.png');
+@endphp
 
-    /* ========== NAV BAWAH ========== */
-    .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: #fff; border-top: 1px solid #ddd;
-      display: flex; justify-content: space-around;
-      padding: 8px 0;
-      box-shadow: 0 -1px 6px rgba(0,0,0,0.1);
-    }
-    .bottom-nav .nav-item {
-      text-align: center;
-      color: #555;
-      text-decoration: none;
-      font-size: 12px;
-    }
-    .bottom-nav .nav-item i {
-      font-size: 18px;
-      display: block;
-    }
-    .bottom-nav .active { color: #0d6efd; }
-    footer small { font-size: 12px; color: #888; }
-  </style>
-</head>
-<body>
-
-  <div class="container text-center">
-    {{-- HEADER PROFILE --}}
-    <div class="profile-header d-flex align-items-center justify-content-start text-start">
-  <img src="{{ $user->foto_profil ? asset('storage/'.$user->foto_profil) : asset('img/default-user.png') }}" alt="Foto Profil" class="profile-photo">
-  <div class="ms-3">
-    <h5 class="mb-0 text-white">{{ $user->nama_lengkap }}</h5>
-    <p class="mb-0 username text-light opacity-75">{{ '@' . $user->username }}</p>
+<div class="profile-header">
+  <img src="{{ $foto }}" alt="Foto Profil" class="profile-photo">
+  <div class="profile-info">
+    <h5>{{ $user->nama_lengkap }}</h5>
+    <p class="username">{{ '@' . $user->username }}</p>
   </div>
 </div>
 
-
-    {{-- MENU UTAMA --}}
-    <div class="menu-section mt-4">
-      <div class="menu-item" onclick="window.location='{{ route('user.profile.edit') }}'">
-        <span>Edit Profil</span>
-        <small>Perbarui data akun Anda</small>
+{{-- ==== MENU UTAMA ==== --}}
+<div class="menu-section">
+  <div class="menu-item" onclick="window.location='{{ route('user.profile.edit') }}'">
+    <div class="menu-item-left">
+      <i class="fas fa-pen"></i>
+      <div class="menu-text">
+        <span>Edit Profile</span>
+        <small>Update data Anda dengan mudah</small>
       </div>
-      <div class="menu-item" onclick="window.location='{{ route('user.payments.index') }}'">
+    </div>
+    <i class="fas fa-chevron-right"></i>
+  </div>
+
+  <div class="menu-item" onclick="window.location='{{ route('user.payments.index', ['from' => 'profile']) }}'">
+    <div class="menu-item-left">
+      <i class="fas fa-receipt"></i>
+      <div class="menu-text">
         <span>Transaksi Saya</span>
-        <small>Lihat riwayat pembayaran</small>
+        <small>Lihat Riwayat Transaksi</small>
       </div>
     </div>
-
-    <div class="menu-item" onclick="window.location='{{ route('user.rentals.index') }}'">
-    <span>Riwayat Sewa Mobil</span>
-    <small>Lihat daftar penyewaan Anda</small>
+    <i class="fas fa-chevron-right"></i>
   </div>
 
-    {{-- MENU LAIN --}}
-    <div class="menu-section mt-4">
-      <div class="menu-item" onclick="window.location='{{ route('user.kontak.index') }}'">
+  <div class="menu-item" onclick="window.location='{{ route('user.rentals.index', ['from' => 'profile']) }}'">
+    <div class="menu-item-left">
+      <i class="fas fa-car"></i>
+      <div class="menu-text">
+        <span>Riwayat Penyewaan</span>
+        <small>Mobil yang pernah Anda sewa</small>
+      </div>
+    </div>
+    <i class="fas fa-chevron-right"></i>
+  </div>
+
+  <div class="menu-item" onclick="window.location='{{ route('user.kontak.index', ['from' => 'profile']) }}'">
+    <div class="menu-item-left">
+      <i class="fas fa-envelope"></i>
+      <div class="menu-text">
         <span>Hubungi Kami</span>
-        <small>Punya pertanyaan?</small>
-      </div>
-      <div class="menu-item" onclick="window.location='{{ url('/tentang-kami') }}'">
-        <span>Tentang Kami</span>
-        <small>Kenali RentCar lebih jauh</small>
-      </div>
-      <div class="menu-item" onclick="confirmLogout()">
-        <span>Log Out</span>
-        <small>Keluar dari akun</small>
+        <small>Butuh bantuan? Kami siap!</small>
       </div>
     </div>
-
-    <footer class="text-center mt-4">
-      <img src="{{ asset('img/logo-rental.png') }}" width="100" alt="Logo RentCar"><br>
-      <small>© 2025 RentCar</small>
-    </footer>
+    <i class="fas fa-chevron-right"></i>
   </div>
+</div>
 
-  {{-- NAVIGASI BAWAH --}}
-  <div class="bottom-nav">
-    <a href="{{ route('user.dashboard') }}" class="nav-item"><i class="bi bi-house"></i><span>Home</span></a>
-    <a href="{{ route('user.rentals.index') }}" class="nav-item"><i class="bi bi-clock-history"></i><span>Riwayat</span></a>
-    <a href="{{ route('user.cars.index') }}" class="nav-item center"><i class="bi bi-car-front-fill"></i><span>Mobil</span></a>
-    <a href="{{ route('user.kontak.index') }}" class="nav-item"><i class="bi bi-telephone"></i><span>Kontak</span></a>
-    <a href="{{ route('user.profile.index') }}" class="nav-item active"><i class="bi bi-person-circle"></i><span>Profil</span></a>
+{{-- ==== LOG OUT ==== --}}
+<div class="logout-section">
+  <div class="menu-item" onclick="openLogoutModal()">
+    <div class="menu-item-left">
+      <i class="fas fa-sign-out-alt"></i>
+      <div class="menu-text">
+        <span>Log Out</span>
+        <small>Sampai jumpa kembali!</small>
+      </div>
+    </div>
+    <i class="fas fa-chevron-right"></i>
   </div>
+</div>
 
-  
+@include('partials.bottom-navbar')
+@endsection  {{-- ⛔ PENTING: tutup content dulu sebelum modal --}}
 
-  <script>
-    function confirmLogout() {
-      if (confirm('Yakin ingin keluar dari akun?')) {
-        document.getElementById('logoutForm').submit();
-      }
-    }
-  </script>
-  <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf</form>
-</body>
-</html>
+{{-- ==== MODAL KONFIRMASI LOGOUT ==== --}}
+<div id="logoutOverlay" class="modal-overlay">
+  <div id="logoutBox" class="modal-box">
+    <i class="fas fa-question-circle"></i>
+    <h4>Apakah Anda yakin ingin keluar?</h4>
+    <p>Setelah keluar, Anda harus login kembali untuk mengakses akun ini.</p>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeLogoutModal()">Tidak</button>
+      <button class="btn-logout" onclick="submitLogout()">Ya</button>
+    </div>
+  </div>
+</div>
+
+<form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display:none;">
+  @csrf
+</form>
+
+<script>
+function openLogoutModal() {
+  const overlay = document.getElementById('logoutOverlay');
+  const box = document.getElementById('logoutBox');
+  overlay.classList.add('active');
+  setTimeout(() => box.classList.add('active'), 20);
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLogoutModal() {
+  const overlay = document.getElementById('logoutOverlay');
+  const box = document.getElementById('logoutBox');
+  box.classList.remove('active');
+  setTimeout(() => overlay.classList.remove('active'), 200);
+  document.body.style.overflow = 'auto';
+}
+
+function submitLogout() {
+  document.getElementById('logoutForm').submit();
+}
+
+// Tutup modal jika klik di luar box
+window.onclick = e=>{
+  const overlay=document.getElementById('logoutOverlay');
+  if(e.target===overlay) closeLogoutModal();
+};
+</script>

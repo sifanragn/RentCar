@@ -1,517 +1,339 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Form Penyewaan Mobil</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f8f9fa;
-      margin: 0;
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    h2 { color: #333; margin-bottom: 20px; }
-    label { display: block; margin-top: 10px; font-weight: 600; color: #333; }
-    input, select, textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-top: 5px;
-      font-family: inherit;
-    }
-    button {
-      background: #0d6efd;
-      color: white;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 6px;
-      margin-top: 15px;
-      cursor: pointer;
-      transition: all .3s;
-    }
-    button:hover { background: #0b5ed7; transform: scale(1.02); }
-    .alert {
-      background: #fff3cd;
-      color: #856404;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 15px;
-    }
-    .price-box {
-      background: #e9ecef;
-      padding: 10px;
-      border-radius: 6px;
-      margin-top: 10px;
-    }
-    #popup-menunggu {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    #popup-menunggu .popup-content {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      width: 350px;
-      text-align: center;
-      position: relative;
-      animation: fadeIn .4s ease;
-    }
-    #popup-menunggu button.close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      border: none;
-      background: none;
-      font-size: 20px;
-      cursor: pointer;
-    }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
+@extends('partials.container')
 
-   <!-- ========================= DRIVER SECTION ========================= -->
+@section('title', 'Form Penyewaan')
+
+@section('styles')
+<style>
+/* ===== Global & Wrapper ===== */
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 0; }
+.container-wrapper { padding: 15px; }
+
+/* ===== Card ===== */
+.card { background: #fff; border-radius: 10px; padding: 25px; max-width: 600px;
+  margin-left: -20px; margin-right: -20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 15px; }
+
+h2 { font-size: 22px; color: #333; margin-bottom: 15px; text-align: center; font-weight: 700; }
+h3 { font-size: 20px; color: #444; margin-bottom: 6px; }
+p  { color: #555; font-size: 15px; }
+
+label { display: block; margin-top: 12px; font-weight: 550; color: #333; }
+
+input, select, textarea {
+  width: 100%; padding: 10px 12px; border: 1.5px solid #ccc; border-radius: 8px;
+  margin-top: 5px; font-size: 14px; transition: 0.2s; font-family: inherit;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.25); outline: none;
+}
+
+/* ===== Button ===== */
+button { background: #000; color: #fff; font-weight: 600; padding: 12px 16px;
+  border: none; border-radius: 8px; margin-top: 18px; cursor: pointer;
+  transition: 0.3s; width: 100%; }
+button:hover { background: #222; transform: scale(1.03); }
+
+/* ===== Back Link ===== */
+.back-link { color: #000; text-decoration: none; font-weight: 500; font-size: 15px; display: inline-block; margin-bottom: 10px; }
+.back-link:hover { text-decoration: underline; }
+
+/* ===== Info Box ===== */
+.price-box {
+  background: #f1f1f1; border-left: 4px solid #000; padding: 12px 15px;
+  border-radius: 6px; margin-top: 15px; color: #333; font-size: 14px; height: 70px;
+}
+
+/* ===== Lokasi & Alamat Box ===== */
+#lokasiRental, #alamatUser { background: #f9f9f9; border-radius: 10px; padding: 15px; border: 1px solid #e0e0e0; }
+
+/* 🚗 ===== DRIVER SECTION ===== */
 .driver-section {
-  margin-top: 25px;
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  margin-top: 25px; background: #fff; border-radius: 14px;
+  padding: 22px 20px; border: 1.5px solid #e0e0e0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+.driver-section:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.driver-section label { font-weight: 600; color: #222; margin-bottom: 8px; font-size: 15px; }
+
+.driver-list { margin-top: 15px; display: none; opacity: 0; transform: translateY(-5px); transition: all 0.25s ease; }
+.driver-list.show { display: block; opacity: 1; transform: translateY(0); }
+
+.driver-dropdown { position: relative; width: 100%; user-select: none; z-index: 10; }
+.driver-dropdown .selected {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; border: 1.5px solid #ccc; border-radius: 8px;
+  background: #fafafa; cursor: pointer;
+}
+.driver-dropdown .options {
+  position: absolute; width: 100%; background: #fff; border: 1.5px solid #ddd;
+  border-radius: 8px; margin-top: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  list-style: none; padding: 8px 0; max-height: 250px; overflow-y: auto;
+  display: none; z-index: 99;
+}
+.driver-dropdown.open .options { display: block; }
+.driver-dropdown .option { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: 0.2s; }
+.driver-dropdown .option:hover { background: #f2f2f2; }
+.driver-dropdown .option img {
+  width: 40px; height: 40px; border-radius: 10px; object-fit: cover; margin-right: 10px; border: 1.5px solid #000;
 }
 
-.driver-section label {
-  font-weight: 600;
-  display: block;
-  margin-bottom: 6px;
-  color: #333;
+.driver-selected { display: none; margin-top: 8px; text-align: center; }
+.driver-selected button {
+  background: #000; color: #fff; font-weight: 600; padding: 8px 14px;
+  border-radius: 8px; border: none; cursor: pointer; transition: 0.25s;
 }
+.driver-selected button:hover { background: #222; transform: translateY(-1px); }
 
-.driver-section select {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  outline: none;
-  transition: .2s;
-}
-
-.driver-section select:focus {
-  border-color: #0d6efd;
-}
-
-.driver-list {
-  margin-top: 15px;
-  display: none;
-}
-
-.driver-card {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background: #f9f9f9;
-  border-radius: 10px;
-  padding: 12px;
-  transition: 0.3s;
-  cursor: pointer;
-  border: 1px solid transparent;
-}
-.driver-card:hover {
-  background: #eef6ff;
-  border-color: #0d6efd;
-}
-
-.driver-card img {
-  width: 65px;
-  height: 65px;
-  border-radius: 10px;
-  object-fit: cover;
-}
-
-.driver-info {
-  flex: 1;
-}
-
-.driver-info h4 {
-  margin: 0;
-  color: #333;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.driver-info small {
-  color: #666;
-  font-size: 13px;
-}
-
-.driver-selected {
-  display: none;
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  background: #eaf6ff;
-  border-left: 4px solid #0d6efd;
-}
-
-.driver-selected strong {
-  color: #0d6efd;
-}
-
-/* === Modal Popup === */
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  display: none; justify-content: center; align-items: center;
+  z-index: 99999; overflow-y: auto;
 }
-
 .modal-box {
-  background: #fff;
-  border-radius: 16px;
-  padding: 25px;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-  position: relative;
-  animation: fadeIn .3s ease;
+  position: relative; background: #fff; border-radius: 18px; padding: 32px 25px 35px;
+  width: 90%; max-width: 400px; text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18); animation: fadeIn 0.3s ease;
 }
-
 .modal-box img {
-  width: 90px;
-  height: 90px;
-  border-radius: 12px;
-  object-fit: cover;
-  display: block;
-  margin: auto;
+  display: block; width: 110px; height: 110px; border-radius: 14px; object-fit: cover;
+  border: 2px solid #000; margin: 10px auto 14px auto; box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
-
-.modal-box h3 {
-  text-align: center;
-  margin: 12px 0 4px;
+.modal-box .close-btn {
+  position: absolute; top: 10px; right: 15px; border: none; background: none;
+  font-size: 22px; cursor: pointer; color: #888; margin-right: -150px; margin-top: -5px
 }
+.modal-box .close-btn:hover { color: #000; }
+.modal-box p { margin: 6px 0; font-size: 15px; color: #333; background: #fafafa; padding: 6px 10px; border-radius: 6px; text-align: left; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+</style>
+@endsection
 
-.modal-box p {
-  color: #555;
-  font-size: 14px;
-  margin: 3px 0;
-  text-align: center;
-}
+@section('content')
+@include('partials.verification-alert')
 
-.modal-box button.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  border: none;
-  background: none;
-  font-size: 22px;
-  cursor: pointer;
-}
+<div class="container-wrapper">
+  @php
+    $user = auth()->user()->refresh();
+    $hasDocuments = $user->foto_ktp && $user->foto_kk;
+    $isVerified   = $user->status_verifikasi === 'disetujui';
+    $redirectBack = url()->previous();
+  @endphp
 
-@keyframes fadeIn {
-  from {opacity:0; transform:translateY(20px);}
-  to {opacity:1; transform:translateY(0);}
-}
-  </style>
-</head>
-<body>
+  <a href="{{ route('user.cars.show', $car->car_id) }}" class="back-link">
+    ← Kembali
+  </a>
 
-<div class="card">
-  <h2>Form Penyewaan Mobil</h2>
+  <div class="card">
+    <h2>Form Penyewaan Mobil</h2>
+    <h3>{{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
+    <p><strong>Harga per jam:</strong> Rp{{ number_format($car->harga_sewa_per_jam, 0, ',', '.') }}</p>
 
-  {{-- ✅ Alert hanya muncul kalau belum verifikasi --}}
-  @if(auth()->user()->status_verifikasi !== 'disetujui')
-    <div class="alert">
-      ⚠️ Penyewaan hanya bisa dilakukan setelah <b>admin memverifikasi KTP & KK Anda.</b><br>
-      <a href="{{ route('user.verifikasi.index') }}" style="color:#0d6efd;">Klik di sini untuk verifikasi sekarang</a>
-    </div>
-  @endif
+    <form id="rentalForm" action="{{ route('user.rentals.store', $car->car_id) }}" method="POST">
+      @csrf
+      <input type="hidden" name="redirect_back" value="{{ $redirectBack }}">
 
- {{-- Harga mobil --}}
-<h3>{{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
-<p><strong>Harga per jam:</strong> Rp{{ number_format($car->harga_sewa_per_jam ?? 0, 0, ',', '.') }}</p>
+      <label for="tanggal_mulai">Tanggal & Jam Mulai</label>
+      <input type="datetime-local" name="tanggal_mulai" id="tanggal_mulai" required>
+      <small style="color:#666;">Minimal sewa 6 jam (08:00–22:00 WIB)</small>
 
-  <form id="rentalForm" action="{{ route('user.rentals.store', $car->car_id) }}" method="POST">
-    @csrf
+      <label for="tanggal_selesai">Tanggal & Jam Selesai</label>
+      <input type="datetime-local" name="tanggal_selesai" id="tanggal_selesai" required>
 
-    {{-- 🔹 input tanggal + jam mulai --}}
-    <label for="tanggal_mulai">Tanggal & Jam Mulai</label>
-    <input type="datetime-local" name="tanggal_mulai" id="tanggal_mulai" required 
-          placeholder="Pilih tanggal dan jam mulai (min 6 jam)">
-    <small style="color:#555;">Minimal sewa 6 jam.</small>
+      {{-- DRIVER --}}
+      <div class="driver-section">
+        <label for="driver">Butuh Driver?</label>
+        <select name="driver" id="driver" onchange="toggleDriverList(this)">
+          <option value="tidak" selected>Tidak</option>
+          <option value="ya">Ya (+ tarif driver otomatis)</option>
+        </select>
 
-    <label for="tanggal_selesai">Tanggal & Jam Selesai</label>
-    <input type="datetime-local" name="tanggal_selesai" id="tanggal_selesai" required 
-          placeholder="Pilih tanggal dan jam selesai">
-          
-    <div class="driver-section">
-  <label for="driver">Butuh Driver?</label>
-  <select name="driver" id="driver" required onchange="toggleDriverList(this)">
-    <option value="tidak">Tidak</option>
-    <option value="ya">Ya (+ otomatis sesuai tarif driver)</option>
-  </select>
+        <div id="driverList" class="driver-list">
+          <label for="driver_id">Pilih Driver</label>
+          <div class="driver-dropdown" id="driverDropdown">
+            <div class="selected" onclick="toggleDropdown()">
+              <span>Pilih Driver...</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="#333" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <ul class="options">
+              @foreach($drivers as $driver)
+                <li class="option"
+                    data-id="{{ $driver->driver_id }}"
+                    data-foto="{{ asset('storage/' . $driver->foto) }}"
+                    data-nama="{{ $driver->nama }}"
+                    data-lokasi="{{ $driver->lokasi ?? 'Tidak diketahui' }}"
+                    data-harga="{{ number_format($driver->harga_per_jam ?? 0, 0, ',', '.') }}"
+                    data-pengalaman="{{ $driver->pengalaman ?? 'Tidak diketahui' }}"
+                    data-deskripsi="{{ $driver->deskripsi ?? 'Tidak ada deskripsi.' }}"
+                    onclick="selectDriver(this)">
+                  <img src="{{ asset('storage/' . $driver->foto) }}" alt="{{ $driver->nama }}">
+                  <span>{{ $driver->nama }}</span>
+                </li>
+              @endforeach
+            </ul>
+            <input type="hidden" name="driver_id" id="driver_id">
+          </div>
+        </div>
 
-  <!-- Pilih driver -->
-  <div id="driverList" class="driver-list">
-    <label for="driver_id" style="margin-top:10px;">Pilih Driver</label>
-    <select id="driver_id" name="driver_id" onchange="showDriverCard(this)">
-    <option value="">-- Pilih Driver --</option>
-    @foreach($drivers as $driver)
-      <option 
-        value="{{ $driver->driver_id }}"
-        data-foto="{{ asset('storage/' . $driver->foto) }}"
-        data-nama="{{ $driver->nama }}"
-        data-lokasi="{{ $driver->lokasi ?? 'Tidak diketahui' }}"
-        data-harga="{{ number_format($driver->harga_per_jam ?? 0, 0, ',', '.') }}"
-        data-pengalaman="{{ $driver->pengalaman ?? 'Tidak diketahui' }}"
-        data-verifikasi="{{ ucfirst($driver->status_verifikasi) }}"
-        data-deskripsi="{{ $driver->deskripsi ?? 'Tidak ada deskripsi.' }}">
-        {{ $driver->nama }}
-      </option>
-    @endforeach
-  </select>
-    <div id="driverSelected" class="driver-selected">
-      <strong id="selectedDriverName"></strong><br>
-      <button type="button" class="btn btn-sm" style="margin-top:6px;background:#0d6efd;color:#fff;padding:6px 10px;border:none;border-radius:6px;" onclick="showDriverDetail()">Lihat Detail Driver</button>
-    </div>
+        <div id="driverSelected" class="driver-selected">
+          <button type="button" id="lihatDetailBtn" onclick="showDriverDetail()">Lihat Detail Driver</button>
+        </div>
+      </div>
+
+      {{-- ✅ METODE PICKUP DARI FILE SATU --}}
+      <label for="metode_pickup" style="margin-top:18px;">Metode Pengambilan</label>
+      <select name="metode_pickup" id="metode_pickup" required>
+        <option value="">-- Pilih Metode --</option>
+        <option value="ambil_sendiri">Ambil di Tempat</option>
+        <option value="pickup_alamat">Antar ke Alamat Saya</option>
+      </select>
+
+      <div id="lokasiRental" style="display:none; margin-top:10px;">
+        <p>📍 Lokasi Rental Kami:</p>
+        <p><strong>Jl. Melati No. 12, Bandung</strong></p>
+        <a href="https://www.google.com/maps?q=-6.914744,107.609810" target="_blank" style="color:#0d6efd;">Lihat di Google Maps</a>
+      </div>
+
+      <div id="alamatUser" style="display:none; margin-top:10px;">
+        <label for="alamat">Alamat Anda</label>
+        <textarea id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap Anda..."></textarea>
+        <button type="button" id="cekOngkirBtn" style="margin-top:8px; height:45px;">Cek Ongkir</button>
+        <p id="hasilOngkir" style="margin-top:8px; color:#333;"></p>
+      </div>
+      {{-- ✅ END METODE PICKUP --}}
+      
+      <div class="price-box">
+        <p><strong>Catatan:</strong> Total biaya akan dihitung otomatis berdasarkan jam sewa.</p>
+      </div>
+
+      <button type="submit">Konfirmasi Sewa</button>
+    </form>
   </div>
 </div>
 
-<!-- Modal detail driver -->
+{{-- Modal Driver --}}
 <div id="driverModal" class="modal-overlay">
   <div class="modal-box">
     <button class="close-btn" onclick="closeDriverModal()">×</button>
     <img id="modalDriverFoto" src="">
     <h3 id="modalDriverNama"></h3>
-    <p id="modalDriverVerifikasi"></p>
-    <p id="modalDriverLokasi"></p>
     <p id="modalDriverHarga"></p>
+    <p id="modalDriverLokasi"></p>
     <p id="modalDriverPengalaman"></p>
     <p id="modalDriverDeskripsi"></p>
   </div>
 </div>
 
-    <label for="metode_pickup">Metode Pengambilan</label>
-    <select name="metode_pickup" id="metode_pickup" required>
-      <option value="">-- Pilih Metode --</option>
-      <option value="ambil_sendiri">Ambil di Tempat</option>
-      <option value="pickup_alamat">Antar ke Alamat Saya</option>
-    </select>
-
-    <!-- Lokasi rental -->
-    <div id="lokasiRental" style="display:none; margin-top:10px;">
-      <p>📍 Lokasi Rental Kami:</p>
-      <p><strong>Hexagon Inc</strong></p>
-      <a href="https://maps.app.goo.gl/A2nueYrYoqiqduJs8" target="_blank"
-         style="color:#0d6efd;">Lihat di Google Maps</a>
-    </div>
-
-    <!-- Input alamat user -->
-    <div id="alamatUser" style="display:none; margin-top:10px;">
-      <label for="alamat">Alamat Anda</label>
-      <textarea id="alamat" name="alamat"
-                placeholder="Masukkan alamat lengkap Anda..."
-                rows="3"
-                style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;"></textarea>
-      <button type="button" id="cekOngkirBtn" style="margin-top:10px;">Cek Ongkir</button>
-      <p id="hasilOngkir" style="margin-top:8px; color:#333;"></p>
-    </div>
-
-    <div class="price-box">
-      <p><strong>Catatan:</strong> Total biaya akan dihitung otomatis setelah pembayaran.</p>
-    </div>
-
-    <button type="submit">Ajukan Penyewaan</button>
-  </form>
-
-  <a href="{{ route('user.cars.show', $car->car_id) }}"
-     style="display:inline-block; margin-top:15px; color:#0d6efd; text-decoration:none;">← Kembali</a>
-</div>
-
-{{-- Popup jika belum verifikasi --}}
-<div id="popup-menunggu">
-  <div class="popup-content">
-    <button class="close-btn" id="close-popup">✖</button>
-    <div style="font-size:40px; animation:spin 1s linear infinite;">⏳</div>
-    <img src="{{ asset('img/waiting-illustration.png') }}" alt="Menunggu"
-         style="width:150px; margin:10px auto;">
-    <h3>Belum Diverifikasi</h3>
-    <p>Anda harus mengunggah KTP & KK terlebih dahulu sebelum melanjutkan penyewaan.</p>
-    <a href="{{ route('user.verifikasi.index') }}"
-       style="display:inline-block;background:#0d6efd;color:#fff;padding:10px 14px;border-radius:6px;text-decoration:none;">Unggah Sekarang</a>
-  </div>
-</div>
-
 <script>
-  const form  = document.getElementById('rentalForm');
-  const popup = document.getElementById('popup-menunggu');
-  const csrf  = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-  const isVerified = "{{ auth()->user()->status_verifikasi }}" === "disetujui";
+window.addEventListener('load', () => {
+  const mulai = document.getElementById('tanggal_mulai');
+  const selesai = document.getElementById('tanggal_selesai');
+  const priceBox = document.querySelector('.price-box p');
+  const hargaPerJam = {{ $car->harga_sewa_per_jam }};
+
+  // 🕓 Set minimal waktu mulai
+  const now = new Date();
+  const adjustedNow = new Date(now.getTime() + 5 * 60000);
+  const localNow = new Date(adjustedNow.getTime() - adjustedNow.getTimezoneOffset() * 60000)
+                    .toISOString().slice(0,16);
+  mulai.min = localNow;
+  selesai.min = localNow;
+
+  mulai.addEventListener('change', () => {
+    const startDate = new Date(mulai.value);
+    if (isNaN(startDate)) return;
+
+    const minEndDate = new Date(startDate.getTime() + 6 * 60 * 60 * 1000);
+    selesai.min = minEndDate.toISOString().slice(0,16);
+
+    if (selesai.value && new Date(selesai.value) < startDate) selesai.value = '';
+    hitungTotal();
+  });
+
+  function hitungTotal() {
+    if (!mulai.value || !selesai.value) return;
+    const start = new Date(mulai.value);
+    const end = new Date(selesai.value);
+    const diff = (end - start) / (1000 * 60 * 60);
+
+    if (diff <= 0) {
+      priceBox.innerHTML = `<strong>⚠️ Jam selesai harus lebih besar dari jam mulai</strong>`;
+      return;
+    }
+
+    if (diff + 0.01 < 6) {
+      priceBox.innerHTML = `<strong>❗Minimal sewa 6 jam</strong>`;
+      return;
+    }
+
+    const total = hargaPerJam * diff;
+    priceBox.innerHTML = `<strong>Total Estimasi:</strong> Rp${total.toLocaleString('id-ID')}<br>
+      <small>(${diff.toFixed(1)} jam × Rp${hargaPerJam.toLocaleString('id-ID')}/jam)</small>`;
+  }
+
+  mulai.addEventListener('change', hitungTotal);
+  selesai.addEventListener('change', hitungTotal);
+
+  /* === Driver Dropdown === */
+  window.toggleDropdown = ()=>document.getElementById('driverDropdown').classList.toggle('open');
+  window.selectDriver = el=>{
+    document.querySelector('#driverDropdown .selected span').innerHTML =
+      `<img src="${el.dataset.foto}" style="width:30px;height:30px;border-radius:8px;margin-right:6px;"> ${el.dataset.nama}`;
+    document.getElementById('driver_id').value = el.dataset.id;
+    document.getElementById('driverSelected').style.display = 'block';
+    document.getElementById('driverDropdown').classList.remove('open');
+  };
+  window.toggleDriverList = sel=>document.getElementById('driverList').classList.toggle('show', sel.value==='ya');
+
+  /* === Driver Modal === */
+  window.showDriverDetail = ()=>{
+    const id=document.getElementById('driver_id').value;
+    const el=document.querySelector(`.option[data-id="${id}"]`);
+    if (!el) return;
+    document.getElementById('driverModal').style.display='flex';
+    document.getElementById('modalDriverFoto').src=el.dataset.foto;
+    document.getElementById('modalDriverNama').textContent=el.dataset.nama;
+    document.getElementById('modalDriverHarga').textContent='💰 Rp'+el.dataset.harga+'/jam';
+    document.getElementById('modalDriverLokasi').textContent='📍 '+el.dataset.lokasi;
+    document.getElementById('modalDriverPengalaman').textContent='🕓 '+el.dataset.pengalaman;
+    document.getElementById('modalDriverDeskripsi').textContent=el.dataset.deskripsi;
+  };
+  window.closeDriverModal=()=>document.getElementById('driverModal').style.display='none';
+
+  /* === Pickup Logic === */
   const metodePickup = document.getElementById('metode_pickup');
   const lokasiRental = document.getElementById('lokasiRental');
   const alamatUser = document.getElementById('alamatUser');
   const cekOngkirBtn = document.getElementById('cekOngkirBtn');
   const hasilOngkir = document.getElementById('hasilOngkir');
 
-  // tampilkan lokasi atau input alamat
-  metodePickup.addEventListener('change', () => {
-    if (metodePickup.value === 'ambil_sendiri') {
-      lokasiRental.style.display = 'block';
-      alamatUser.style.display = 'none';
-      hasilOngkir.textContent = '';
-    } else if (metodePickup.value === 'pickup_alamat') {
-      lokasiRental.style.display = 'none';
-      alamatUser.style.display = 'block';
-    } else {
-      lokasiRental.style.display = 'none';
-      alamatUser.style.display = 'none';
-      hasilOngkir.textContent = '';
-    }
-  });
+  function togglePickup() {
+    lokasiRental.style.display = metodePickup.value === 'ambil_sendiri' ? 'block' : 'none';
+    alamatUser.style.display   = metodePickup.value === 'pickup_alamat' ? 'block' : 'none';
+    if (metodePickup.value !== 'pickup_alamat') hasilOngkir.textContent = '';
+  }
+  metodePickup.addEventListener('change', togglePickup);
+  togglePickup();
 
-  // 🔹 Hitung ongkir ke backend
-  cekOngkirBtn.addEventListener('click', async () => {
+  // Cek Ongkir
+  cekOngkirBtn?.addEventListener('click', async () => {
     const alamat = document.getElementById('alamat').value.trim();
-    if (!alamat) return alert('Masukkan alamat Anda terlebih dahulu.');
-
+    if (!alamat) {
+      alert('Masukkan alamat Anda terlebih dahulu.');
+      return;
+    }
     hasilOngkir.textContent = 'Menghitung jarak...';
-
-    try {
-      const res = await fetch("{{ route('user.pickup.distance') }}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-TOKEN": document.querySelector('meta[name=\"csrf-token\"]').content
-        },
-        body: JSON.stringify({ alamat })
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        hasilOngkir.innerHTML = `📏 Jarak: <b>${data.distance_text}</b> — Ongkir: <b>Rp${data.ongkir.toLocaleString('id-ID')}</b>`;
-      } else {
-        hasilOngkir.textContent = 'Gagal menghitung jarak.';
-      }
-    } catch {
-      hasilOngkir.textContent = 'Terjadi kesalahan koneksi.';
-    }
-  });
-
-  // 🔒 Validasi jam 08:00–22:00 WIB
-  const minHour = 8, minMinute = 0, maxHour = 22, maxMinute = 0;
-  const inputMulai = document.getElementById('tanggal_mulai');
-  const inputSelesai = document.getElementById('tanggal_selesai');
-
-  function validateTimeRange(input) {
-    if (!input.value) return;
-    const date = new Date(input.value);
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const totalMinutes = hour * 60 + minute;
-    const minTotal = minHour * 60 + minMinute;
-    const maxTotal = maxHour * 60 + maxMinute;
-
-    if (totalMinutes < minTotal || totalMinutes > maxTotal) {
-      alert('⚠️ Jam penyewaan hanya diperbolehkan antara 08:00 hingga 22:00 WIB.');
-      if (totalMinutes < minTotal) date.setHours(minHour, minMinute);
-      else if (totalMinutes > maxTotal) date.setHours(maxHour, maxMinute);
-      input.value = date.toISOString().slice(0, 16);
-    }
-  }
-  [inputMulai, inputSelesai].forEach(el => el.addEventListener('change', () => validateTimeRange(el)));
-
-  // submit utama
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    if (!isVerified) {
-      popup.style.display = 'flex';
-      return;
-    }
-    const mulai = document.getElementById('tanggal_mulai').value;
-    const selesai = document.getElementById('tanggal_selesai').value;
-    if (new Date(mulai) >= new Date(selesai)) {
-      alert('Tanggal selesai harus lebih besar dari tanggal mulai.');
-      return;
-    }
-    const fd = new FormData(this);
-    fd.set('tanggal_mulai', mulai);
-    fd.set('tanggal_selesai', selesai);
-    fetch(this.action, {
-      method: 'POST',
-      body: fd,
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': csrf
-      },
+    
+    const res = await fetch("{{ route('user.pickup.distance') }}", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ alamat }),
       credentials: 'same-origin'
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success && data.redirect_url) window.location.href = data.redirect_url;
-      else alert(data.message || 'Terjadi kesalahan.');
-    })
-    .catch(() => alert('Terjadi kesalahan koneksi.'));
+    });
+    const data = await res.json();
+    hasilOngkir.innerHTML = data.success
+      ? `📏 Jarak: <b>${data.distance_text}</b> — Ongkir: <b>Rp${data.ongkir.toLocaleString('id-ID')}</b>`
+      : 'Gagal menghitung jarak.';
   });
+});
 </script>
-<script>
-function toggleDriverList(sel) {
-  const list = document.getElementById('driverList');
-  const selected = document.getElementById('driver_id');
-// lalu ambil opt.dataset.harga untuk ditampilkan
-  list.style.display = (sel.value === 'ya') ? 'block' : 'none';
-  document.getElementById('driverSelected').style.display = 'none';
-  document.getElementById('driver_id').value = '';
-}
 
-function showDriverCard(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  if (!opt.value) {
-    document.getElementById('driverSelected').style.display = 'none';
-    return;
-  }
-  document.getElementById('driverSelected').style.display = 'block';
-  document.getElementById('selectedDriverName').textContent = opt.dataset.nama;
-}
-
-function showDriverDetail() {
-  const sel = document.getElementById('driver_id');
-  const opt = sel.options[sel.selectedIndex];
-  if (!opt.value) return;
-
-  document.getElementById('driverModal').style.display = 'flex';
-  document.getElementById('modalDriverFoto').src = opt.dataset.foto;
-  document.getElementById('modalDriverNama').textContent = opt.dataset.nama;
-  document.getElementById('modalDriverVerifikasi').textContent = '✅ ' + opt.dataset.verifikasi;
-  document.getElementById('modalDriverLokasi').textContent = '📍 Lokasi: ' + opt.dataset.lokasi;
-  document.getElementById('modalDriverHarga').textContent = '💰 Tarif: Rp' + opt.dataset.harga + ' /jam';
-  document.getElementById('modalDriverPengalaman').textContent = '🕓 Pengalaman: ' + opt.dataset.pengalaman;
-  document.getElementById('modalDriverDeskripsi').textContent = opt.dataset.deskripsi;
-}
-
-function closeDriverModal() {
-  document.getElementById('driverModal').style.display = 'none';
-}
-</script>
-</body>
-</html>
+@endsection

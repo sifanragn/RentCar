@@ -27,11 +27,13 @@
           {{ ucfirst($driver->status_verifikasi) }}
         </span>
       </p>
-      <p><strong>Status Aktif:</strong> 
+
+      <p><strong>Status Aktif:</strong>
         <span class="badge {{ $driver->status == 'aktif' ? 'active' : 'inactive' }}">
           {{ ucfirst($driver->status) }}
         </span>
       </p>
+
       <p><strong>Deskripsi:</strong> {{ $driver->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
 
       <div class="actions">
@@ -40,7 +42,7 @@
               onsubmit="return confirm('Yakin ingin menghapus driver ini?')" style="display:inline;">
           @csrf
           @method('DELETE')
-          <button type="submit" class="btn-danger">🗑 Hapus</button>
+          <button type="submit" class="btn-delete">🗑 Hapus</button>
         </form>
       </div>
     </div>
@@ -83,99 +85,187 @@
   </div>
 </div>
 
+{{-- ============================= STYLE ============================= --}}
 <style>
+/* === WRAPPER === */
+.admin-content-wrapper {
+  padding: 10px 30px 50px 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* === PAGE HEADER === */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 18px 24px;
+  border-radius: 14px;
+  background: #181c26;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+body.light-mode .page-header {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.page-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f5f7fa;
+}
+body.light-mode .page-header h2 { color: #222; }
+
+.btn-secondary {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* === CARD DETAIL === */
 .driver-detail-card {
   display: flex;
   flex-wrap: wrap;
   gap: 25px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 16px;
+  padding: 30px;
+  background: #141821;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+  transition: all 0.3s ease;
+}
+body.light-mode .driver-detail-card {
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
 
+/* === FOTO DRIVER === */
 .driver-detail-foto {
-  width: 180px;
-  height: 180px;
-  border-radius: 12px;
+  width: 200px;
+  height: 200px;
+  border-radius: 14px;
   object-fit: cover;
-  border: 3px solid #e5e5e5;
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+body.light-mode .driver-detail-foto {
+  border-color: #e5e5e5;
 }
 
+/* === INFO DRIVER === */
 .driver-detail-info {
   flex: 1;
-  min-width: 250px;
+  min-width: 280px;
 }
+.driver-detail-info h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+body.light-mode .driver-detail-info h3 { color: #222; }
 
 .driver-detail-info p {
   margin: 6px 0;
-  color: #444;
+  color: #d4d8e3;
+  font-size: 15px;
 }
+body.light-mode .driver-detail-info p { color: #444; }
 
-.actions {
-  margin-top: 15px;
+.driver-detail-info strong {
+  color: #9fc8ff;
 }
+body.light-mode .driver-detail-info strong { color: #0d6efd; }
 
-.btn-edit {
-  background: #ffc107;
-  color: #000;
-  padding: 8px 12px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-  margin-right: 8px;
-}
-
-.btn-danger {
-  background: #dc3545;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
+/* === BADGE === */
 .badge {
   display: inline-block;
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
 }
-.badge.active { background: #d1e7dd; color: #0f5132; }
-.badge.inactive { background: #f8d7da; color: #842029; }
-.badge.verified { background: #cfe2ff; color: #084298; }
-.badge.pending { background: #fff3cd; color: #664d03; }
+.badge.active { background: rgba(16,185,129,0.2); color: #10b981; }
+.badge.inactive { background: rgba(239,68,68,0.2); color: #ef4444; }
+.badge.verified { background: rgba(59,130,246,0.25); color: #3b82f6; }
+.badge.pending { background: rgba(251,191,36,0.25); color: #fbbf24; }
+
+/* === ACTIONS === */
+.actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.btn-edit {
+  background: #0d6efd;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  transition: all 0.25s ease;
+}
+.btn-edit:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+.btn-delete {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+.btn-delete:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
 
 /* === FOTO DOKUMEN === */
 .document-section {
   margin-top: 30px;
-  background: #fff;
+  background: #141821;
   padding: 20px;
   border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+body.light-mode .document-section {
+  background: #fff;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
-
 .document-section h3 {
   margin-bottom: 15px;
-  color: #333;
+  color: #f5f7fa;
 }
+body.light-mode .document-section h3 { color: #333; }
 
 .document-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
 }
-
 .doc-card {
   text-align: center;
-  border: 1px solid #eee;
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   padding: 10px;
+  background: #1d2430;
+}
+body.light-mode .doc-card {
+  border-color: #eee;
   background: #fafafa;
 }
-
 .doc-card img {
   width: 100%;
   height: 160px;
@@ -184,7 +274,6 @@
   margin-top: 6px;
   border: 2px solid #e0e0e0;
 }
-
 .no-doc {
   font-size: 13px;
   color: #999;

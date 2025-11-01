@@ -19,7 +19,7 @@
     @endif
 
     {{-- FORM TAMBAH MODEL --}}
-    <form action="{{ route('cars.models.store') }}" method="POST" class="model-form">
+    <form action="{{ route('admin.cars.models.store') }}" method="POST" class="model-form">
       @csrf
       <div class="form-grid">
 
@@ -59,7 +59,7 @@
       {{-- TOMBOL --}}
       <div class="form-actions">
         <button type="submit" class="btn-submit">Tambah</button>
-        <a href="{{ route('cars.create') }}" class="btn-cancel">Kembali</a>
+        <a href="{{ route('admin.cars.create') }}" class="btn-cancel">Kembali</a>
       </div>
     </form>
   </div>

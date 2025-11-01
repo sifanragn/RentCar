@@ -164,20 +164,31 @@ class PaymentController extends Controller
     /* --------------------------------------------------------------------------
      | 📋 Daftar pembayaran (index)
      * -------------------------------------------------------------------------- */
-    public function index(Request $r)
-    {
-        $q = Payment::with(['rental.car.brand', 'rental.invoice'])
-            ->whereHas('rental', fn($q) => $q->where('user_id', auth()->id()));
+public function index(Request $r)
+{
+    $q = Payment::with(['rental.car.brand', 'rental.invoice'])
+        ->where(function ($query) {
+            $query->whereHas('rental', function ($rental) {
+                $rental->where('user_id', auth()->id());
+            })
+            ->orWhereNull('rental_id'); // 🔹 Tambahan: tampilkan juga jika rental_id null
+        });
 
-        if ($r->filled('no_transaksi'))
-            $q->whereHas('rental.invoice', fn($i) => $i->where('invoice_id', str_replace('INV', '', $r->no_transaksi)));
-        if ($r->filled('tanggal'))
-            $q->whereDate('created_at', $r->tanggal);
-        if ($r->filled('status'))
-            $q->where('status_pembayaran', $r->status);
+    if ($r->filled('no_transaksi'))
+        $q->whereHas('rental.invoice', fn($i) => 
+            $i->where('invoice_id', str_replace('INV', '', $r->no_transaksi))
+        );
 
-        return view('user.payments.index', ['payments' => $q->latest()->get()]);
-    }
+    if ($r->filled('tanggal'))
+        $q->whereDate('created_at', $r->tanggal);
+
+    if ($r->filled('status'))
+        $q->where('status_pembayaran', $r->status);
+
+    $payments = $q->latest()->get();
+    return view('user.payments.index', compact('payments'));
+}
+
 
     /* --------------------------------------------------------------------------
      | ⏱️ Auto expire + sinkron cancel
@@ -306,6 +317,105 @@ class PaymentController extends Controller
         ]);
         Log::info('🚗 Rental ikut diupdate', ['rental_id' => $p->rental_id]);
     }
+
+     // ✅ WhatsApp Notification & Invoice Auto-Send
+if ($status === 'success' && $p->rental) {
+    $user = $p->rental->user;
+    $car  = $p->rental->car;
+
+    $mulai   = Carbon::parse($p->rental->tanggal_mulai)->format('d M Y H:i');
+    $selesai = Carbon::parse($p->rental->tanggal_selesai)->format('d M Y H:i');
+
+    // ✅ Generate & save PDF invoice
+    $pdfPath = storage_path("app/public/Kuitansi-{$p->payment_id}.pdf");
+    Pdf::loadView('user.payments.receipt_pdf', ['payment' => $p])->save($pdfPath);
+
+    // ✅ URL file untuk dikirim via WA
+    $pdfUrl = url("storage/Kuitansi-{$p->payment_id}.pdf");
+
+    /* -------------------------
+       1) Notice Pembayaran Berhasil
+    --------------------------*/
+    \App\Helpers\Whatsapp::send(
+        $user->no_hp,
+        "*Pembayaran Berhasil*
+
+Halo {$user->nama_lengkap}, terima kasih telah melakukan pembayaran rental mobil.
+
+• Order ID: {$p->payment_id}
+• Mobil: {$car->brand->nama_merek} {$car->model}
+• Jadwal: {$mulai} — {$selesai}
+• Status: Lunas
+
+Invoice digital Anda sudah kami siapkan. Silakan lihat link berikut setelah pesan ini."
+    );
+
+    /* -------------------------
+       2) Info Pickup / Delivery
+    --------------------------*/
+    if ($p->rental->metode_pickup == 'ambil_sendiri') {
+
+        \App\Helpers\Whatsapp::send(
+            $user->no_hp,
+            "*Informasi Pengambilan Mobil*
+
+Silakan mengambil kendaraan di kantor kami:
+
+HexaRent  
+Jl. Abdul Halim No.128, Cimahi Tengah  
+Google Maps: https://maps.app.goo.gl/2Yw3YymwUTG1KCLQ7
+
+Waktu pengambilan:
+{$mulai} WIB
+
+Mohon membawa KTP dan menunjukkan bukti pemesanan."
+        );
+
+    } else {
+
+        \App\Helpers\Whatsapp::send(
+            $user->no_hp,
+            "*Pengantaran Mobil*
+
+Kendaraan akan diantar ke alamat Anda sesuai jadwal.
+
+• Estimasi tiba: {$mulai} WIB
+• Driver akan menghubungi Anda sebelum keberangkatan.
+
+Terima kasih telah memilih layanan kami."
+        );
+    }
+
+    /* -------------------------
+       3) Link Invoice PDF
+    --------------------------*/
+    \App\Helpers\Whatsapp::send(
+        $user->no_hp,
+        "*Invoice & Bukti Pembayaran*
+
+File invoice digital Anda siap diunduh:
+{$pdfUrl}
+
+Jika ada pertanyaan, kami siap membantu kapan saja."
+    );
+
+    /* -------------------------
+       4) Notifikasi Admin
+    --------------------------*/
+    \App\Helpers\Whatsapp::send(
+        env('ADMIN_WA'),
+        "*Pembayaran Masuk*
+
+Pelanggan: {$user->nama_lengkap}  
+Unit: {$car->brand->nama_merek} {$car->model}  
+Jumlah: Rp" . number_format($p->total_bayar, 0, ',', '.') . "  
+
+Order ID: {$p->payment_id}  
+Status: Lunas"
+    );
+}
+
+
     // 🧾 Jika pembayaran charge (denda) sukses → update invoice jadi selesai
     if ($status === 'success' && $p->payment_type === 'charge' && $p->rental) {
         $invoice = \App\Models\Invoice::where('rental_id', $p->rental->rental_id)

@@ -1,82 +1,232 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register Akun</title>
-  <style>
-    body { font-family:'Segoe UI',Arial,sans-serif; background:#f8f9fa; margin:0; padding:40px; }
-    .card { background:white; padding:25px; max-width:500px; margin:auto; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-    h2 { text-align:center; margin-bottom:20px; }
-    label { display:block; margin-top:10px; font-weight:600; color:#333; }
-    input[type="text"], input[type="email"], input[type="password"], input[type="file"] {
-      width:100%; padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:6px;
-    }
-    button {
-      width:100%; padding:10px; background:#0d6efd; color:white; border:none; border-radius:6px; margin-top:20px;
-      font-size:16px; cursor:pointer;
-    }
-    button:hover { background:#0b5ed7; }
-    .note { background:#fff3cd; color:#856404; padding:10px; border-radius:6px; font-size:13px; margin-top:10px; }
-    .alert { background:#d1e7dd; color:#0f5132; padding:10px; border-radius:6px; margin-bottom:15px; }
-  </style>
-</head>
-<body>
+@extends('partials.container')
 
-  <div class="card">
-    <h2>Daftar Akun Baru</h2>
-    @if ($errors->any())
-  <div style="background:#f8d7da;color:#842029;padding:10px;border-radius:8px;margin-bottom:15px;">
-    <strong>Terjadi kesalahan:</strong>
-    <ul style="margin:8px 0 0 20px;">
-      @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-      @endforeach
-    </ul>
+@section('title', 'Register')
+
+@section('styles')
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  body {
+    background: #000;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 360px;
+    background: #fff;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 10px;
+  }
+
+  /* Header */
+  .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .logo img {
+    width: 70px;
+    height: auto;
+    margin-top: 4px;
+  }
+
+  .logo h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #000;
+  }
+
+  .hero {
+    width: 100%;
+    max-width: 300px;
+    margin-left: -70px;
+    display: block;
+  }
+
+  .title {
+    font-size: 25px;
+    font-weight: 800;
+    color: #000;
+    margin-top: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 1.8rem;
+  }
+
+  /* Form */
+  form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .input-group label {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+    color: #222;
+    display: block;
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 10px 10px;
+    border: 2px solid #ccc;
+    font-size: 1rem;
+    background: #f9f9f9;
+    border-radius: 10px;
+    transition: 0.3s;
+  }
+
+  .input-group input:focus {
+    border-color: #0077b6;
+    background: #fff;
+    outline: none;
+  }
+
+  /* Tombol */
+  .btn-register {
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 0.8rem;
+  }
+
+  .btn-register:hover {
+    background: #222;
+  }
+
+  .login-text {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 70px; /* supaya tidak ketutup navbar */
+    font-size: 1rem;
+    color: #333;
+  }
+
+  .login-text a {
+    color: #0077b6;
+    text-decoration: none;
+    font-weight: 600;
+  }
+</style>
+@endsection
+
+@section('content')
+  <div class="logo">
+    <img src="/images/logo.png" alt="Logo" />
+    <h3>Selamat Datang!</h3>
   </div>
-@endif
+
+  <img src="/images/car1.png" alt="Mobil" class="hero" />
+
+  <h1 class="title">Get Started Free!</h1>
+  <p class="subtitle">Ayo Buat Akun Dan Cari Mobilmu</p>
+
+  {{-- 🔔 Notifikasi error atau sukses --}}
+  @if ($errors->any())
+    <div style="
+      background: #ffecec;
+      color: #a40000;
+      border: 1px solid #ffb3b3;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 1.2rem;
+      font-size: 14px;
+      text-align: left;
+    ">
+      <ul style="list-style:none; margin:0; padding:0;">
+        @foreach ($errors->all() as $error)
+          <li>⚠️ {{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
+
+  @if (session('success'))
+    <div style="
+      background: #e9ffe9;
+      color: #006400;
+      border: 1px solid #a3e6a3;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 1.2rem;
+      font-size: 14px;
+      text-align: center;
+    ">
+      ✅ {{ session('success') }}
+    </div>
+  @endif
+
+  <form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+
+    <div class="input-group">
+      <label for="nama_lengkap">Nama Lengkap</label>
+      <input type="text" id="nama_lengkap" name="nama_lengkap" placeholder="Masukkan nama lengkap Anda" required>
+    </div>
+
+    <div class="input-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Masukkan username Anda" required>
+    </div>
+
+    <div class="input-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required>
+    </div>
+
+    <div class="input-group">
+  <label for="no_hp">No WhatsApp</label>
+  <input 
+    type="text" 
+    id="no_hp" 
+    name="no_hp" 
+    placeholder="08xxxxxxxx" 
+    value="{{ old('no_hp') }}"
+    required
+  >
+</div>
 
 
-    @if(session('success'))
-      <div class="alert">{{ session('success') }}</div>
-    @endif
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required>
+    </div>
 
-    <form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data">
-      @csrf
+    <div class="input-group">
+      <label for="password_confirmation">Konfirmasi Password</label>
+      <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password Anda" required>
+    </div>
 
-      <label>Nama Lengkap</label>
-      <input type="text" name="nama_lengkap" required>
+    <button type="submit" class="btn-register">Daftar</button>
 
-      <label>Username</label>
-      <input type="text" name="username" required>
-
-      <label>Email</label>
-      <input type="email" name="email" required>
-
-      <label>Password</label>
-      <input type="password" name="password" required>
-
-      <label>Konfirmasi Password</label>
-      <input type="password" name="password_confirmation" required>
-
-      <div class="note">
-        ⚠️ Upload <b>KTP & KK</b> di bawah ini bersifat opsional.  
-        Jika belum tersedia, Anda bisa mengunggahnya nanti dari menu profil.
-      </div>
-
-      <label>Upload Foto KTP (Opsional)</label>
-      <input type="file" name="foto_ktp" accept="image/*">
-
-      <label>Upload Foto KK (Opsional)</label>
-      <input type="file" name="foto_kk" accept="image/*">
-
-      <button type="submit">Daftar</button>
-    </form>
-
-    <p style="text-align:center;margin-top:15px;">
-      Sudah punya akun? <a href="{{ route('login') }}" style="color:#0d6efd;text-decoration:none;">Login di sini</a>
+    <p class="login-text">
+      Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
     </p>
-  </div>
-
-</body>
-</html>
+  </form>
+@endsection
