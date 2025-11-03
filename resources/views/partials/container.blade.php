@@ -2,19 +2,15 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-<!-- Bootstrap JS Bundle (sudah termasuk Popper) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
 
   <title>@yield('title')</title>
-
-  {{-- Tempat untuk CSS tambahan dari setiap halaman --}}
   @yield('styles')
 
   <style>
@@ -26,46 +22,41 @@
     }
 
     body {
-      background: #fff;
+      background: #f2f2f2;
       min-height: 100vh;
+      overflow-x: hidden;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      overflow-y: auto;
     }
 
-    .container {
+    /* ✅ container utama halaman */
+    .app-container {
       width: 100%;
-      max-width: 360px;
-      background: #fff;
-      padding: 2rem 1.5rem;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-overflow-y: auto;
-overflow-x: hidden;      min-height: 100vh; /* ✅ Tambahan penting */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-        padding-bottom: 80px;
-
+      min-height: 100vh;
+      padding: 16px;
+      padding-bottom: 70px; /* space untuk bottom nav */
     }
 
-    @media (max-width: 480px) {
-      body {
-        padding: 1.5rem 0;
-      }
-
-      .container {
-        max-width: 340px;
-        padding: 1.5rem 1.2rem;
-        border-radius: 16px;
+    /* ✅ tampilan saat buka di laptop */
+    @media (min-width: 480px) {
+      .app-container {
+        max-width: 420px;
+        background: #fff;
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
       }
     }
   </style>
 </head>
+
 <body>
-<div class="container mx-auto p-4">
-    {{-- konten panjang --}}
+
+<div class="app-container">
     @yield('content')
 </div>
+
+<!-- ✅ Bootstrap JS di akhir body -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

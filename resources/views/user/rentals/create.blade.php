@@ -103,7 +103,117 @@ button:hover { background: #222; transform: scale(1.03); }
 }
 .modal-box .close-btn:hover { color: #000; }
 .modal-box p { margin: 6px 0; font-size: 15px; color: #333; background: #fafafa; padding: 6px 10px; border-radius: 6px; text-align: left; }
+
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none; justify-content: center; align-items: center;
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+}
+
+.modal-box {
+  border-radius: 20px;
+  background:#fff;
+  animation: fadeIn .25s ease;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  background: #f2f2f2;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .2s;
+}
+
+.modal-close-btn:hover {
+  background: #e0e0e0;
+  transform: scale(1.1);
+}
+
+/* ===== Car Info Header ===== */
+.car-info-box {
+  background: #ffffff;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 2px solid #e7e7e7;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.car-text-block {
+  flex: 1;
+}
+
+.car-img-box {
+  width: 80px; /* dulu 50px — ditambah biar lebih keliatan */
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.car-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.car-title {
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: #111;
+}
+
+.brand-tag {
+  background: #000;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+
+.car-price {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0d6efd;
+  margin-top: 4px;
+}
+
+.car-price span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+}
+
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
 </style>
 @endsection
 
@@ -119,21 +229,45 @@ button:hover { background: #222; transform: scale(1.03); }
   @endphp
 
   <a href="{{ route('user.cars.show', $car->car_id) }}" class="back-link">
-    ← Kembali
+    ← 
   </a>
 
   <div class="card">
     <h2>Form Penyewaan Mobil</h2>
-    <h3>{{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
-    <p><strong>Harga per jam:</strong> Rp{{ number_format($car->harga_sewa_per_jam, 0, ',', '.') }}</p>
+<div class="car-info-box">
+  
+  <div class="car-text-block">
+    <div class="car-title">
+      <span class="brand-tag">{{ $car->brand->nama_merek }}</span>
+      {{ $car->model }}
+    </div>
+
+    <div class="car-price">
+      Rp{{ number_format($car->harga_sewa_per_jam, 0, ',', '.') }}
+      <span>/ jam</span>
+    </div>
+  </div>
+
+<div class="car-img-box">
+  <img 
+    src="{{ $car->foto ? asset('storage/' . $car->foto) : asset('/images/default-car.png') }}"
+    alt="Car Image"
+  >
+</div>
+
+</div>
 
     <form id="rentalForm" action="{{ route('user.rentals.store', $car->car_id) }}" method="POST">
       @csrf
       <input type="hidden" name="redirect_back" value="{{ $redirectBack }}">
 
-      <label for="tanggal_mulai">Tanggal & Jam Mulai</label>
-      <input type="datetime-local" name="tanggal_mulai" id="tanggal_mulai" required>
-      <small style="color:#666;">Minimal sewa 6 jam (08:00–22:00 WIB)</small>
+<label for="tanggal_mulai">Tanggal & Jam Mulai</label>
+<small style="color:#666; font-size:12px; display:block; line-height:1.45; margin:6px 0 2px;">
+  • Mulai minimal <b>5 menit</b> dari sekarang<br>
+  • Minimal sewa <b>6 jam</b><br>
+  • Jam operasional: <b>08:00 — 22:00 WIB</b>
+</small>
+<input type="datetime-local" name="tanggal_mulai" id="tanggal_mulai" required>
 
       <label for="tanggal_selesai">Tanggal & Jam Selesai</label>
       <input type="datetime-local" name="tanggal_selesai" id="tanggal_selesai" required>
@@ -205,6 +339,42 @@ button:hover { background: #222; transform: scale(1.03); }
       </div>
 
       <button type="submit">Konfirmasi Sewa</button>
+
+<!-- ✅ MODAL WAJIB VERIFIKASI -->
+<div id="modalVerifikasi" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:350px; text-align:center; padding:25px; position:relative;">
+
+    <!-- ✅ Close Button -->
+    <button id="btnCloseVerify" class="modal-close-btn">✕</button>
+
+    <!-- Icon -->
+    <div style="
+      width:70px; height:70px; background:#e8f0ff; 
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      margin:0 auto 12px auto; font-size:32px; color:#0d6efd;">
+      🔒
+    </div>
+
+    <h3 style="margin:6px 0 8px; font-size:19px; font-weight:700; color:#111;">
+      Belum Diverifikasi
+    </h3>
+
+    <p style="
+      font-size:14px; color:#444; background:#f8f8f8; padding:12px;
+      border-radius:10px; margin-bottom:18px;">
+      Anda harus mengunggah KTP & KK terlebih dahulu sebelum melanjutkan penyewaan.
+    </p>
+
+    <button id="btnUnggahNow" style="
+      background:#0d6efd; color:#fff; width:100%; padding:12px; font-weight:600;
+      border:none; border-radius:10px; cursor:pointer; margin-bottom:10px;">
+      Unggah Sekarang
+    </button>
+
+  </div>
+</div>
+
+
     </form>
   </div>
 </div>
@@ -333,7 +503,32 @@ window.addEventListener('load', () => {
       ? `📏 Jarak: <b>${data.distance_text}</b> — Ongkir: <b>Rp${data.ongkir.toLocaleString('id-ID')}</b>`
       : 'Gagal menghitung jarak.';
   });
+  
+ // === Modal Verify Elements ===
+const modalVerify       = document.getElementById('modalVerifikasi');
+const btnUnggahNow      = document.getElementById('btnUnggahNow');
+const btnCloseVerify    = document.getElementById('btnCloseVerify');
+const formRental        = document.getElementById('rentalForm'); // ✅ harus ada
+
+// ✅ Jika server kirim session('warning') → tampilkan modal
+@if(session('warning'))
+setTimeout(() => {
+    if (modalVerify) modalVerify.style.display = "flex";
+}, 300);
+@endif
+
+// ✅ Tombol "Unggah Sekarang"
+btnUnggahNow.onclick = () => {
+    window.location.href = "{{ route('user.verifikasi.index') }}";
+};
+
+// ✅ Tombol tutup modal
+btnCloseVerify.onclick = () => {
+    modalVerify.style.display = "none";
+};
+
 });
 </script>
+  @include('partials.bottom-navbar')
 
 @endsection

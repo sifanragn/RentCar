@@ -12,23 +12,16 @@
   margin-right: -10px;
 }
 
-/* ===== Card ===== */
-.card-daftar {
-  background: #fff;
-  border-radius: 16px;
-  padding: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  margin-left: -10px;
-  margin-right: -10px;
-  margin-bottom: 10px;
-}
-
 h2 {
   text-align: center;
   margin-bottom: 20px;
   color: #222;
   font-size: 25px;
   font-weight: 600;
+}
+
+p {
+    text-align: center;
 }
 
 /* ===== Filter Bar Style ===== */
@@ -71,19 +64,19 @@ h2 {
   outline: none;
 }
 .btn-search {
-  background-color: #000;
+  background-color: #333; /* abu item elegan */
   color: #fff;
   border: none;
   border-radius: 8px;
   padding: 5px 12px;
-  font-family: 'Poppins', sans-serif;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: 0.3s;
-  flex-shrink: 0;
 }
-.btn-search:hover { background-color: #333; }
+.btn-search:hover {
+  background-color: #111; /* lebih hitam saat hover */
+}
 
 /* 🌟 Payment List */
 .payment-list {
@@ -101,8 +94,8 @@ h2 {
   align-items: center;
   box-shadow: 0 3px 10px rgba(0,0,0,0.10);
   transition: 0.25s ease;
-  margin-left: -10px;
-  margin-right: -10px;
+  margin-left: -1px;
+  margin-right: -1px;
 }
 .payment-card:hover {
   transform: translateY(-3px);
@@ -137,7 +130,7 @@ h2 {
 .success { background: #d4edda; color: #155724; }
 .failed  { background: #f8d7da; color: #721c24; }
 
-/* 🔧 Samakan ukuran semua tombol */
+/* Tombol dasar */
 .btn,
 .btn-kuitansi,
 .btn-info,
@@ -145,7 +138,7 @@ h2 {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  height: 28px; /* ✅ tetap seperti sebelumnya */
+  height: 28px;
   padding: 8px 16px;
   border-radius: 10px;
   font-size: 13px;
@@ -155,12 +148,11 @@ h2 {
   text-decoration: none;
   transition: 0.25s ease;
   border: none;
-  background: #000;
-  color: #fff;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Warna tombol utama */
+/* Default tombol */
 .btn, .btn-kuitansi, .btn-info {
   background: #000;
   color: #fff;
@@ -169,7 +161,32 @@ h2 {
   background: #333;
 }
 
-/* Warna tombol batalkan */
+/* ✅ Disabled — background abu gelap, teks tetap putih */
+.btn:disabled,
+.btn.disabled,
+.btn-kuitansi:disabled,
+.btn-info:disabled {
+  background: #666 !important;
+  color: #fff !important;  /* <-- teks tetap putih */
+  opacity: 1 !important;
+  cursor: not-allowed;
+}
+
+/* ✅ Tombol Lanjutkan (Biru) */
+.btn-lanjut {
+  background: #2563EB !important;
+  color: #fff !important;
+}
+.btn-lanjut:hover {
+  background: #1D4ED8 !important;
+}
+.btn-lanjut:active,
+.btn-lanjut:focus {
+  background: #3B82F6 !important;
+  color: #fff !important;
+}
+
+/* Tombol Batal */
 .btn-danger {
   background: #dc3545;
   color: #fff;
@@ -355,6 +372,33 @@ button.btn:focus-visible {
   background: #333;
   transform: translateY(-1px);
 }
+/* Force white text & grey background untuk tombol kuitansi/info yg disabled */
+.btn-info,
+.btn-kuitansi {
+  color: #fff !important;
+}
+
+.btn-info:disabled,
+.btn-info.disabled,
+.btn-kuitansi:disabled,
+.btn-kuitansi.disabled {
+  background: #7a7a7a !important; /* abu elegan */
+  color: #fff !important;        /* teks putih */
+  border: none !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* block override dari .btn:active & .btn:focus */
+.btn-info:disabled:active,
+.btn-info:disabled:focus,
+.btn-kuitansi:disabled:active,
+.btn-kuitansi:disabled:focus {
+  background: #7a7a7a !important;
+  color: #fff !important;
+}
+
 
 @media (max-width:700px) {
   .payment-card {
@@ -462,7 +506,7 @@ button.btn:focus-visible {
             </div>
 
             @if($p->status_pembayaran === 'pending')
-              <a class="btn" href="{{ route('user.payments.continue', $p->payment_id) }}">Lanjutkan</a>
+<a class="btn btn-lanjut" href="{{ route('user.payments.continue', $p->payment_id) }}">Lanjutkan</a>
 
               @php
                 $isKuitansiTambahan = $p->payment_type === 'charge' ||

@@ -64,17 +64,17 @@ input[type="file"] { display: none; }
   margin-top: 20px;
   padding: 10px 0;
   border-radius: 8px;
-  background: #70D972;
-  color: #000;
+  background: #000;
+  color: #fff;
   border: none;
   cursor: pointer;
   font-size: 16px;
   width: 100%;
   max-width: 380px;
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
-.submit-button:hover { background: #5AC260; }
+.submit-button:hover { background: #333; }
 
 @media (max-width: 360px) {
   .card { padding: 15px; }
@@ -91,7 +91,7 @@ input[type="file"] { display: none; }
     <input type="hidden" name="redirect_to" value="{{ $redirectTo }}">
 
     <div class="cards-container">
-        <a href="{{ $redirectTo }}" class="back-link">← Kembali</a>
+        <a href="{{ $redirectTo }}" class="back-link">←</a>
 
         <div class="card">
             <h3>Upload KTP</h3>

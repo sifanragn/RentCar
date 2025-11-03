@@ -15,7 +15,8 @@
   padding: 5px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  margin-top: -10px;
+  margin-top: -5px;
+  margin-left: 10px;
 }
 
 .header h1 {
@@ -64,40 +65,49 @@
 
 /* ===== Carousel ===== */
 .carousel {
-  width: calc(100% + 3rem);
-  margin: 20px 0 0 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 0;
+  margin-top: 12px;
 }
 
 .carousel-inner img {
   width: 100%;
-  height: auto;
+  display: block;
 }
 
+
+.carousel-inner {
+  width: 100%;
+}
+
+/* ===== Nav Buttons ===== */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   filter: invert(100%);
 }
 
-/* ===== Carousel Indicators (Bulat) ===== */
+/* ===== Bullets indikator ===== */
 .carousel-indicators {
-  bottom: -30px; /* posisinya sedikit ke atas */
+  bottom: -30px;
 }
 
 .carousel-indicators [data-bs-target] {
   width: 10px;
   height: 10px;
-  border-radius: 50%; /* bulat penuh */
-  background-color: #D9D9D9; /* warna bulatan default */
+  border-radius: 50%;
+  background-color: #D9D9D9;
   opacity: 0.5;
   border: none;
   transition: all 0.3s ease;
-  margin: 0 4px; /* jarak antar titik */
+  margin: 0 4px;
 }
 
 .carousel-indicators .active {
   opacity: 1;
-  background-color: #000; /* warna aktif (bisa diganti sesuai tema) */
-  transform: scale(1.25); /* sedikit membesar pas aktif */
+  background-color: #000;
+  transform: scale(1.25);
 }
 
 /* Scroll container */
@@ -129,6 +139,7 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: background 0.2s ease;
+  margin-bottom: 10px;
 }
 
 .brand-btn:hover {
@@ -174,7 +185,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 15px;
+  padding: 0 5px; /* ✅ kasih jarak kiri kanan biar ga nempel layar */
 }
 
 .card {
@@ -182,7 +194,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  width: 110%;
+  width: 100%; /* ✅ full tapi tidak nabrak karena ada padding container */
   max-width: 600px;
   border: 1px solid #ccc;
   border-radius: 20px;
@@ -193,19 +205,18 @@
   padding: 8px;
   gap: 10px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin-left: -15px;
 }
 
 .card:hover {
-  transform: translateY(-4px); /* lebih kecil supaya smooth */
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* shadow lebih terasa saat hover */
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
 .car-image {
   width: 125px;
   height: auto;
   object-fit: contain;
-  flex-shrink: 0; /* agar gambar tidak mengecil */
+  flex-shrink: 0;
 }
 
 .card-content {
@@ -243,8 +254,8 @@
 
 .tag {
   border: 1px solid #000;
-  border-radius: 12px; /* lebih kecil */
-  padding: 2px 6px;    /* lebih kecil */
+  border-radius: 12px;
+  padding: 2px 6px;
   font-size: 9px;
   display: flex;
   align-items: center;

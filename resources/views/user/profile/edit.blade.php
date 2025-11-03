@@ -24,12 +24,11 @@
   box-shadow: 0 3px 6px rgba(0,0,0,0.08);
 }
 
-/* ===== EDIT ICON (pensil) ===== */
 .edit-icon {
   position: absolute;
   bottom: 3px;
   right: 3px;
-  background: #0d6efd;
+  background: #333; /* abu gelap instead of biru */
   color: #fff;
   border-radius: 50%;
   width: 25px;
@@ -43,9 +42,10 @@
   transition: 0.2s ease;
 }
 .edit-icon:hover {
-  background: #0b5ed7;
+  background: #111;
   transform: scale(1.05);
 }
+
 
 /* ===== NAMA & USERNAME ===== */
 .profile-header h4 {
@@ -98,14 +98,35 @@ form {
   justify-content: center;
 }
 
-/* 🔧 Ganti tombol biru jadi hitam */
-.btn-primary {
-  background: #000;
+/* 🔥 Tombol Update (hitam) */
+.btn-update {
+  width: 100%;
+  height: 48px;
+  background: #000 !important;
+  color: #fff !important;
+  border: none;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 12px;
+  margin: 10px 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-update:hover {
+  background: #111 !important;
+}
+
+
+
+/* 🔐 Tombol Verifikasi Password lama */
+.btn-verify {
+  background: #333;
   color: #fff;
   border: none;
 }
-.btn-primary:hover {
-  background: #333;
+.btn-verify:hover {
+  background: #111;
 }
 
 /* Outline merah tetap */
@@ -118,16 +139,16 @@ form {
   color: #fff;
 }
 
-/* Tombol merah utama */
+/* Merah = Hapus verifikasi */
 .btn-danger {
-  background: #c91d2e;
-  border: none;
-  color: #fff;
-  margin-bottom: 25px;
+  @extend .btn-profile;
+  background: #c91d2e !important;
+  color: #fff !important;
 }
 .btn-danger:hover {
-  background: #a31522;
+  background: #a31522 !important;
 }
+
 
 /* 🚫 Hilangkan warna biru saat tombol diklik di semua browser */
 .btn,
@@ -266,10 +287,12 @@ form .btn-primary.w-100.small-btn {
   margin-left: -155px;
 }
 
-/* ===== Geser Alert di Halaman Profile Sedikit ke Kiri ===== */
-.verification-alert-wrapper {
-  position: relative;
-  left: -15px; /* 🔹 geser dikit ke kiri */
+/* ✅ remove card layout feel */
+.app-container {
+  background: #fff !important;
+  padding-top: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
 }
 
 @media (max-width: 480px) {
@@ -314,9 +337,7 @@ form .btn-primary.w-100.small-btn {
     <div class="text-muted">{{ '@' . $user->username }}</div>
   </div>
 
-<div class="verification-alert-wrapper">
   @include('partials.verification-alert')
-</div>
 
   {{-- FORM FIELD --}}
   <div class="mb-3">
@@ -335,36 +356,41 @@ form .btn-primary.w-100.small-btn {
   </div>
 
   {{-- PASSWORD --}}
-  <div id="verifySection" class="mb-3">
-    <label class="form-label">Masukkan Password Lama</label>
-    <div class="input-group" style="overflow:hidden; border-radius:12px;">
-      <input id="current_password" type="password" name="current_password"
-             class="form-control" placeholder="Password lama"
-             style="border-radius:12px 0 0 12px;">
-      <button class="btn btn-primary" type="button" id="verifyButton"
-              style="border-radius:0 12px 12px 0;">Verifikasi</button>
-    </div>
-    <div id="verifyMsg" class="mt-2 text-muted" style="font-size:13px;"></div>
+<div id="verifySection" class="mb-3">
+  <label class="form-label">Masukkan Password Lama</label>
+  <div class="input-group" style="overflow:hidden; border-radius:12px;">
+    <input id="current_password" type="password" name="current_password"
+           class="form-control" placeholder="Password lama"
+           style="border-radius:12px 0 0 12px;">
+
+    <button class="btn btn-verify" type="button" id="verifyButton" style="border-radius:0 12px 12px 0;">
+      Verifikasi
+    </button>
+  </div>
+  <div id="verifyMsg" class="mt-2 text-muted" style="font-size:13px;"></div>
+</div>
+
+
+{{-- PASSWORD BARU --}}
+<div id="passwordFields" class="password-box" style="display:none;">
+  <div class="cancel-icon" id="cancelChangePw" title="Batal Mengubah Password">✖</div>
+
+  <div class="mb-3">
+    <label class="form-label">Password Baru</label>
+    <input id="password" type="password" name="password" class="form-control"
+           placeholder="Kosongkan jika tidak ingin mengubah">
   </div>
 
-  {{-- PASSWORD BARU --}}
-  <div id="passwordFields" class="password-box" style="display:none;">
-    <div class="cancel-icon" id="cancelChangePw" title="Batal Mengubah Password">✖</div>
-
-    <div class="mb-3">
-      <label class="form-label">Password Baru</label>
-      <input id="password" type="password" name="password" class="form-control"
-             placeholder="Kosongkan jika tidak ingin mengubah">
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Konfirmasi Password Baru</label>
-      <input id="password_confirmation" type="password" name="password_confirmation"
-             class="form-control" placeholder="Ulangi password baru">
-    </div>
+  <div class="mb-3">
+    <label class="form-label">Konfirmasi Password Baru</label>
+    <input id="password_confirmation" type="password" name="password_confirmation"
+           class="form-control" placeholder="Ulangi password baru">
   </div>
+</div>
 
-  <button type="submit" class="btn btn-primary w-100 mt-3 small-btn">Update</button>
+<button type="submit" class="btn btn-update w-100 mt-3 small-btn">
+  Update
+</button>
 
 {{-- MODAL HAPUS VERIFIKASI --}}
 @if($user->status_verifikasi === 'disetujui')
@@ -372,6 +398,7 @@ form .btn-primary.w-100.small-btn {
         data-bs-toggle="modal" data-bs-target="#hapusVerifikasiModal">
   Hapus Verifikasi
 </button>
+
 
 <div class="modal fade" id="hapusVerifikasiModal" tabindex="-1" aria-labelledby="hapusVerifikasiLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
