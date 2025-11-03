@@ -61,80 +61,118 @@ class RegisterController extends Controller
     public function sendOtp(Request $request)
 {
     $request->validate([
-    'nama_lengkap' => 'required',
-    'email' => 'required|email|unique:users,email',
-    'no_hp' => 'required|unique:users,no_hp',
-    'password' => 'required|min:6'
-], [
-    'no_hp.unique' => 'Nomor WhatsApp ini sudah terdaftar, silakan login.',
-    'email.unique' => 'Email ini sudah terdaftar, silakan login.',
-]);
+        'nama_lengkap' => 'required',
+        'email' => 'required|email|unique:users,email',
+        'no_hp' => 'required',
+        'password' => 'required|min:6'
+    ]);
 
-    $otp = Otp::generate($request->no_hp);
-    // Hapus OTP sebelumnya biar tidak bentrok
-    Otp::where('phone', $request->no_hp)->delete();
+    // ✅ Format nomor (08 -> 628)
+    $phone = PhoneFormatter::format($request->no_hp);
 
-    Whatsapp::send($request->no_hp, 
+    // ✅ Cek apakah nomor WA sudah terdaftar
+    if (User::where('no_hp', $phone)->exists()) {
+        return redirect()->route('login')
+    ->with('error', 'Nomor WhatsApp ini sudah terdaftar. Silakan login.');
+    }
+
+    // ✅ Hapus OTP lama untuk nomor ini
+    Otp::where('phone', $phone)->delete();
+
+    // ✅ Generate OTP
+    $otp = Otp::generate($phone);
+
+    // ✅ Kirim WA
+    Whatsapp::send($phone,
         "Kode verifikasi HexaRent kamu: *{$otp->code}*\n\nJangan berikan kode ini kepada siapapun.\nBerlaku 5 menit."
     );
 
-    Session::put('register_data', $request->all());
+    // ✅ Simpan data pendaftaran & nomor yg sudah diformat
+    $data = $request->all();
+    $data['no_hp'] = $phone;
+    Session::put('register_data', $data);
 
     return redirect()->route('register.verifyPage')
         ->with('success', 'Kode OTP sudah dikirim via WhatsApp');
 }
 
-public function verifyOtp(Request $request)
-{
-    $request->validate(['otp' => 'required']);
 
-    $data = Session::get('register_data');
-    if (!$data) return redirect()->route('register')->with('error', 'Data registrasi hilang, ulangi');
+    public function verifyOtp(Request $request)
+    {
+        $request->validate(['otp' => 'required']);
 
-    $otp = Otp::where('phone', $data['no_hp'])
-        ->where('code', $request->otp)
-        ->where('expires_at', '>=', now())
-        ->first();
+        $data = Session::get('register_data');
+        if (!$data) {
+            return redirect()->route('register')->with('error', 'Data registrasi hilang, ulangi');
+        }
 
-    if (!$otp) {
-        return back()->with('error', 'Kode OTP salah atau kedaluwarsa');
+        // ✅ Ambil nomor yang sudah diformat
+        $phone = PhoneFormatter::format($data['no_hp']);
+
+        $otp = Otp::where('phone', $phone)
+            ->where('code', $request->otp)
+            ->where('expires_at', '>=', now())
+            ->first();
+
+        if (!$otp) {
+            return back()->with('error', 'Kode OTP salah atau kedaluwarsa');
+        }
+
+        // ✅ Hapus OTP setelah valid
+        $otp->delete();
+
+        // ✅ Buat user
+        $user = User::create([
+            'nama_lengkap' => $data['nama_lengkap'],
+            'username' => $data['username'] ?? strtok($data['email'], '@'),
+            'email' => $data['email'],
+            'no_hp' => $phone,
+            'password' => Hash::make($data['password']),
+            'status_verifikasi' => 'disetujui',
+            'role' => 'user',
+        ]);
+
+        Session::forget('register_data');
+        auth()->login($user);
+
+        return redirect()->route('user.dashboard')->with('success', 'Akun berhasil dibuat!');
     }
 
-    // Hapus OTP setelah berhasil
-    $otp->delete();
 
-    $user = User::create([
-        'nama_lengkap' => $data['nama_lengkap'],
-        'username' => $data['username'] ?? strtok($data['email'], '@'),
-        'email' => $data['email'],
-        'no_hp' => $data['no_hp'],
-        'password' => Hash::make($data['password']),
-        'status_verifikasi' => 'disetujui',
-        'role' => 'user',
-    ]);
+        public function resendOtp(Request $request)
+    {
+        $data = Session::get('register_data');
 
-    Session::forget('register_data');
+        if (!$data || !isset($data['no_hp'])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan. Silakan daftar ulang.'
+            ]);
+        }
 
-    auth()->login($user);
+        // ✅ format nomor lagi biar rapih
+        $phone = \App\Helpers\PhoneFormatter::format($data['no_hp']);
 
-    return redirect()->route('user.dashboard')->with('success', 'Akun berhasil dibuat!');
-}
+        // ✅ buat OTP baru dan hapus lama
+        $otp = \App\Models\Otp::generate($phone);
 
-public function resendOtp(Request $request)
-{
-    $data = Session::get('register_data');
+        // ✅ kirim WhatsApp
+        $wa = \App\Helpers\Whatsapp::send(
+            $phone,
+            "Kode verifikasi HexaRent kamu: *{$otp->code}*\n\nJangan berikan kode ini kepada siapapun.\nBerlaku 5 menit."
+        );
 
-    if (!$data || !isset($data['no_hp'])) {
-        return response()->json(['status' => false, 'message' => 'Data tidak ditemukan. Silakan daftar ulang.']);
+        // ✅ cek kalau API WA gagal
+        if (!$wa) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengirim OTP, coba lagi.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Kode OTP baru telah dikirim'
+        ]);
     }
-
-    $otp = Otp::generate($data['no_hp']);
-
-    Whatsapp::send($data['no_hp'],
-        "Kode verifikasi HexaRent kamu: *{$otp->code}*\n\nJangan berikan kode ini kepada siapapun.\nBerlaku 5 menit."
-    );
-
-    return response()->json(['status' => true, 'message' => 'Kode OTP baru telah dikirim']);
-}
-
 }

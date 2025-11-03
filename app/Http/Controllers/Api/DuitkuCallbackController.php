@@ -15,10 +15,29 @@ class DuitkuCallbackController extends Controller
         Log::info('✅ Callback Duitku diterima', $request->all());
 
         $merchantOrderId = $request->merchantOrderId ?? null;
-        $resultCode = $request->resultCode ?? null;
+        $resultCode      = $request->resultCode ?? null;
+        $reference       = $request->reference ?? null;
 
-        // 🔍 Cari payment berdasarkan merchant_order_id
-        $payment = Payment::where('merchant_order_id', $merchantOrderId)->first();
+        // ✅ Validasi Signature (penting untuk keamanan)
+        $merchantCode = $request->merchantCode ?? '';
+        $amount       = preg_replace('/[^0-9]/', '', ($request->amount ?? ''));
+        $apiKey       = env('DUITKU_API_KEY');
+
+        $expectedSign = md5($merchantCode . $amount . $merchantOrderId . $apiKey);
+
+        if (($request->signature ?? '') !== $expectedSign) {
+            Log::error('❌ Signature tidak valid pada callback', [
+                'expected' => $expectedSign,
+                'got'      => $request->signature
+            ]);
+
+            return response()->json(['message' => 'Invalid signature'], 401);
+        }
+
+        // 🔍 Cari payment berdasarkan merchantOrderId / reference
+        $payment = Payment::where('merchant_order_id', $merchantOrderId)
+            ->orWhere('gateway_reference', $reference)
+            ->first();
 
         if (!$payment) {
             Log::warning("❌ Payment tidak ditemukan untuk merchantOrderId: {$merchantOrderId}");
@@ -30,7 +49,7 @@ class DuitkuCallbackController extends Controller
         // 💳 Update status payment
         $payment->update([
             'status_pembayaran' => $isSuccess ? 'success' : 'failed',
-            'callback_status'   => 'done',
+            'callback_status'   => $isSuccess ? 'done' : 'error',
             'tanggal_bayar'     => now(),
         ]);
 
@@ -38,38 +57,27 @@ class DuitkuCallbackController extends Controller
         if ($payment->rental) {
             $rental = $payment->rental;
 
-            // 🔹 Kalau payment utama
+            // 🔹 Payment utama
             if ($payment->payment_type === 'main') {
-                if ($isSuccess) {
-                    // setelah user bayar pertama kali, rental mulai berjalan
-                    $rental->update(['status_rental' => 'berjalan']);
-                } else {
-                    $rental->update(['status_rental' => 'dibatalkan']);
-                }
+                $rental->update([
+                    'status_rental' => $isSuccess ? 'berjalan' : 'dibatalkan'
+                ]);
             }
 
-            // 🔸 Kalau payment tambahan (charge/invoice)
+            // 🔸 Payment charge
             if ($payment->payment_type === 'charge') {
+                $invoice = Invoice::where('rental_id', $rental->rental_id)
+                                   ->latest()
+                                   ->first();
+
+                if ($invoice) {
+                    $invoice->update([
+                        'status_invoice' => $isSuccess ? 'selesai' : 'dibatalkan'
+                    ]);
+                }
+
                 if ($isSuccess) {
-                    // ✅ invoice charge berhasil → ubah jadi selesai
                     $rental->update(['status_rental' => 'selesai']);
-
-                    $invoice = Invoice::where('rental_id', $rental->rental_id)
-                        ->latest('tanggal_cetak')
-                        ->first();
-                    if ($invoice) {
-                        $invoice->update(['status_invoice' => 'selesai']);
-                    }
-
-                    Log::info("✅ Charge invoice sukses untuk rental #{$rental->rental_id}");
-                } else {
-                    // ❌ charge gagal → ubah jadi dibatalkan
-                    $invoice = Invoice::where('rental_id', $rental->rental_id)
-                        ->latest('tanggal_cetak')
-                        ->first();
-                    if ($invoice) {
-                        $invoice->update(['status_invoice' => 'dibatalkan']);
-                    }
                 }
             }
         }

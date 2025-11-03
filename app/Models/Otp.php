@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Helpers\PhoneFormatter;
 
 class Otp extends Model
 {
@@ -12,9 +13,14 @@ class Otp extends Model
 
     public static function generate($phone)
     {
-        $code = rand(100000, 999999);
+        // ✅ pastikan format konsisten (08xx → 628xx)
+        $phone = PhoneFormatter::format($phone);
 
+        // hapus OTP sebelumnya
         self::where('phone', $phone)->delete();
+
+        // generate otp
+        $code = rand(100000, 999999);
 
         return self::create([
             'phone' => $phone,

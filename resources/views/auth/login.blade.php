@@ -20,7 +20,6 @@
   padding: 24px 22px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* ❗ kita pakai atas biar ga terlalu di tengah */
 }
 
 /* Logo */
@@ -41,36 +40,32 @@
   font-weight: 600;
 }
 
-/* Hero section */
+/* Hero */
 .hero-box {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 4px auto 10px; /* ✅ jarak atas bawah diperkecil */
+  margin: 4px auto 10px;
 }
-
 .hero {
   width: 100%;
-  max-width: 330px; /* ✅ ukuran pas, tidak terlalu besar */
+  max-width: 330px;
   object-fit: contain;
   display: block;
   margin-top: -25px;
 }
 
-/* Title section */
+/* Title */
 .title {
   font-size: 1.55rem;
   font-weight: 700;
-  margin-top: 6px;
-  margin-bottom: 2px; /* ✅ rapetin */
-  text-align: center;
   margin-top: -25px;
+  margin-bottom: 2px;
+  text-align: center;
 }
-
 .subtitle {
   font-size: .9rem;
   color: #666;
-  margin-bottom: 14px; /* ✅ lebih rapat */
   text-align: center;
   margin-bottom: 20px;
 }
@@ -82,25 +77,21 @@ form {
   gap: 12px;
   margin-bottom: 6px;
 }
-
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
 .input-group label {
   font-size: .88rem;
   font-weight: 600;
   color: #222;
 }
-
-/* Fields sementara simple */
 .input-group input {
   width: 100%;
   padding: 11px 12px;
   border: 1.6px solid #d4d4d4;
-  border-radius: 10px; /* ✅ bikin lebih smooth */
+  border-radius: 10px;
   background: #fafafa;
 }
 
@@ -118,27 +109,24 @@ form {
   transition: .25s;
   margin-bottom: 20px;
 }
-
 .btn-login:hover {
   background: #111;
 }
 
-/* Bottom link */
+/* Bottom text */
 .register-text {
   text-align: center;
   font-size: .88rem;
   color: #555;
   margin-top: 8px;
-  margin-bottom: 6px; /* ✅ buang space bawah */
 }
-
 .register-text a {
-  color: #000 !important; /* ✅ jadi hitam */
+  color: #000 !important;
   font-weight: 600;
   text-decoration: underline;
 }
 
-/* ✅ remove card layout feel */
+/* Remove card frame */
 .app-container {
   background: #fff !important;
   padding-top: 0 !important;
@@ -146,50 +134,73 @@ form {
   border-right: none !important;
 }
 </style>
-
 @endsection
+
 
 @section('content')
 <div class="login-wrap">
 
-  <div class="logo">
-    <img src="/images/logo.png" alt="Logo" />
-    <h3>Selamat Datang!</h3>
+{{-- ALERTS --}}
+@if(session('error'))
+  <div style="background:#ffdddd;color:#b80000;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:500;text-align:center;">
+      ⚠️ {{ session('error') }}
+  </div>
+@endif
+
+@if(session('success'))
+  <div style="background:#ddffdd;color:#0d8500;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:500;text-align:center;">
+      ✅ {{ session('success') }}
+  </div>
+@endif
+
+{{-- Logo --}}
+<div class="logo">
+  <img src="/images/logo.png" alt="Logo" />
+  <h3>Selamat Datang!</h3>
+</div>
+
+<div class="hero-box">
+  <img src="/images/loreg.png" class="hero" alt="">
+</div>
+
+<h1 class="title">Welcome Back!</h1>
+<p class="subtitle">Silakan login kembali ke akun Anda</p>
+
+<form action="{{ route('login.submit') }}" method="POST">
+  @csrf
+
+  {{-- Error login --}}
+  @if ($errors->has('login_error'))
+    <div style="background:#ffeaea;color:#b30000;padding:8px;border-radius:8px;font-size:.85rem;margin-bottom:6px;">
+      {{ $errors->first('login_error') }}
+    </div>
+  @endif
+
+  {{-- Email / No HP --}}
+  <div class="input-group">
+    <label for="login_id">Email / No HP</label>
+    <input 
+      type="text" 
+      id="login_id" 
+      name="login_id" 
+      placeholder="Email atau No HP"
+      value="{{ old('login_id') }}" 
+      required 
+    />
   </div>
 
-  <div class="hero-box">
-    <img src="/images/loreg.png" class="hero" alt="">
+  {{-- Password --}}
+  <div class="input-group">
+    <label>Password</label>
+    <input type="password" name="password" placeholder="Masukkan password Anda" required>
   </div>
 
-  <h1 class="title">Welcome Back!</h1>
-  <p class="subtitle">Silakan login kembali ke akun Anda</p>
+  <button type="submit" class="btn-login">Login</button>
+</form>
 
-  <form action="{{ route('login.submit') }}" method="POST">
-    @csrf
-
-    {{-- Error --}}
-    @if ($errors->has('login_error'))
-      <div style="background:#ffeaea;color:#b30000;padding:8px;border-radius:8px;font-size:.85rem;margin-bottom:6px;">
-        {{ $errors->first('login_error') }}
-      </div>
-    @endif
-
-    <div class="input-group">
-      <label>Email</label>
-      <input type="email" name="email" placeholder="Masukkan email Anda" required>
-    </div>
-
-    <div class="input-group">
-      <label>Password</label>
-      <input type="password" name="password" placeholder="Masukkan password Anda" required>
-    </div>
-
-    <button type="submit" class="btn-login">Login</button>
-  </form>
-
-  <p class="register-text">Belum punya akun?
-    <a href="{{ route('register') }}">Daftar di sini</a>
-  </p>
+<p class="register-text">Belum punya akun?
+  <a href="{{ route('register') }}">Daftar di sini</a>
+</p>
 
 </div>
 @endsection

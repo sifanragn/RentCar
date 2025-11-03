@@ -30,7 +30,7 @@ html, body { height: 100%; }
   text-align: center;
 }
 
-/* Icon circle */
+/* Icon */
 .otp-icon-box {
   width: 60px;
   height: 60px;
@@ -70,7 +70,7 @@ html, body { height: 100%; }
   margin-bottom: 18px;
 }
 
-/* OTP Inputs */
+/* OTP box */
 .otp-inputs {
   display: flex;
   justify-content: center;
@@ -94,7 +94,7 @@ html, body { height: 100%; }
   box-shadow: 0 0 6px rgba(0,0,0,0.15);
 }
 
-/* Verify button */
+/* Button */
 .btn-verify {
   width: 100%;
   padding: 13px;
@@ -112,7 +112,7 @@ html, body { height: 100%; }
   transform: scale(.98);
 }
 
-/* Bottom text */
+/* Text */
 .otp-info {
   font-size: 13px;
   color: #666;
@@ -127,7 +127,7 @@ html, body { height: 100%; }
   color: #333;
 }
 
-/* Resend button */
+/* Resend */
 .resend-btn {
   margin-top: 6px;
   font-size: 14px;
@@ -155,7 +155,7 @@ html, body { height: 100%; }
     <i class="fab fa-whatsapp"></i>
   </div>
 
-  {{-- Success badge --}}
+  {{-- Badge --}}
   @if(session('success'))
     <div class="otp-badge">
       <i class="fas fa-check-circle"></i> OTP terkirim
@@ -175,7 +175,6 @@ html, body { height: 100%; }
   <form action="{{ route('register.verifyOtp') }}" method="POST" id="otpForm">
     @csrf
 
-    {{-- OTP Inputs --}}
     <div class="otp-inputs">
       @for ($i = 0; $i < 6; $i++)
         <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
@@ -205,60 +204,97 @@ html, body { height: 100%; }
 
 @push('scripts')
 <script>
-const inputs=document.querySelectorAll('.otp-inputs input');
-const otpValue=document.getElementById('otpValue');
-const resendBtn=document.getElementById('resendBtn');
-const timerEl=document.getElementById('timer');
-const timerWrapper=document.getElementById('timerWrapper');
+const inputs = document.querySelectorAll('.otp-inputs input');
+const otpValue = document.getElementById('otpValue');
+const resendBtn = document.getElementById('resendBtn');
+const timerEl = document.getElementById('timer');
+const timerWrapper = document.getElementById('timerWrapper');
 
 let countdown;
-const OTP_KEY="otp_expire_time";
+const OTP_KEY = "otp_expire_time";
+const OTP_CAN_RESEND = "otp_can_resend";
 
-function startTimer(d=60){
-  let t=Date.now()+d*1000;
-  localStorage.setItem(OTP_KEY,t);
+/* TIMER */
+function startTimer(duration = 60) {
+  const expire = Date.now() + duration * 1000;
+  localStorage.setItem(OTP_KEY, expire);
+  localStorage.setItem(OTP_CAN_RESEND, "0");
   runTimer();
 }
-function runTimer(){
+
+function runTimer() {
   clearInterval(countdown);
-  countdown=setInterval(()=>{
-    let t=localStorage.getItem(OTP_KEY);
-    let left=Math.floor((t-Date.now())/1000);
-    if(left<=0){
-      clearInterval(countdown);
-      timerWrapper.style.display="none";
+  countdown = setInterval(() => {
+    const expire = localStorage.getItem(OTP_KEY);
+    const canResend = localStorage.getItem(OTP_CAN_RESEND) === "1";
+    const left = Math.floor((expire - Date.now()) / 1000);
+
+    if (canResend) {
+      timerWrapper.style.display = "none";
       resendBtn.classList.remove("disabled");
       return;
     }
-    timerEl.textContent=left;
-  },1000);
+
+    if (left <= 0) {
+      clearInterval(countdown);
+      timerWrapper.style.display = "none";
+      resendBtn.classList.remove("disabled");
+      localStorage.setItem(OTP_CAN_RESEND, "1");
+      return;
+    }
+
+    timerWrapper.style.display = "block";
+    timerEl.textContent = left;
+  }, 1000);
 }
 
-let saved=localStorage.getItem(OTP_KEY);
-(!saved||saved<Date.now())?startTimer():runTimer();
+/* INIT */
+let saved = localStorage.getItem(OTP_KEY);
+let canResend = localStorage.getItem(OTP_CAN_RESEND) === "1";
 
+if (saved && saved > Date.now() && !canResend) {
+  runTimer();
+} else {
+  timerWrapper.style.display = "none";
+  resendBtn.classList.remove("disabled");
+  localStorage.setItem(OTP_CAN_RESEND, "1");
+}
+
+/* OTP input jump */
 inputs[0].focus();
-inputs.forEach((inp,i)=>{
-  inp.addEventListener("input",()=>{
-    inp.value=inp.value.replace(/\D/g,'');
-    if(inp.value && i<5) inputs[i+1].focus();
-    otpValue.value=[...inputs].map(x=>x.value).join('');
+inputs.forEach((box,i) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/\D/g,'');
+    if (box.value && i < 5) inputs[i+1].focus();
+    otpValue.value = [...inputs].map(x=>x.value).join('');
   });
-  inp.addEventListener("keydown",e=>{
-    if(e.key==="Backspace"&&!inp.value&&i>0) inputs[i-1].focus();
+
+  box.addEventListener('keydown', e => {
+    if (e.key === "Backspace" && !box.value && i > 0)
+      inputs[i-1].focus();
   });
 });
 
-resendBtn.addEventListener("click",function(){
-  if(this.classList.contains("disabled")) return;
+/* RESEND BUTTON */
+resendBtn.addEventListener('click', function () {
+  if (this.classList.contains("disabled")) return;
 
-  this.textContent="Mengirim...";
-  fetch("{{ route('register.resendOtp') }}",{
-    method:"POST",
-    headers:{ "X-CSRF-TOKEN":"{{ csrf_token() }}" }
-  }).then(r=>r.json()).then(d=>{
-    this.textContent="Kirim Ulang Kode";
-    d.status?startTimer():alert(d.message);
+  this.textContent = "Mengirim...";
+  this.classList.add("disabled");
+
+  fetch("{{ route('register.resendOtp') }}", {
+    method: "POST",
+    headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
+  })
+  .then(r => r.json())
+  .then(d => {
+    this.textContent = "Kirim Ulang Kode";
+    d.status ? startTimer(60) : alert(d.message);
+  })
+  .catch(() => {
+    this.textContent = "Kirim Ulang Kode";
+    this.classList.remove("disabled");
+    alert("Gagal mengirim OTP, coba lagi.");
   });
 });
 </script>
