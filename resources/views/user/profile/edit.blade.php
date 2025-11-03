@@ -336,10 +336,10 @@ form .btn-primary.w-100.small-btn {
 
   {{-- PASSWORD --}}
   <div id="verifySection" class="mb-3">
-    <label class="form-label">Masukkan Password Lama</label>
+    <label class="form-label">Buat Password Baru</label>
     <div class="input-group" style="overflow:hidden; border-radius:12px;">
       <input id="current_password" type="password" name="current_password"
-             class="form-control" placeholder="Password lama"
+             class="form-control" placeholder="Masukkan Password Lama"
              style="border-radius:12px 0 0 12px;">
       <button class="btn btn-primary" type="button" id="verifyButton"
               style="border-radius:0 12px 12px 0;">Verifikasi</button>

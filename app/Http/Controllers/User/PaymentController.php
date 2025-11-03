@@ -11,9 +11,20 @@ use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
-    private string $merchantCode = 'DS25394';
-    private string $apiKey = '06a924ce717ea70f6522e5c51241ccc6';
-    private string $callbackUrl = 'https://amiyah-mouselike-stably.ngrok-free.dev/api/payment/callback';
+    private function getMerchantCode()
+{
+    return env('DUITKU_MERCHANT_CODE');
+}
+
+private function getApiKey()
+{
+    return env('DUITKU_API_KEY');
+}
+
+private function getCallbackUrl()
+{
+    return env('DUITKU_CALLBACK_URL');
+}
 
     /* --------------------------------------------------------------------------
      | 🔹 STEP 1: Tampilkan detail sewa & buat transaksi utama
@@ -34,11 +45,16 @@ class PaymentController extends Controller
     /* --------------------------------------------------------------------------
      | ▶️ STEP 2: Kirim ke Duitku & redirect ke halaman pembayaran
      * -------------------------------------------------------------------------- */
-   public function startProcess(Request $r, $rental_id)
+  public function startProcess(Request $r, $rental_id)
 {
     $r->validate(['metode' => 'required|in:qris,bca,bri']);
     $rental = Rental::with(['car.brand', 'user'])->findOrFail($rental_id);
     abort_if($rental->user_id !== auth()->id(), 403);
+
+    // ✅ Ambil config dari .env
+    $merchantCode = $this->getMerchantCode();
+    $apiKey       = $this->getApiKey();
+    $callbackUrl  = $this->getCallbackUrl();
 
     // 🚫 Jika sudah ada payment pending, arahkan ke sana
     if (Payment::where('rental_id', $rental->rental_id)->where('status_pembayaran', 'pending')->exists()) {
@@ -46,10 +62,10 @@ class PaymentController extends Controller
         return redirect()->route('user.payments.process', $exist->payment_id);
     }
 
-    // 🔗 Request ke Duitku
     $tempOrder = 'TMP-' . strtoupper(uniqid());
+
     $payload = [
-        "merchantCode" => $this->merchantCode,
+        "merchantCode" => $merchantCode,
         "paymentAmount" => (int)$rental->total_biaya,
         "paymentMethod" => match($r->metode) {
             'bca' => 'BC', 'bri' => 'BR', default => 'QRIS',
@@ -59,55 +75,45 @@ class PaymentController extends Controller
         "email" => $rental->user->email,
         "phoneNumber" => $rental->user->no_hp ?? '08123456789',
         "customerVaName" => $rental->user->nama_lengkap,
-        "callbackUrl" => $this->callbackUrl,
+        "callbackUrl" => $callbackUrl,
         "returnUrl" => route('user.payments.index'),
-        "signature" => md5($this->merchantCode . $tempOrder . (int)$rental->total_biaya . $this->apiKey),
+        "signature" => md5($merchantCode . $tempOrder . (int)$rental->total_biaya . $apiKey),
         "expiryPeriod" => 30,
     ];
 
     $res = Http::post('https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry', $payload)->json();
 
     if (empty($res['paymentUrl'])) {
-    Log::error('🚨 Duitku gagal buat transaksi', [
-        'payload' => $payload,
-        'response' => $res,
-    ]);
-    return back()->with('error', 'Gagal membuat transaksi, silakan coba lagi.');
-}
+        Log::error('🚨 Duitku gagal buat transaksi', [
+            'payload' => $payload,
+            'response' => $res,
+        ]);
+        return back()->with('error', 'Gagal membuat transaksi, silakan coba lagi.');
+    }
 
-    // ✅ Update status rental → menunggu pembayaran
+    // ✅ Update rental status
     $rental->update([
         'status_rental' => 'menunggu_pembayaran',
-        'updated_at'    => now(),
+        'updated_at' => now(),
     ]);
 
-    // ✅ Buat payment utama (langsung pending biar countdown aktif)
-        $payment = Payment::create([
-            'rental_id'         => $rental->rental_id,
-            'gateway'           => 'Duitku',
-            'metode'            => $r->metode,
-            'payment_type'      => 'main',
-            'total_bayar'       => $rental->total_biaya,
-            'status_pembayaran' => 'pending',
-            'gateway_reference' => $res['reference'] ?? ('MAN-' . rand(100000, 999999)),
-            'payment_token'     => $res['paymentUrl'],
-            'merchant_order_id' => $tempOrder, // 🔹 tambahkan ini
-            'callback_status'   => 'waiting',
-            'tanggal_bayar'     => now(),
-            'expired_at'        => now()->addMinutes(30),
-        ]);
-
-    Log::info('💰 Pembayaran dimulai', [
-        'payment_id' => $payment->payment_id,
-        'rental_id'  => $rental->rental_id,
-        'status'     => 'pending',
-        'metode'     => $r->metode,
+    Payment::create([
+        'rental_id' => $rental->rental_id,
+        'gateway' => 'Duitku',
+        'metode' => $r->metode,
+        'payment_type' => 'main',
+        'total_bayar' => $rental->total_biaya,
+        'status_pembayaran' => 'pending',
+        'gateway_reference' => $res['reference'] ?? ('MAN-' . rand(100000, 999999)),
+        'payment_token' => $res['paymentUrl'],
+        'merchant_order_id' => $tempOrder,
+        'callback_status' => 'waiting',
+        'tanggal_bayar' => now(),
+        'expired_at' => now()->addMinutes(30),
     ]);
 
-    // 🚀 Redirect ke Duitku
     return redirect()->away($res['paymentUrl']);
 }
-
 
 
     private function duitkuPayload($rental, $payment, $metode)
@@ -116,7 +122,7 @@ class PaymentController extends Controller
         $amount = (int)$rental->total_biaya;
         $orderId = 'ORDER-' . $payment->payment_id;
         return [
-            "merchantCode" => $this->merchantCode,
+            "merchantCode" => $this->getMerchantCode(),
             "paymentAmount" => $amount,
             "paymentMethod" => $map[$metode] ?? 'QRIS',
             "merchantOrderId" => $orderId,
@@ -124,9 +130,9 @@ class PaymentController extends Controller
             "email" => $rental->user->email,
             "phoneNumber" => $rental->user->no_hp ?? '08123456789',
             "customerVaName" => $rental->user->nama_lengkap,
-            "callbackUrl" => $this->callbackUrl,
+            "callbackUrl" => $this->getCallbackUrl(),
             "returnUrl" => route('user.payments.index'),
-            "signature" => md5($this->merchantCode . $orderId . $amount . $this->apiKey),
+            "signature" => md5($this->getMerchantCode() . $orderId . $amount . $this->getApiKey()),
             "expiryPeriod" => 30,
         ];
     }
@@ -263,7 +269,7 @@ public function index(Request $r)
     $merchantOrderId = $r->merchantOrderId ?? '';
     $amountRaw = $r->amount ?? '';
     $amountClean = preg_replace('/[^0-9]/', '', $amountRaw); // hapus titik/koma
-    $apiKey = $this->apiKey;
+    $apiKey = $this->getApiKey();
 
     $expectedSign = md5($merchantCode . $amountClean . $merchantOrderId . $apiKey);
     $receivedSign = $r->signature ?? '';

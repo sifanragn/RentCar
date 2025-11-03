@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Admin;
+use App\Helpers\PhoneFormatter;
+
 
 class LoginController extends Controller
 {
@@ -17,57 +19,64 @@ class LoginController extends Controller
     }
 
     public function authenticate(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+{
+    $request->validate([
+        'login_id' => 'required',
+        'password' => 'required',
+    ]);
+
+    $login_id = $request->login_id;
+
+    // Tentukan email atau HP
+    $field = filter_var($login_id, FILTER_VALIDATE_EMAIL) ? 'email' : 'no_hp';
+
+    // ✅ Jika nomor HP → normalisasi (08 → 628)
+    if ($field === 'no_hp') {
+        $login_id = PhoneFormatter::format($login_id);
+    }
+
+    // ---------------------- ADMIN LOGIN ---------------------- //
+    $admin = Admin::where($field, $login_id)
+        ->where('status', 'aktif')
+        ->first();
+
+    if ($admin && Hash::check($request->password, $admin->password)) {
+        session([
+            'admin_logged_in' => true,
+            'admin_id' => $admin->admin_id,
+            'admin_role' => $admin->role,
+            'admin_name' => $admin->nama_lengkap,
         ]);
 
-        // 1️⃣ Cek dulu di tabel admins
-        $admin = Admin::where('email', $request->email)
-            ->where('status', 'aktif')
-            ->first();
+        \Log::info('✅ Admin login berhasil', [$field => $login_id]);
+        return redirect()->route('admin.dashboard.index');
+    }
 
-        if ($admin && Hash::check($request->password, $admin->password)) {
-            session([
-                'admin_logged_in' => true,
-                'admin_id' => $admin->admin_id,
-                'admin_role' => $admin->role,
-                'admin_name' => $admin->nama_lengkap,
-            ]);
+    // ---------------------- USER LOGIN ---------------------- //
+    $user = User::where($field, $login_id)->first();
 
-            \Log::info('✅ Admin login berhasil', ['email' => $admin->email]);
+    if ($user && Hash::check($request->password, $user->password)) {
+        Auth::login($user);
+        $request->session()->regenerate();
 
-return redirect()->route('admin.dashboard.index');
-        }
+        \Log::info('✅ User login berhasil', [$field => $login_id]);
+        return redirect()->route('user.home');
+    }
 
-        // 2️⃣ Kalau bukan admin, cek user biasa
-        $user = User::where('email', $request->email)->first();
+    // ---------------------- LOGIN FAILED ---------------------- //
+    \Log::warning('❌ Login gagal', [$field => $login_id]);
 
-if ($user && Hash::check($request->password, $user->password)) {
-    Auth::login($user);
-    $request->session()->regenerate();
-
-    \Log::info('✅ User login berhasil', ['email' => $user->email]);
-
-    // ⬇️ ubah ini
-return redirect()->route('user.home');
+    return back()->withErrors([
+        'login_error' => 'Email / No HP atau password salah, atau akun tidak aktif.',
+    ])->withInput();
 }
 
-        // 3️⃣ Kalau keduanya gagal
-        \Log::warning('❌ Login gagal', ['email' => $request->email]);
-
-        return back()->withErrors([
-            'login_error' => 'Email atau password salah, atau akun tidak aktif.',
-        ]);
-    }
 
    public function __construct()
 {
     $this->middleware(\App\Http\Middleware\PreventBackHistory::class)
          ->only(['index', 'logout']);
 }
-
 
 
     public function logout(Request $request)

@@ -2,6 +2,7 @@
 
 @section('title', 'Login')
 
+
 @section('styles')
 <style>
   * {
@@ -140,7 +141,19 @@
 </style>
 @endsection
 
+
 @section('content')
+@if(session('error'))
+    <div style="background:#ffdddd;color:#b80000;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:500;text-align:center;">
+        ⚠️ {{ session('error') }}
+    </div>
+@endif
+
+@if(session('success'))
+    <div style="background:#ddffdd;color:#0d8500;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:500;text-align:center;">
+        ✅ {{ session('success') }}
+    </div>
+@endif
   <!-- Logo dan teks atas -->
   <div class="logo">
     <img src="/images/logo.png" alt="Logo" />
@@ -166,16 +179,16 @@
     @endif
 
     <div class="input-group">
-      <label for="email">Email</label>
-      <input 
-        type="email" 
-        id="email" 
-        name="email" 
-        placeholder="Masukkan email Anda" 
-        value="{{ old('email') }}" 
-        required 
-      />
-    </div>
+    <label for="login_id">Email / No HP</label>
+    <input 
+      type="text" 
+      id="login_id" 
+      name="login_id" 
+      placeholder="Email atau No HP"
+      value="{{ old('login_id') }}" 
+      required 
+    />
+  </div>
 
     <div class="input-group">
       <label for="password">Password</label>

@@ -183,12 +183,13 @@ const timerWrapper = document.getElementById('timerWrapper');
 
 let countdown;
 const OTP_KEY = "otp_expire_time";
+const OTP_CAN_RESEND = "otp_can_resend";
 
-// ====== TIMER FUNCTION ======
+// ===== TIMER =====
 function startTimer(duration = 60) {
-  let expireTime = Date.now() + duration * 1000;
+  const expireTime = Date.now() + duration * 1000;
   localStorage.setItem(OTP_KEY, expireTime);
-
+  localStorage.setItem(OTP_CAN_RESEND, "0"); // 🚫 belum bisa resend
   runTimer();
 }
 
@@ -196,31 +197,48 @@ function runTimer() {
   clearInterval(countdown);
 
   countdown = setInterval(() => {
-    let expireTime = localStorage.getItem(OTP_KEY);
-    let diff = Math.floor((expireTime - Date.now()) / 1000);
+    const expireTime = localStorage.getItem(OTP_KEY);
+    const canResend = localStorage.getItem(OTP_CAN_RESEND) === "1";
+    const diff = Math.floor((expireTime - Date.now()) / 1000);
 
-    if (diff <= 0) {
-      clearInterval(countdown);
+    // ✅ Sudah boleh resend (expired)
+    if (canResend) {
       timerWrapper.style.display = "none";
       resendBtn.classList.remove("disabled");
       return;
     }
 
+    // ✅ Countdown habis
+    if (diff <= 0) {
+      clearInterval(countdown);
+      timerWrapper.style.display = "none";
+      resendBtn.classList.remove("disabled");
+      localStorage.setItem(OTP_CAN_RESEND, "1"); // tandai siap resend
+      return;
+    }
+
+    // ⏳ Countdown jalan
     timerWrapper.style.display = "block";
     timerEl.textContent = diff;
     resendBtn.classList.add("disabled");
+
   }, 1000);
 }
 
-// ====== INIT TIMER ON PAGE LOAD ======
+// ===== INIT ON PAGE LOAD =====
 let savedTime = localStorage.getItem(OTP_KEY);
-if (!savedTime || savedTime < Date.now()) {
-  startTimer(60);
-} else {
+let canResend = localStorage.getItem(OTP_CAN_RESEND) === "1";
+
+if (savedTime && savedTime > Date.now() && !canResend) {
   runTimer();
+} else {
+  // langsung siap resend (jika waktu habis sebelumnya)
+  timerWrapper.style.display = "none";
+  resendBtn.classList.remove("disabled");
+  localStorage.setItem(OTP_CAN_RESEND, "1");
 }
 
-// ====== auto input ======
+// ===== INPUT BOXES =====
 inputs[0].focus();
 inputs.forEach((input, index) => {
   input.addEventListener('input', () => {
@@ -236,23 +254,33 @@ inputs.forEach((input, index) => {
   });
 });
 
-// ====== Resend button ======
+// ===== RESEND ACTION =====
 resendBtn.addEventListener('click', function () {
   if (resendBtn.classList.contains("disabled")) return;
 
   resendBtn.textContent = "Mengirim...";
+  resendBtn.classList.add("disabled");
+
   fetch("{{ route('register.resendOtp') }}", {
     method: "POST",
     headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
   })
   .then(res => res.json())
   .then(data => {
+    if (data.status === true) {
+      resendBtn.textContent = "Kirim Ulang Kode";
+      startTimer(60); // Reset timer
+    } else {
+      resendBtn.textContent = "Kirim Ulang Kode";
+      alert(data.message);
+    }
+  })
+  .catch(() => {
     resendBtn.textContent = "Kirim Ulang Kode";
-    if (data.status) startTimer(60);
-    else alert(data.message);
+    resendBtn.classList.remove("disabled");
+    alert("Gagal mengirim OTP, coba lagi.");
   });
 });
-
 
 </script>
 @endsection

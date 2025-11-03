@@ -91,22 +91,23 @@ class PaymentGatewayController extends Controller
             return back()->with('error', 'Gagal membuat transaksi: ' . ($result['Message'] ?? 'unknown'));
         }
 
-        // Simpan ke DB
-        DB::transaction(function () use ($rental, $request, $result, $paymentMethod, $merchantOrderId, &$payment) {
+        // Simpan ke DB sesuai logic kamu
+        DB::transaction(function () use ($rental, $request, $result, $merchantOrderId, &$payment) {
             $payment = Payment::create([
-            'rental_id'         => $rental->rental_id,
-            'gateway'           => 'Duitku',
-            'metode'            => $r->metode,
-            'payment_type'      => 'main',
-            'total_bayar'       => $rental->total_biaya,
-            'status_pembayaran' => 'pending',
-            'gateway_reference' => $res['reference'] ?? ('MAN-' . rand(100000, 999999)),
-            'payment_token'     => $res['paymentUrl'],
-            'merchant_order_id' => $tempOrder, // 🔹 tambahkan ini
-            'callback_status'   => 'waiting',
-            'tanggal_bayar'     => now(),
-            'expired_at'        => now()->addMinutes(30),
-        ]);
+                'rental_id'         => $rental->rental_id,
+                'gateway'           => 'Duitku',
+                'metode'            => $request->metode,
+                'payment_type'      => 'main',
+                'total_bayar'       => $rental->total_biaya,
+                'status_pembayaran' => 'pending',
+                'gateway_reference' => $result['reference'] ?? ('MAN-' . rand(100000, 999999)),
+                'payment_token'     => $result['paymentUrl'],
+                'merchant_order_id' => $merchantOrderId,
+                'callback_status'   => 'waiting',
+                'tanggal_bayar'     => now(),
+                'expired_at'        => now()->addMinutes(30),
+            ]);
+
             $rental->update(['status_rental' => 'menunggu_pembayaran']);
         });
 
