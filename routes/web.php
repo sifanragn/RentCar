@@ -54,6 +54,13 @@ Route::middleware(['guest', PreventBackHistory::class])->group(function () {
 
     Route::get('/register', [RegisterController::class, 'index'])->name('register');
     Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+
+    // ✅ OTP routes (harus di sini)
+    Route::post('/register/send-otp', [RegisterController::class, 'sendOtp'])->name('register.sendOtp');
+    Route::post('/register/verify-otp', [RegisterController::class, 'verifyOtp'])->name('register.verifyOtp');
+    Route::get('/register/verify', fn() => view('auth.verify-otp'))->name('register.verifyPage');
+    Route::post('/register/resend-otp', [RegisterController::class, 'resendOtp'])->name('register.resendOtp');
+
 });
 
 // Logout
@@ -101,6 +108,8 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/rentals/store/{car_id}', [RentalController::class, 'store'])->name('rentals.store');
     Route::post('/rentals/cancel-latest', [RentalController::class, 'cancelLatest'])->name('rentals.cancelLatest');
     Route::get('/rentals/{id}', [RentalController::class, 'show'])->name('rentals.show');
+    Route::delete('/rentals/{id}', [RentalController::class, 'destroy'])->name('rentals.destroy');
+
 
     // 💳 Pembayaran
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');

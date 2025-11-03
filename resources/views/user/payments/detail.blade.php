@@ -301,4 +301,115 @@ h2 {
       payBtn.innerText = 'Menghubungkan ke Duitku...';
     });
   </script>
+  <style>
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.45);
+    display: none; justify-content: center; align-items: center;
+    backdrop-filter: blur(6px);
+    z-index: 99999;
+    animation: fadeIn .25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  .modal-box {
+    background: #fff;
+    padding: 22px 24px;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 360px;
+    text-align: center;
+    transform: scale(.9);
+    opacity: 0;
+    animation: pop .25s ease forwards;
+  }
+
+  @keyframes pop {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .modal-icon {
+    font-size: 44px;
+    margin-bottom: 8px;
+    animation: spin 1.5s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color:#111;
+    margin-bottom: 6px;
+  }
+
+  .modal-desc {
+    color:#555;
+    font-size:14px;
+  }
+
+  .modal-btns {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-danger, .btn-light {
+    flex: 1; padding: 10px; border-radius: 8px;
+    font-weight: 600; cursor: pointer; border: none;
+    transition: .2s;
+  }
+
+  .btn-danger {
+    background:#000; color:#fff;
+  }
+  .btn-danger:hover { background:#111; }
+
+  .btn-light {
+    background:#f1f1f1; color:#111;
+  }
+  .btn-light:hover { background:#e4e4e4; }
+</style>
+
+<div class="modal-overlay" id="exitModal">
+  <div class="modal-box" onclick="event.stopPropagation()">
+
+    <!-- icon jam pasir -->
+    <div class="modal-icon">⏳</div>
+
+    <div class="modal-title">Keluar dari halaman ini?</div>
+    <p class="modal-desc">Langkah kamu tinggal sedikit lagi loh…</p>
+
+    <div class="modal-btns">
+      <button class="btn-light" id="cancelExit">Lanjutkan</button>
+
+      <form action="{{ route('user.rentals.destroy', $rental->rental_id) }}" method="POST">
+        @csrf @method('DELETE')
+        <button type="submit" class="btn-danger">Keluar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const exitBtn    = document.getElementById('exitBtn');
+  const exitModal  = document.getElementById('exitModal');
+  const cancelExit = document.getElementById('cancelExit');
+
+  // buka modal
+  exitBtn.onclick = () => exitModal.style.display = 'flex';
+
+  // klik lanjutkan
+  cancelExit.onclick = () => exitModal.style.display = 'none';
+
+  // klik area luar close modal
+  exitModal.onclick = () => exitModal.style.display = 'none';
+</script>
+
 @endsection

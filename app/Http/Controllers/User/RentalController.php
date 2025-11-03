@@ -56,21 +56,20 @@ class RentalController extends Controller
         return view('user.rentals.create', compact('car', 'user', 'drivers'));
     }
 
-    /**
-     * 💾 Simpan data penyewaan baru (per jam)
-     */
+/**
+ * 💾 Simpan data penyewaan baru (per jam)
+ */
 public function store(Request $request, $car_id)
 {
     $user = auth()->user();
     $car  = Car::findOrFail($car_id);
 
-    // ❌ Kalau belum verifikasi → JANGAN buat rental dulu
-if ($user->status_verifikasi !== 'disetujui') {
-    return back()->with('warning', 'Akun perlu verifikasi terlebih dahulu.');
-}
+    // ❌ Kalau belum verifikasi → tidak boleh lanjut
+    if ($user->status_verifikasi !== 'disetujui') {
+        return back()->with('warning', 'Akun perlu verifikasi terlebih dahulu.');
+    }
 
-
-    // 🚫 Cegah transaksi ganda
+    // 🚫 Cegah transaksi ganda (pending payment belum selesai)
     $hasPendingPayment = Payment::whereHas('rental', function ($q) use ($user) {
             $q->where('user_id', $user->user_id);
         })
@@ -101,7 +100,7 @@ if ($user->status_verifikasi !== 'disetujui') {
         ], 409);
     }
 
-    // ✅ Validasi input
+    // ✅ Validasi
     $validated = $request->validate([
         'tanggal_mulai'   => 'required|date|after_or_equal:today',
         'tanggal_selesai' => 'required|date|after:tanggal_mulai',
@@ -110,12 +109,12 @@ if ($user->status_verifikasi !== 'disetujui') {
         'metode_pickup'   => 'required|in:ambil_sendiri,pickup_alamat',
     ]);
 
-    // 🕒 Konversi ke WIB
+    // 🕒 WIB
     $timezone = 'Asia/Jakarta';
     $tanggalMulai   = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tanggal_mulai'], $timezone);
     $tanggalSelesai = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tanggal_selesai'], $timezone);
 
-    // 🔹 Validasi jam operasional (08–22 WIB)
+    // Jam operasional
     $jamMulai   = (int) $tanggalMulai->format('H');
     $jamSelesai = (int) $tanggalSelesai->format('H');
 
@@ -133,7 +132,7 @@ if ($user->status_verifikasi !== 'disetujui') {
         ], 422);
     }
 
-    // 🔹 Hitung durasi
+    // Durasi per jam
     $durasiJam = $tanggalMulai->diffInHours($tanggalSelesai);
     if ($durasiJam < 6) {
         return response()->json([
@@ -146,7 +145,7 @@ if ($user->status_verifikasi !== 'disetujui') {
     $hargaPerJamMobil = $car->harga_sewa_per_jam ?? 0;
     $biayaMobil = $hargaPerJamMobil * $durasiJam;
 
-    // 💰 Hitung biaya driver
+    // 💰 Biaya driver
     $hargaDriver = 0;
     $driver = null;
     if ($validated['driver'] === 'ya' && $validated['driver_id']) {
@@ -155,20 +154,18 @@ if ($user->status_verifikasi !== 'disetujui') {
             ->find($validated['driver_id']);
 
         if ($driver) {
-            $hargaPerJamDriver = $driver->harga_per_jam ?? 0;
-            $hargaDriver = $hargaPerJamDriver * $durasiJam;
+            $hargaDriver = ($driver->harga_per_jam ?? 0) * $durasiJam;
         }
     }
 
-    // 🔹 Total
-    $total = $biayaMobil + $hargaDriver;
-    if ($total < 10000) $total = 10000;
+    // Total minimal 10k
+    $total = max($biayaMobil + $hargaDriver, 10000);
 
-    // 🔹 Status awal selalu draft (karena user pasti sudah verified)
+    // Status awal (kamu benar: user sudah pasti verified jadi draft)
     $statusAwal = 'draft';
     $expiredAt = now()->addMinutes(30);
 
-    // 🔹 Simpan rental
+    // Simpan rental
     $rental = Rental::create([
         'user_id'         => $user->user_id,
         'car_id'          => $car->car_id,
@@ -191,7 +188,7 @@ if ($user->status_verifikasi !== 'disetujui') {
         'total'     => $total,
     ]);
 
-    // ✅ Redirect langsung ke pembayaran
+    // ✅ Redirect ke pembayaran
     return redirect()
         ->route('user.payments.detailRental', $rental->rental_id)
         ->with('success', 'Draft disimpan, lanjut ke pembayaran');
@@ -228,4 +225,17 @@ if ($user->status_verifikasi !== 'disetujui') {
 
         return response()->json(['message' => 'Transaksi dibatalkan.']);
     }
+
+    public function destroy($id)
+{
+    $rental = Rental::findOrFail($id);
+
+    abort_if($rental->user_id !== auth()->id(), 403);
+
+    $rental->delete();
+
+    return redirect()->route('user.cars.index')
+        ->with('success', 'Pesanan berhasil dibatalkan.');
+}
+
 }

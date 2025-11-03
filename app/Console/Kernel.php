@@ -33,6 +33,33 @@ class Kernel extends ConsoleKernel
             ]);
         })->everyThirtyMinutes()
           ->description('Auto expire pembayaran tiap 30 menit');
+          // ✅ Reminder H-1 rental dimulai
+$schedule->call(function () {
+    $rentals = \App\Models\Rental::with(['user', 'car.brand'])
+        ->whereDate('tanggal_mulai', now()->addDay()->toDateString())
+        ->where('status_rental', 'berjalan')
+        ->get();
+
+    foreach ($rentals as $r) {
+        \App\Helpers\Whatsapp::send(
+            $r->user->no_hp,
+            "⏰ *Pengingat Rental Mobil Besok!*
+
+Halo *{$r->user->nama_lengkap}*, ini adalah pengingat bahwa rental mobil Anda akan dimulai besok 🚗✨
+
+📆 Tanggal Mulai: {$r->tanggal_mulai}
+🚘 Mobil: {$r->car->brand->nama_merek} {$r->car->model}
+📍 Metode Pickup: " . (
+                $r->metode_pickup == 'ambil_sendiri'
+                ? "Ambil di Kantor Rental"
+                : "Antar ke Alamat Anda"
+            ) . "
+
+Terima kasih telah mempercayai layanan kami 🙏😊"
+        );
+    }
+})->dailyAt('09:00')->description('Reminder rental H-1 via WhatsApp');
+
     }
 
     /**

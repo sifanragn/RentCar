@@ -5,9 +5,7 @@
 @section('styles')
 <style>
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  margin: 0; padding: 0; box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -25,129 +23,58 @@
 
 /* Logo */
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  display: flex; align-items: center; gap: 6px;
   justify-content: center;
   margin-bottom: 4px;
 }
-
-.logo img {
-  width: 40px;
-}
-
-.logo h3 {
-  font-size: 1.05rem;
-  font-weight: 600;
-}
+.logo img { width: 40px; }
+.logo h3 { font-size: 1.05rem; font-weight: 600; }
 
 /* Hero */
-.hero-box {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: 4px auto 10px;
-}
-
-.hero {
-  width: 100%;
-  max-width: 330px;
-  object-fit: contain;
-  display: block;
-  margin-top: -18px;
-}
+.hero-box { width: 100%; display: flex; justify-content: center; margin: 4px auto 10px; }
+.hero { width: 100%; max-width: 330px; object-fit: contain; display: block; margin-top: -18px; }
 
 /* Titles */
 .title {
-  font-size: 1.55rem;
-  font-weight: 700;
-  margin-top: -10px;
-  text-align: center;
+  font-size: 1.55rem; font-weight: 700;
+  margin-top: -10px; text-align: center;
   margin-bottom: 4px;
 }
-
 .subtitle {
-  font-size: .9rem;
-  color: #666;
-  text-align: center;
-  margin-bottom: 16px;
+  font-size: .9rem; color: #666;
+  text-align: center; margin-bottom: 16px;
 }
 
 /* Form */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 5px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.input-group label {
-  font-size: .88rem;
-  font-weight: 600;
-  color: #222;
-}
-
+form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 5px; }
+.input-group { display: flex; flex-direction: column; gap: 4px; }
+.input-group label { font-size: .88rem; font-weight: 600; color: #222; }
 .input-group input {
-  width: 100%;
-  padding: 11px 12px;
-  border: 1.6px solid #d4d4d4;
-  border-radius: 10px;
-  background: #fafafa;
-  font-size: .92rem;
+  width: 100%; padding: 11px 12px; border: 1.6px solid #d4d4d4;
+  border-radius: 10px; background: #fafafa; font-size: .92rem;
 }
 
 /* Button */
 .btn-register {
-  background: #000;
-  color: #fff;
-  padding: 12px;
-  border: none;
-  border-radius: 30px;
-  font-size: 1rem;
-  font-weight: 600;
-  margin-top: 6px;
-  cursor: pointer;
-  transition: .25s;
-  margin-bottom: 20px;
+  background: #000; color: #fff;
+  padding: 12px; border: none; border-radius: 30px;
+  font-size: 1rem; font-weight: 600; margin-top: 6px;
+  cursor: pointer; transition: .25s; margin-bottom: 20px;
 }
-
-.btn-register:hover {
-  background: #111;
-}
+.btn-register:hover { background: #111; }
 
 /* Bottom text */
-.login-text {
-  text-align: center;
-  font-size: .88rem;
-  color: #555;
-  margin-top: 8px;
-  margin-bottom: 6px;
-}
+.login-text { text-align: center; font-size: .88rem; color: #555; margin-top: 8px; margin-bottom: 6px; }
+.login-text a { color: #000 !important; font-weight: 600; text-decoration: underline; }
 
-.login-text a {
-  color: #000 !important;
-  font-weight: 600;
-  text-decoration: underline;
-}
-
-/* Notification box */
+/* Notification */
 .alert-custom {
-  background: #ffecec;
-  color: #a40000;
-  border: 1px solid #ffb3b3;
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  font-size: .85rem;
+  background: #ffecec; color: #a40000;
+  border: 1px solid #ffb3b3; border-radius: 10px;
+  padding: 10px 12px; margin-bottom: 12px; font-size: .85rem;
 }
 
-/* ✅ remove card layout feel */
+/* remove card feel */
 .app-container {
   background: #fff !important;
   padding-top: 0 !important;
@@ -180,7 +107,7 @@ form {
     </div>
   @endif
 
-  <form action="{{ route('register.store') }}" method="POST">
+  <form action="{{ route('register.sendOtp') }}" method="POST">
     @csrf
 
     <div class="input-group">
@@ -199,6 +126,11 @@ form {
     </div>
 
     <div class="input-group">
+      <label>No WhatsApp</label>
+      <input type="text" name="no_hp" placeholder="08xxxxxxxx" value="{{ old('no_hp') }}" required>
+    </div>
+
+    <div class="input-group">
       <label>Password</label>
       <input type="password" name="password" placeholder="Masukkan password Anda" required>
     </div>
@@ -208,7 +140,9 @@ form {
       <input type="password" name="password_confirmation" placeholder="Ulangi password Anda" required>
     </div>
 
-    <button type="submit" class="btn-register">Daftar</button>
+    <button type="submit" class="btn-register">
+      Kirim Kode OTP
+    </button>
   </form>
 
   <p class="login-text">

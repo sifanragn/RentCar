@@ -548,14 +548,31 @@ button.btn:focus-visible {
 
 <script>
 /* ---------------- Countdown ---------------- */
-const toMMSS = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-document.querySelectorAll('.cd').forEach(el=>{
-  let s = +el.dataset.s || 0;
-  const row = el.closest('.payment-card');
-  if (s <= 0) { el.textContent = '00:00'; return; }
-  const tick = () => { el.textContent = toMMSS(s); if(s-->0) setTimeout(tick,1000); };
+const toMMSS = (s) => {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+};
+
+document.querySelectorAll('.cd').forEach(el => {
+  let s = parseInt(el.dataset.s) || 0;
+
+  if (s <= 0) {
+    el.textContent = "00:00";
+    return;
+  }
+
+  const tick = () => {
+    el.textContent = toMMSS(s);
+    if (s > 0) {
+      s--;
+      setTimeout(tick, 1000);
+    }
+  };
+
   tick();
 });
+
 
 /* ---------------- Modal Receipt ---------------- */
 function openReceipt(id){
