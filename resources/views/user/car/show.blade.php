@@ -4,82 +4,207 @@
 
 @section('styles')
 <style>
-  body { margin:0; padding:0; }
-  .detail-container {
-    width: 100%;
-    font-family: 'Poppins', sans-serif;
-    color: #000;
-  }
-  .car-image-container {
-    width: 100%;
-    border-radius: 16px;
-    overflow: hidden;
-    background: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 12px 0;
-  }
-  .car-image { width:100%; height:auto; object-fit:contain; }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  color: #000;
+  overflow-x: hidden;
+}
 
-  .car-info {
-    background-color:#262625; color:#fff;
-      border-radius:20px 20px 0 0; /* ✅ cuma atas yang bulat */ 
-    padding:16px;
-    margin-top:-30px; margin-left:-10px; margin-right:-10px;
-    padding-bottom: 40px;
-  }
-  .car-info h2 { font-size:16px; font-weight:600; }
-  .car-info .price {
-    background:#fff; color:#000;
-    display:inline-block;
-    padding:4px 10px;
-    border-radius:10px;
-    font-weight:600;
-    font-size:13px;
-    margin:8px 0;
-  }
-  .car-info .price small {
-    color:#555;
-    font-size:11px;
-    font-weight:500;
-  }
-  .tag-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
-    gap:8px; margin-bottom:12px;
-  }
-  .tag-box {
-    background:#e5e5e5; color:#000;
-    border-radius:12px; padding:10px;
-    font-size:12px; text-align:center;
-    display:flex; flex-direction:column; align-items:center;
-  }
-  .tag-box img { width:20px; height:20px; margin-bottom:6px; }
-  .btn-rent {
-    display:block; text-align:center;
-    background-color:#555;
-    color:#fff; border-radius:12px;
-    padding:6px 0; font-weight:600;
-    margin-top:16px; text-decoration:none;
-    transition:background-color 0.3s ease;
-  }
-  .btn-rent:hover { background-color:#444; }
+/* ===== CONTAINER ===== */
+.detail-container {
+  width: 100%;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ===== Gambar Mobil ===== */
+.carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 20px 20px;
+}
+.carousel-inner {
+  border-radius: 0 0 20px 20px;
+  overflow: hidden;
+}
+.car-slide-img {
+  width: 100%;
+  height: 250px;
+  object-fit: contain;
+  transition: transform 0.8s ease, opacity 0.6s ease;
+}
+.carousel-item.active .car-slide-img {
+  transform: scale(1.02);
+  opacity: 1;
+}
+.carousel-item-next .car-slide-img,
+.carousel-item-prev .car-slide-img {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Panah kiri-kanan carousel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(100%);
+}
+
+/* ===== Tombol kembali ===== */
+.back-link {
+  position: absolute;
+  top: 12px;
+  left: 15px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+  z-index: 10;
+  text-decoration: none;
+}
+.back-link:hover {
+  background: #000;
+}
+.back-link:hover svg {
+  stroke: #fff;
+}
+.back-link svg {
+  stroke: #000;
+  transition: 0.3s;
+}
+
+/* ===== INFO MOBIL ===== */
+.car-info {
+  background: #262625;
+  color: #fff;
+  border-radius: 18px 18px 0 0;
+  margin: -14px auto 0;
+  width: 96%; /* 🔹 lebih lebar, tapi masih aman dalam layout */
+  padding: 22px 16px 40px;
+  animation: fadeSlideUp 0.6s ease forwards;
+  box-shadow: 0 -3px 8px rgba(0,0,0,0.25);
+  max-width: 600px; /* biar tetep proporsional di desktop */
+}
+
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(15px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.car-info h2 {
+  font-size: 15.8px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 6px;
+}
+
+.car-info .price {
+  background: #fff;
+  color: #000;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12.8px;
+  margin: 8px 0 14px;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== SECTION TITLE ===== */
+.section-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  margin: 14px 0 8px;
+  border-left: 3px solid #fff;
+  padding-left: 8px;
+}
+
+/* ===== GRID INFO ===== */
+.tag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 6px;
+}
+
+.tag-box {
+  background: #f4f4f4;
+  color: #000;
+  border-radius: 10px;
+  padding: 9px 6px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  transition: all 0.25s ease;
+}
+.tag-box:hover {
+  transform: translateY(-2px);
+  background: #ececec;
+  box-shadow: 0 3px 8px rgba(255,255,255,0.25);
+}
+.tag-box img {
+  width: 18px;
+  height: 18px;
+  margin-bottom: 5px;
+  opacity: 0.9;
+  transition: 0.2s ease;
+}
+.tag-box:hover img {
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+/* ===== Tombol Sewa Sekarang ===== */
+.btn-rent {
+  display: block;
+  width: 85%;
+  max-width: 330px;
+  margin: 22px auto 0;
+  text-align: center;
+  background-color: #555;     /* 🔹 abu tua elegan */
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 0;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+.btn-rent:hover {
+  background-color: #666;     /* 🔹 sedikit lebih terang saat hover */
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(0,0,0,0.35);
+}
+
+
+/* ===== Alert (mobil disewa) ===== */
+.alert {
+  margin-top: 16px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  background: #fff3cd;
+  color: #856404;
+  animation: fadeIn 0.5s ease;
+}
+
+
   
-  .back-link svg {
-    vertical-align: middle;
-  }
-
-  .carousel { width:100%; margin-top:15px; }
-  .carousel-inner { border-radius:16px; overflow:hidden; }
-  .car-slide-img { width:100%; height:220px; object-fit:cover; }
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon { filter:invert(100%); }
-  .alert {
-    margin-top:16px; padding:12px;
-    border-radius:10px; font-size:14px;
-    background:#fff3cd; color:#856404;
-  }
 </style>
 @endsection
 
@@ -168,6 +293,28 @@
     @endif
   </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const carInfo = document.querySelector(".car-info");
+  const carImg = document.querySelectorAll(".car-slide-img");
+
+  // efek parallax halus saat scroll
+  window.addEventListener("scroll", () => {
+    const scrollY = window.scrollY;
+    carImg.forEach(img => {
+      img.style.transform = `translateY(${scrollY * 0.2}px) scale(1.02)`;
+    });
+  });
+
+  // animasi muncul smooth
+  carInfo.style.opacity = 0;
+  setTimeout(() => {
+    carInfo.style.transition = "opacity 0.6s ease";
+    carInfo.style.opacity = 1;
+  }, 250);
+});
+</script>
+
 
 @include('partials.bottom-navbar')
 @endsection
