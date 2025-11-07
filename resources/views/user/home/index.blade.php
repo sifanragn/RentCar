@@ -416,40 +416,104 @@ width: 100%;
 </div>
 
 <!-- Bagian Paling Populer -->
+<!-- Bagian Paling Populer -->
 <div class="section-container">
   <div class="section-header">
     <h2>Paling Populer</h2>
     <a href="{{ route('user.cars.index') }}">See All</a>
   </div>
 
+  <style>
+  /* ===== Tambahan CSS status mobil ===== */
+  .unavailable, .pending {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+  }
+  .unavailable { background: #ff4d4d; color: #fff; }
+  .pending { background: #ffc107; color: #000; }
+
+  /* efek disable */
+  .card.disabled {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  </style>
+
   <div class="card-container">
     @foreach($popularCars as $car)
-    {{-- Link ke detail mobil --}}
-    <a href="{{ route('user.cars.show', $car->car_id) }}" style="text-decoration: none; color: inherit;">
-      <div class="card">
-        <img src="{{ asset('storage/' . $car->foto) }}" alt="{{ $car->nama }}" class="car-image">
-        <div class="card-content">
-          <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
-          <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
-          <p class="price">Rp {{ number_format($car->harga_sewa_per_jam, 0, ',', '.') }}</p>
-          <div class="info-tags">
-            <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
-            <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
-            <div class="tag">{{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
-            <div class="tag">{{ $car->liter_tangki ?? 0 }} Liter</div>
-            <div class="tag">{{ ucfirst($car->lokasi ?? '-') }}</div>
-            <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
-            <div class="tag">
-              {{ \Carbon\Carbon::parse($car->tanggal_mulai)->format('j M') }} -
-              {{ \Carbon\Carbon::parse($car->tanggal_selesai)->format('j M Y') }}
+      @php
+        $rental = \App\Models\Rental::where('car_id', $car->car_id)
+          ->whereIn('status_rental',['verifikasi_diperlukan','menunggu','menunggu_pembayaran','berjalan'])
+          ->latest()->first();
+      @endphp
+
+      {{-- 🚫 kalau sedang disewa → tidak bisa diklik --}}
+      @if($rental)
+        <div class="card disabled">
+          <img src="{{ asset('storage/' . $car->foto) }}" alt="{{ $car->nama }}" class="car-image">
+
+          <div class="card-content">
+            <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
+            <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
+            <p class="price">Rp {{ number_format($car->harga_sewa_per_jam, 0, ',', '.') }}</p>
+
+            <div class="info-tags">
+              <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
+              <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
+              <div class="tag">{{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
+              <div class="tag">{{ $car->liter_tangki ?? 0 }} Liter</div>
+              <div class="tag">{{ ucfirst($car->lokasi ?? '-') }}</div>
+              <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
             </div>
           </div>
+
+          <div class="fav-btn">
+            <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
+          </div>
+
+          @if($rental->status_rental === 'menunggu_pembayaran')
+            <div class="pending">💰 Pembayaran Pending</div>
+          @else
+            <div class="unavailable">⛔ Sedang Disewa</div>
+          @endif
         </div>
-        <div class="fav-btn">
-          <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
-        </div>
-      </div>
-    </a>
+
+      @else
+        {{-- ✅ kalau belum disewa → bisa diklik --}}
+        <a href="{{ route('user.cars.show', $car->car_id) }}" style="text-decoration: none; color: inherit;">
+          <div class="card">
+            <img src="{{ asset('storage/' . $car->foto) }}" alt="{{ $car->nama }}" class="car-image">
+
+            <div class="card-content">
+              <h3>{{ $car->tahun }} {{ $car->brand->nama_merek ?? '-' }} {{ $car->model }}</h3>
+              <p>Edisi {{ ucfirst($car->warna) ?? '-' }}</p>
+              <p class="price">Rp {{ number_format($car->harga_sewa_per_jam, 0, ',', '.') }}</p>
+
+              <div class="info-tags">
+                <div class="tag">{{ number_format($car->kilometer ?? 0) }} km</div>
+                <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
+                <div class="tag">{{ $car->capacity->jumlah_orang ?? '-' }} Orang</div>
+                <div class="tag">{{ $car->liter_tangki ?? 0 }} Liter</div>
+                <div class="tag">{{ ucfirst($car->lokasi ?? '-') }}</div>
+                <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
+              </div>
+            </div>
+
+            <div class="fav-btn">
+              <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" alt="heart">
+            </div>
+          </div>
+        </a>
+      @endif
     @endforeach
   </div>
 </div>
