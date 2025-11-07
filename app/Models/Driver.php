@@ -29,6 +29,15 @@ class Driver extends Model
         'deskripsi',
         'created_by',
     ];
+    protected $appends = [
+    'foto_url',
+    'foto_sim_url',
+    'foto_ktp_url',
+    'foto_kk_url',
+    'harga_formatted',
+    'pengalaman_formatted',
+];
+
 
     /* ============================
        🔗 RELASI

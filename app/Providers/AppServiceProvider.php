@@ -19,10 +19,8 @@ class AppServiceProvider extends ServiceProvider
         // Composer untuk semua layout admin
         View::composer(['layouts.admin.*', 'layouts.admin.partials.*'], function ($view) {
             $totalPendapatan = Payment::where('status_pembayaran', 'success')
-                ->whereHas('rental', function ($q) {
-                    $q->whereIn('status_rental', ['selesai']);
-                })
-                ->sum('total_bayar');
+            ->sum('total_bayar');
+
 
             $now = Carbon::now('Asia/Jakarta');
 

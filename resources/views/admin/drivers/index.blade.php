@@ -58,7 +58,9 @@
               </span>
             </td>
             <td class="driver-actions">
-              <a href="{{ route('admin.drivers.show', $driver->driver_id) }}" class="btn-view">👁 Lihat</a>
+              <button type="button" class="btn-view" onclick="openDriverDetail({{ $driver->toJson() }})">
+              👁 Lihat
+            </button>
               <a href="{{ route('admin.drivers.edit', $driver->driver_id) }}" class="btn-edit">✏ Edit</a>
               <form action="{{ route('admin.drivers.destroy', $driver->driver_id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus driver ini?')" style="display:inline;">
                 @csrf
@@ -72,12 +74,72 @@
       </table>
     </div>
   @endif
+
+<!-- Modal Detail Driver -->
+<div id="driverModal" class="driver-modal-overlay" style="display:none;">
+  <div class="driver-modal">
+
+    <button class="driver-modal-close" onclick="closeDriverDetail()">✖</button>
+
+    <!-- Foto -->
+    <img id="modalFoto" src="" class="driver-detail-foto">
+
+    <h2 id="modalNama" class="driver-name"></h2>
+
+    <div class="driver-info-grid">
+      <div><strong>Nomor HP</strong><span id="modalHp"></span></div>
+      <div><strong>Email</strong><span id="modalEmail"></span></div>
+      <div><strong>No. SIM</strong><span id="modalSim"></span></div>
+      <div><strong>Lokasi</strong><span id="modalLokasi"></span></div>
+      <div><strong>Pengalaman</strong><span id="modalPengalaman"></span></div>
+      <div><strong>Tarif / Jam</strong><span id="modalHarga"></span></div>
+      <div style="grid-column: 1 / -1;">
+        <strong>Deskripsi</strong><span id="modalDeskripsi"></span>
+      </div>
+    </div>
+
+    <!-- Dokumen -->
+    <div class="driver-docs">
+      <h4>📎 Dokumen Identitas</h4>
+
+      <div class="doc-grid">
+        <div class="doc-card">
+          <p><strong>SIM</strong></p>
+          <img id="docSim" src="" class="doc-img" onclick="showFullImage(this.src)">
+        </div>
+
+        <div class="doc-card">
+          <p><strong>KTP</strong></p>
+          <img id="docKtp" src="" class="doc-img" onclick="showFullImage(this.src)">
+        </div>
+
+        <div class="doc-card">
+          <p><strong>KK</strong></p>
+          <img id="docKk" src="" class="doc-img" onclick="showFullImage(this.src)">
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<!-- Full Image Preview -->
+<div id="fullImgOverlay">
+  <img id="fullImg">
+</div>
+</div>
+
+
 
 {{-- ========================================= --}}
 {{--                 STYLE                     --}}
 {{-- ========================================= --}}
 <style>
+  :root {
+  --bg: #fff;
+  --text: #222;
+}
+
 /* === WRAPPER UTAMA === */
 .admin-content-wrapper {
   padding: 10px 30px 50px 30px;
@@ -281,5 +343,199 @@ body.light-mode .btn-view:hover {
   }
   .driver-thumb { width: 45px; height: 45px; }
 }
+
+
+/* MODAL WRAPPER */
+.driver-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+/* MODAL BOX */
+.driver-modal {
+  background: var(--bg);
+  padding: 28px;
+  border-radius: 18px;
+  width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  text-align: center;
+  box-shadow: 0 6px 28px rgba(0,0,0,.25);
+  position: relative;
+}
+body.light-mode .driver-modal { --bg:#fff; }
+body:not(.light-mode) .driver-modal { --bg:#171c26; }
+
+/* Close btn */
+.driver-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: #ff5c5c;
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* FOTO DRIVER */
+.driver-detail-foto {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* INFO */
+.driver-modal p {
+  margin: 4px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+.driver-modal strong {
+  color: var(--primary);
+}
+body.light-mode .driver-modal { --text:#222; --primary:#007bff }
+body:not(.light-mode) .driver-modal { --text:#dce2f0; --primary:#4da3ff }
+
+/* ACTION buttons */
+.driver-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 14px 0;
+}
+
+/* DOC SECTION */
+.driver-docs h4 {
+  margin: 12px 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Thumbnail docs */
+.doc-grid {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.doc-card {
+  width: 95px;
+}
+
+.doc-card p {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.doc-img {
+  width: 95px;
+  height: 95px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.2);
+  cursor: pointer;
+  transition: .15s;
+}
+.doc-img:hover {
+  transform: scale(1.05);
+}
+
+/* FULL IMAGE */
+#fullImgOverlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,.9);
+  z-index: 5000;
+}
+
+#fullImg {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 12px;
+}
+
+.driver-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.driver-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 30px;
+  justify-content: center;
+  margin: 0 auto 18px;
+  max-width: 320px; /* sebelumnya 380px */
+  text-align: center; /* pusatkan isi */
+}
+.driver-info-grid div {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  align-items: center; /* biar label & value sejajar */
+}
+.driver-info-grid strong {
+  font-size: 12px;
+  color: #6d6d6d;
+  margin-bottom: 2px;
+}
+.driver-info-grid span {
+  font-weight: 600;
+  color: var(--text);
+}
+
+
 </style>
+<script>
+function openDriverDetail(driver) {
+  document.getElementById("modalFoto").src = driver.foto_url;
+  document.getElementById("modalNama").innerText = driver.nama;
+  document.getElementById("modalHp").innerText = driver.no_hp ?? "-";
+  document.getElementById("modalEmail").innerText = driver.email ?? "-";
+  document.getElementById("modalSim").innerText = driver.sim_number ?? "-";
+  document.getElementById("modalLokasi").innerText = driver.lokasi ?? "-";
+  document.getElementById("modalPengalaman").innerText = driver.pengalaman ?? "-";
+  document.getElementById("modalHarga").innerText = driver.harga_formatted;
+  document.getElementById("modalDeskripsi").innerText = driver.deskripsi ?? "-";
+
+  document.getElementById("docSim").src = driver.foto_sim_url;
+  document.getElementById("docKtp").src = driver.foto_ktp_url;
+  document.getElementById("docKk").src = driver.foto_kk_url;
+
+  document.getElementById("driverModal").style.display = "flex";
+}
+
+function closeDriverDetail() {
+  document.getElementById("driverModal").style.display = "none";
+}
+
+function showFullImage(src) {
+  document.getElementById("fullImg").src = src;
+  document.getElementById("fullImgOverlay").style.display = "flex";
+}
+
+document.getElementById("fullImgOverlay").onclick = () => {
+  document.getElementById("fullImgOverlay").style.display = "none";
+};
+
+</script>
 @endsection
