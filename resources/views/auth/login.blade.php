@@ -22,6 +22,15 @@
   flex-direction: column;
 }
 
+/* pastikan semua sudut bulat */
+.login-wrap .input-group input {
+  border-radius: 10px !important;
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 /* Logo */
 .logo {
   display: flex;
@@ -40,29 +49,32 @@
   font-weight: 600;
 }
 
-/* Hero */
 .hero-box {
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   margin: 4px auto 10px;
+  margin-top: -25px;
 }
+
 .hero {
-  width: 100%;
-  max-width: 330px;
+  width: 130%; /* Besar banget, adjust kalau perlu */
   object-fit: contain;
   display: block;
+  margin-left: -110px; /* Geser lebih kiri */
   margin-top: -25px;
+  margin-bottom: -100px; /* tambah ini */
 }
 
 /* Title */
 .title {
   font-size: 1.55rem;
   font-weight: 700;
-  margin-top: -25px;
+  margin-top: -5px;   /* sebelumnya -25px */
   margin-bottom: 2px;
   text-align: center;
 }
+
 .subtitle {
   font-size: .9rem;
   color: #666;
@@ -93,6 +105,9 @@ form {
   border: 1.6px solid #d4d4d4;
   border-radius: 10px;
   background: #fafafa;
+  outline: none;
+  display: block; /* pastikan bukan inline */
+  overflow: visible; /* penting untuk border radius */
 }
 
 /* Button */
@@ -119,6 +134,7 @@ form {
   font-size: .88rem;
   color: #555;
   margin-top: 8px;
+  margin-bottom: -50px;
 }
 .register-text a {
   color: #000 !important;

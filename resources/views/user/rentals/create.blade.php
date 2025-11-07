@@ -2,6 +2,7 @@
 
 @section('title', 'Form Penyewaan')
 
+
 @section('styles')
 <style>
 /* ===== Global & Wrapper ===== */
@@ -33,7 +34,11 @@ button { background: #000; color: #fff; font-weight: 600; padding: 12px 16px;
 button:hover { background: #222; transform: scale(1.03); }
 
 /* ===== Back Link ===== */
-.back-link { color: #000; text-decoration: none; font-weight: 500; font-size: 15px; display: inline-block; margin-bottom: 10px; }
+.back-link {
+  position: relative !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+}
 .back-link:hover { text-decoration: underline; }
 
 /* ===== Info Box ===== */
@@ -228,9 +233,10 @@ button:hover { background: #222; transform: scale(1.03); }
     $redirectBack = url()->previous();
   @endphp
 
-  <a href="{{ route('user.cars.show', $car->car_id) }}" class="back-link">
-    ← 
-  </a>
+<a href="{{ route('user.cars.show', $car->car_id) }}" class="back-link" id="btnBack">
+    <span style="font-size:20px; padding:8px 10px; display:inline-block;">←</span>
+</a>
+
 
   <div class="card">
     <h2>Form Penyewaan Mobil</h2>
@@ -390,6 +396,7 @@ button:hover { background: #222; transform: scale(1.03); }
     <p id="modalDriverPengalaman"></p>
     <p id="modalDriverDeskripsi"></p>
   </div>
+
 </div>
 
 <script>
@@ -404,10 +411,14 @@ window.addEventListener('load', () => {
   const adjustedNow = new Date(now.getTime() + 5 * 60000);
   const localNow = new Date(adjustedNow.getTime() - adjustedNow.getTimezoneOffset() * 60000)
                     .toISOString().slice(0,16);
-  mulai.min = localNow;
-  selesai.min = localNow;
 
-  mulai.addEventListener('change', () => {
+  // ✅ Fix error null
+  if (mulai && selesai) {
+      mulai.min = localNow;
+      selesai.min = localNow;
+  }
+
+  mulai?.addEventListener('change', () => {
     const startDate = new Date(mulai.value);
     if (isNaN(startDate)) return;
 
@@ -419,7 +430,7 @@ window.addEventListener('load', () => {
   });
 
   function hitungTotal() {
-    if (!mulai.value || !selesai.value) return;
+    if (!mulai?.value || !selesai?.value) return;
     const start = new Date(mulai.value);
     const end = new Date(selesai.value);
     const diff = (end - start) / (1000 * 60 * 60);
@@ -439,8 +450,8 @@ window.addEventListener('load', () => {
       <small>(${diff.toFixed(1)} jam × Rp${hargaPerJam.toLocaleString('id-ID')}/jam)</small>`;
   }
 
-  mulai.addEventListener('change', hitungTotal);
-  selesai.addEventListener('change', hitungTotal);
+  mulai?.addEventListener('change', hitungTotal);
+  selesai?.addEventListener('change', hitungTotal);
 
   /* === Driver Dropdown === */
   window.toggleDropdown = ()=>document.getElementById('driverDropdown').classList.toggle('open');
@@ -530,5 +541,4 @@ btnCloseVerify.onclick = () => {
 });
 </script>
   @include('partials.bottom-navbar')
-
 @endsection

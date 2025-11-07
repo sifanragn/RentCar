@@ -21,6 +21,14 @@
   justify-content: flex-start;
 }
 
+/* pastikan semua sudut bulat */
+.register-wrap .input-group input {
+  border-radius: 10px !important;
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
 /* Logo */
 .logo {
   display: flex; align-items: center; gap: 6px;
@@ -30,9 +38,22 @@
 .logo img { width: 40px; }
 .logo h3 { font-size: 1.05rem; font-weight: 600; }
 
-/* Hero */
-.hero-box { width: 100%; display: flex; justify-content: center; margin: 4px auto 10px; }
-.hero { width: 100%; max-width: 330px; object-fit: contain; display: block; margin-top: -18px; }
+.hero-box {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin: 4px auto 10px;
+  margin-top: -30px;
+}
+
+.hero {
+  width: 130%; /* Besar banget, adjust kalau perlu */
+  object-fit: contain;
+  display: block;
+  margin-left: -110px; /* Geser lebih kiri */
+  margin-top: -25px;
+  margin-bottom: -100px; /* tambah ini */
+}
 
 /* Titles */
 .title {
@@ -64,7 +85,7 @@ form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 5px; }
 .btn-register:hover { background: #111; }
 
 /* Bottom text */
-.login-text { text-align: center; font-size: .88rem; color: #555; margin-top: 8px; margin-bottom: 6px; }
+.login-text { text-align: center; font-size: .88rem; color: #555; margin-top: 8px; margin-bottom: -40px; }
 .login-text a { color: #000 !important; font-weight: 600; text-decoration: underline; }
 
 /* Notification */

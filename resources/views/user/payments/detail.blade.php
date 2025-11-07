@@ -271,8 +271,6 @@ h2 {
 
 </div>
 
-
-
     {{-- ===================== STEP 4: PEMBAYARAN ===================== --}}
     <form action="{{ route('user.payments.start', $rental->rental_id) }}" method="POST" id="startForm">
       @csrf
@@ -398,18 +396,36 @@ h2 {
 </div>
 
 <script>
-  const exitBtn    = document.getElementById('exitBtn');
-  const exitModal  = document.getElementById('exitModal');
-  const cancelExit = document.getElementById('cancelExit');
+const backLink   = document.querySelector(".back-link");
+const exitModal  = document.getElementById("exitModal");
+const cancelExit = document.getElementById("cancelExit");
 
-  // buka modal
-  exitBtn.onclick = () => exitModal.style.display = 'flex';
+// Tambah state supaya tombol back browser ke-detect
+history.pushState(null, null, location.href);
 
-  // klik lanjutkan
-  cancelExit.onclick = () => exitModal.style.display = 'none';
+// intercept klik tombol back icon
+backLink.addEventListener("click", function(e) {
+    e.preventDefault(); // cegah pindah halaman
+    exitModal.style.display = "flex"; // munculkan modal
+});
 
-  // klik area luar close modal
-  exitModal.onclick = () => exitModal.style.display = 'none';
+// intercept swipe back / tombol back browser
+window.addEventListener("popstate", function(e){
+    exitModal.style.display = "flex";
+    history.pushState(null, null, location.href); // dorong state lagi agar tetap di halaman
+});
+
+// Tombol modal "Lanjutkan"
+cancelExit.addEventListener("click", function(){
+    exitModal.style.display = "none";
+});
+
+// Klik area luar modal untuk batal
+exitModal.addEventListener("click", function(e){
+    if(e.target === exitModal) {
+        exitModal.style.display = "none";
+    }
+});
 </script>
 
 @endsection

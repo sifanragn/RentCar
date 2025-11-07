@@ -32,25 +32,46 @@ form {
 .form-control { border-radius: 12px; padding: 11px 13px; border: 1px solid #ccc; }
 .mb-3 { margin-bottom: 18px !important; }
 
+/* ===== INPUT + VERIFIKASI BUTTON WRAPPER ===== */
+.input-group {
+  display: flex; align-items: center; border-radius: 12px; overflow: hidden;
+}
+.input-group input {
+  flex: 1; padding: 12px 13px; font-size: 14px;
+  border-radius: 12px 0 0 12px; border: 1px solid #ccc; background: #fafafa;
+}
+.input-group button.btn-verify {
+  background: #000 !important; color: #fff !important;
+  padding: 0 16px; height: 48px; font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0 12px 12px 0;
+}
+.input-group button.btn-verify:hover { background: #111 !important; }
+
 /* ===== BUTTONS ===== */
 .btn-update {
   width: 100%; height: 48px; background: #000 !important; color: #fff !important;
-  border-radius: 12px; font-size: 15px; font-weight: 600; margin: 10px 0 15px;
+  border-radius: 12px; font-size: 15px; font-weight: 600; margin: 14px 0 10px;
 }
 .btn-update:hover { background: #111 !important; }
-.btn-verify { background: #333; color: #fff; border: none; }
-.btn-verify:hover { background: #111; }
+
+.btn-danger {
+  width: 100%; height: 48px; border-radius: 12px;
+  font-weight: 600; font-size: 15px;
+}
+
 .btn-outline-danger { border: 1px solid #dc3545; color: #dc3545; }
 .btn-outline-danger:hover { background: #dc3545; color: #fff; }
 
 /* Remove highlight on mobile */
 button, .btn { -webkit-tap-highlight-color: transparent !important; }
-button:focus, .btn:focus { box-shadow: none !important; background-color: #000 !important; color:#fff!important; }
+button:focus, .btn:focus { box-shadow: none !important; }
 
 /* ===== PASSWORD BOX ===== */
 .password-box {
-  position: relative; border: 1px solid #eee; border-radius: 12px; padding: 18px 15px 10px;
-  background: #fafafa; margin-top: 12px; transition: .3s ease;
+  position: relative; border: 1px solid #eee; border-radius: 12px;
+  padding: 18px 15px 10px; background: #fafafa;
+  margin-top: 12px; transition: .3s ease;
 }
 .cancel-icon {
   position: absolute; top: 10px; right: 12px; color: #dc3545;
@@ -63,6 +84,7 @@ button:focus, .btn:focus { box-shadow: none !important; background-color: #000 !
 
 /* Container override */
 .app-container { background:#fff!important; padding-top:0!important; border:none!important; }
+
 </style>
 @endsection
 
@@ -108,9 +130,9 @@ button:focus, .btn:focus { box-shadow: none !important; background-color: #000 !
 
 {{-- Password Verify --}}
 <div id="verifySection" class="mb-3">
-  <label class="form-label">Masukkan Password Lama</label>
+  <label class="form-label">Buat Password Baru</label>
   <div class="input-group" style="overflow:hidden; border-radius:12px;">
-    <input id="current_password" type="password" name="current_password" class="form-control" placeholder="Password lama">
+    <input id="current_password" type="password" name="current_password" class="form-control" placeholder="Masukkan Password Lama">
     <button class="btn btn-verify" type="button" id="verifyButton">Verifikasi</button>
   </div>
   <div id="verifyMsg" class="mt-2 text-muted" style="font-size:13px;"></div>
