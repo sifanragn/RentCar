@@ -1,6 +1,6 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Laporan Penyewaan')
+@section('title', 'Laporan Keuangan')
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('css/admin-laporan.css') }}">
@@ -9,7 +9,7 @@
 @section('content')
 <div class="admin-content-wrapper">
   <div class="page-header">
-    <h2>Laporan Penyewaan Mobil</h2>
+    <h2>Laporan Keuangan Rental</h2>
     <p>Data ringkasan transaksi penyewaan yang telah dilakukan pengguna.</p>
   </div>
 
@@ -66,31 +66,39 @@
     <th>Tanggal Selesai</th>
     <th>Total (Rp)</th>
     <th>Status</th>
+    <th>Metode Pembayaran</th>
     <th>Jenis Kuitansi</th>
   </tr>
 </thead>
 <tbody>
   @foreach($rentals as $rental)
     @foreach($rental->payments as $payment)
-      <tr>
-        <td>{{ $loop->parent->iteration }}</td>
-        <td>{{ $rental->user->nama_lengkap }}</td>
-        <td>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model }}</td>
-        <td>{{ $rental->tanggal_mulai }}</td>
-        <td>{{ $rental->tanggal_selesai }}</td>
-        <td>Rp{{ number_format($payment->total_bayar, 0, ',', '.') }}</td>
-        <td>
-          <span class="status {{ strtolower($rental->status_rental) }}">
-            {{ ucfirst($rental->status_rental) }}
-          </span>
-        </td>
-        <td>
-          <span class="badge {{ $payment->payment_type === 'charge' ? 'badge-tambahan' : 'badge-utama' }}">
+<tr>
+    <td>{{ $loop->parent->iteration }}</td>
+    <td>{{ $rental->user->nama_lengkap }}</td>
+    <td>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model }}</td>
+    <td>{{ $rental->tanggal_mulai }}</td>
+    <td>{{ $rental->tanggal_selesai }}</td>
+    <td>Rp{{ number_format($payment->total_bayar, 0, ',', '.') }}</td>
+
+    <td>
+        <span class="status {{ strtolower($payment->status_pembayaran) }}">
+            {{ ucfirst($payment->status_pembayaran) }}
+        </span>
+    </td>
+
+    <td>
+        {{ strtoupper($payment->metode_pembayaran) ?? '-' }}
+    </td>
+
+    <td>
+        <span class="badge {{ $payment->payment_type === 'charge' ? 'badge-tambahan' : 'badge-utama' }}">
             {{ $payment->payment_type === 'charge' ? 'Kuitansi Tambahan' : 'Kuitansi Utama' }}
-          </span>
-        </td>
-      </tr>
-    @endforeach
+        </span>
+    </td>
+</tr>
+@endforeach
+
   @endforeach
 </tbody>
       </table>

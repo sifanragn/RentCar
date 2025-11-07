@@ -37,18 +37,19 @@ class LaporanController extends Controller
 
         // 💰 Hitung total pendapatan sesuai filter
         $totalPendapatan = Payment::where('status_pembayaran', 'success')
-            ->whereIn('payment_type', $jenis === 'utama' ? ['main'] :
-                ($jenis === 'tambahan' ? ['charge'] : ['main', 'charge']))
-            ->whereHas('rental', function ($q) use ($bulan, $tahun) {
-                $q->whereIn('status_rental', ['selesai', 'selesai_dengan_charge'])
-                  ->when($bulan && $tahun, function ($r) use ($bulan, $tahun) {
-                      $r->whereMonth('tanggal_mulai', $bulan)
-                        ->whereYear('tanggal_mulai', $tahun);
-                  });
-            })
-            ->sum('total_bayar');
+    ->whereIn('payment_type', $jenis === 'utama' ? ['main'] :
+        ($jenis === 'tambahan' ? ['charge'] : ['main', 'charge']))
+    ->when($bulan && $tahun, function ($q) use ($bulan, $tahun) {
+        $q->whereMonth('created_at', $bulan)
+          ->whereYear('created_at', $tahun);
+    })
+    ->sum('total_bayar');
 
-        return view('admin.laporan.index', compact('rentals', 'totalPendapatan', 'bulan', 'tahun', 'jenis'));
+
+        return view('admin.laporan.index', compact(
+    'rentals', 'totalPendapatan', 'bulan', 'tahun', 'metode'
+));
+
     }
 
     public function cetak(Request $request)
@@ -78,16 +79,14 @@ class LaporanController extends Controller
 
         // 💰 Total pendapatan sesuai jenis filter
         $totalPendapatan = Payment::where('status_pembayaran', 'success')
-            ->whereIn('payment_type', $jenis === 'utama' ? ['main'] :
-                ($jenis === 'tambahan' ? ['charge'] : ['main', 'charge']))
-            ->whereHas('rental', function ($q) use ($bulan, $tahun) {
-                $q->whereIn('status_rental', ['selesai', 'selesai_dengan_charge'])
-                  ->when($bulan && $tahun, function ($r) use ($bulan, $tahun) {
-                      $r->whereMonth('tanggal_mulai', $bulan)
-                        ->whereYear('tanggal_mulai', $tahun);
-                  });
-            })
-            ->sum('total_bayar');
+    ->whereIn('payment_type', $jenis === 'utama' ? ['main'] :
+        ($jenis === 'tambahan' ? ['charge'] : ['main', 'charge']))
+    ->when($bulan && $tahun, function ($q) use ($bulan, $tahun) {
+        $q->whereMonth('created_at', $bulan)
+          ->whereYear('created_at', $tahun);
+    })
+    ->sum('total_bayar');
+
 
         $tanggalCetak = Carbon::now('Asia/Jakarta')->translatedFormat('d F Y');
 

@@ -186,3 +186,26 @@ body.light-mode .total-box {
   font-weight: 600;
 }
 
+.status.success {
+  background: #d1fae5;
+  color: #059669;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.status.pending {
+  background: #fef9c3;
+  color: #b45309;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.status.failed {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
