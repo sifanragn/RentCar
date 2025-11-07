@@ -68,12 +68,12 @@
 
   @elseif($status === 'menunggu')
     <div class="alert alert-info">
-      ⏳ Dokumen kamu sedang diperiksa admin. Harap tunggu ya!
+      Dokumen kamu sedang diperiksa admin. Harap tunggu ya!
     </div>
 
   @elseif($status === 'ditolak')
     <div class="alert alert-danger">
-      ❌ Verifikasi gagal. Silakan unggah ulang dokumen kamu.<br>
+      Verifikasi gagal. Silakan unggah ulang dokumen kamu.<br>
       <a href="{{ route('user.verifikasi.index') }}">Verifikasi ulang</a>
     </div>
   @endif

@@ -6,17 +6,30 @@
 <style>
 /* ===== Header ===== */
 .header {
-  background: #000;
+  background: linear-gradient(to right, #000, #333);
   color: #fff;
   width: 95%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  margin-top: -5px;
-  margin-left: 10px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  margin: 10px auto;
+}
+
+.btn-register {
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: 0.3s ease;
+}
+
+.btn-register:hover {
+  background: #fff;
+  color: #000;
 }
 
 .header h1 {
@@ -50,17 +63,8 @@
   color: #000;
 }
 
-.btn-register {
-  background: #555;
-  color: #fff;
-}
-
 .btn-login:hover {
   background: #eaeaea;
-}
-
-.btn-register:hover {
-  background: #444;
 }
 
 /* ===== Carousel ===== */
@@ -71,8 +75,8 @@ width: 100%;
 }
 
 .carousel-inner img {
-  width: 100%;
-  display: block;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
 
 
@@ -108,41 +112,77 @@ width: 100%;
   transform: scale(1.25);
 }
 
-/* Scroll container */
+/* Scroll otomatis merek */
 .brand-scroll {
   display: flex;
   gap: 0.75rem;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-  scroll-behavior: smooth;
-  padding: 0;
-  margin: 0;
-  scroll-snap-type: x mandatory;
+  overflow: hidden; /* sembunyikan area di luar */
+  position: relative;
+  padding: 8px 0;
 }
 
-.brand-scroll::-webkit-scrollbar {
-  display: none;
+.brand-marquee {
+  display: flex;
+  gap: 0.75rem;
+  animation: scrollBrands 20s linear infinite;
+}
+
+@keyframes scrollBrands {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Efek hover hentikan animasi */
+.brand-scroll:hover .brand-marquee {
+  animation-play-state: paused;
 }
 
 /* Tombol kapsul */
 .brand-btn {
   flex: none;
-  padding: 0px 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
   background: #fff;
-  border: 1.5px solid #000;
+  border: 1px solid #444;
   border-radius: 9999px;
   font-size: 13px;
-  color: #333;
+  color: #222;
   font-family: 'Poppins', sans-serif;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
   cursor: pointer;
-  transition: background 0.2s ease;
-  margin-bottom: 10px;
+  transition: all 0.25s ease;
 }
 
 .brand-btn:hover {
-  background: #f5f5f5;
+  background: #f7f7f7;
+  border-color: #777;
+  color: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
 }
+
+.brand-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+
+/* Efek klik (pressed) */
+.brand-btn:active {
+  background: #ededed;
+  transform: translateY(0);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.12);
+}
+
 
 .section-container {
   width: 100%;
@@ -283,9 +323,9 @@ width: 100%;
 
 .choose-scroll {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   overflow-x: auto;
-  padding-bottom: 1rem;
+  padding: 8px 4px 18px;
   scroll-snap-type: x mandatory;
 }
 
@@ -295,36 +335,39 @@ width: 100%;
 
 .choose-card {
   flex: none;
-  width: 150; /* Lebar card lebih kecil */
-  border-radius: 12px;
+  width: 160px;
+  border-radius: 14px;
   overflow: hidden;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
   scroll-snap-align: start;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .choose-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
 }
 
 .choose-card-title {
-  background-color: #000;
-  color: #fff;
-  padding: 8px;
+  font-size: 13px;
   font-weight: 600;
-  font-size: 0.85rem;
   text-align: center;
+  color: #111;
+  background: #fff;
+  padding: 10px 8px 4px;
   font-family: 'Poppins', sans-serif;
 }
 
 .choose-card img {
   width: 100%;
-  height: 100px; /* Samakan tinggi gambar semua card */
+  height: 90px;
   object-fit: cover;
-  border-radius: 0 0 12px 12px;
-  display: block;
+  border-top: 1px solid #eee;
+  border-radius: 0 0 14px 14px;
 }
+
 
 @media (max-width: 480px) {
   .card {
@@ -346,7 +389,156 @@ width: 100%;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
   }
+
 }
+
+.alert-verif {
+  background: #fff3f3;
+  border: 1px solid #f5c2c7;
+  color: #b52d3a;
+  font-size: 13px;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 10px 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.alert-verif a {
+  color: #b52d3a;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ===== RESPONSIVE OPTIMIZATION ===== */
+@media (max-width: 768px) {
+  /* Judul Section */
+  .section-header h2 {
+    font-size: 18px;
+    margin-top: 0;
+  }
+
+  /* Card Mobil */
+  .card-container {
+    padding: 0 2vw; /* ✅ rapetin jarak kanan kiri */
+    gap: 12px;      /* sedikit lebih rapat antar card */
+  }
+
+  .card {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    width: 100%;
+    max-width: none;
+    margin: 0 auto;
+    border-radius: 16px;
+    padding: 10px 8px; /* sedikit lebih kecil padding-nya */
+  }
+
+  .car-image {
+    width: 110px;
+    height: auto;
+    margin-right: 8px;
+    object-fit: contain;
+  }
+
+  .card-content {
+    flex: 1;
+    padding: 0;
+  }
+
+  .card-content h3 {
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+
+  .card-content p {
+    font-size: 11px;
+  }
+
+  .price {
+    font-size: 12px;
+  }
+
+  .info-tags {
+    gap: 3px;
+  }
+
+  .tag {
+    font-size: 8.8px;
+    padding: 1.5px 5px;
+  }
+
+  /* Heart button */
+  .fav-btn {
+    width: 24px;
+    height: 24px;
+    top: 8px;
+    right: 10px;
+  }
+
+  .fav-btn img {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Carousel full width dengan radius halus */
+  .carousel {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .carousel-inner img {
+    border-radius: 0;
+  }
+
+  /* Brand scroll */
+  .brand-scroll {
+    overflow-x: auto;
+    padding: 6px 0;
+  }
+
+  /* Section spacing */
+  .section-container {
+    margin-top: 18px;
+  }
+
+  /* Kenapa Memilih Kita */
+  .choose-card {
+    width: 140px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .choose-card-title {
+    font-size: 12px;
+  }
+
+  .choose-card img {
+    height: 80px;
+  }
+}
+
+
+/* Tambahan agar tampilan tetap proporsional di layar sangat kecil */
+@media (max-width: 380px) {
+  .car-image {
+    width: 95px;
+  }
+  .card-content h3 {
+    font-size: 11px;
+  }
+  .price {
+    font-size: 11px;
+  }
+  .tag {
+    font-size: 8px;
+  }
+}
+
+
 
 </style>
 @endsection
@@ -409,10 +601,28 @@ width: 100%;
   </div>
 
   <div class="brand-scroll">
+  <div class="brand-marquee">
     @foreach($brands as $brand)
-      <button class="brand-btn">{{ $brand->nama_merek }}</button>
+      <button class="brand-btn">
+        @if($brand->logo)
+          <img src="{{ asset('img/brand_logos/' . $brand->logo) }}" alt="{{ $brand->nama_merek }}" class="brand-logo">
+        @endif
+        <span>{{ $brand->nama_merek }}</span>
+      </button>
+    @endforeach
+
+    {{-- duplikasi untuk looping seamless --}}
+    @foreach($brands as $brand)
+      <button class="brand-btn">
+        @if($brand->logo)
+          <img src="{{ asset('img/brand_logos/' . $brand->logo) }}" alt="{{ $brand->nama_merek }}" class="brand-logo">
+        @endif
+        <span>{{ $brand->nama_merek }}</span>
+      </button>
     @endforeach
   </div>
+</div>
+
 </div>
 
 <!-- Bagian Paling Populer -->

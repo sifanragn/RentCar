@@ -215,6 +215,99 @@
     width:80%;
   }
 }
+
+/* ============================= */
+/* ===== RESPONSIVE FIX ======== */
+/* ============================= */
+
+/* Tablet & Mobile (<=992px) */
+@media (max-width: 992px) {
+  .car-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 10px;
+  }
+
+  .car-card {
+    display: flex;
+    flex-direction: row; /* ✅ tetap menyamping */
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    width: 100%;
+    border-radius: 16px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .car-image {
+    width: 38%; /* ✅ gambar proporsional */
+    max-width: 140px;
+    height: auto;
+    border-radius: 12px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .car-info {
+    flex: 1;
+    padding-left: 8px;
+  }
+
+  .car-info h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .car-info p {
+    font-size: 11px;
+    color: #555;
+    margin: 1px 0;
+  }
+
+  .price {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 3px;
+  }
+
+  .info-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  .tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border: 1px solid #000;
+    border-radius: 10px;
+  }
+
+  .fav-btn {
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .fav-btn img {
+    width: 12px;
+    height: 12px;
+  }
+
+  .unavailable,
+  .pending {
+    top: 8px;
+    left: 8px;
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+}
+
 </style>
 @endsection
 

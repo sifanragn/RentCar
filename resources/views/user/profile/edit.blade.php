@@ -85,18 +85,41 @@ button:focus, .btn:focus { box-shadow: none !important; }
 /* Container override */
 .app-container { background:#fff!important; padding-top:0!important; border:none!important; }
 
+/* ===== BUTTON ===== */
+.back-btn {
+  display: block;
+  width: 100%;
+  background: #000;
+  color: #fff;
+  padding: 11px 0;
+  border-radius: 10px;
+  margin-top: 22px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  transition: .2s;
+}
+.back-btn:hover {
+  background: #222;
+}
+
+
+
 </style>
 @endsection
 
 
 @section('content')
 
-<a href="{{ route('user.profile.index') }}" class="back-link">
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black" stroke-width="2">
+<a href="{{ route('user.profile.index') }}" class="back-link" aria-label="Kembali">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+    class="feather feather-arrow-left">
     <line x1="19" y1="12" x2="5" y2="12"/>
     <polyline points="12 19 5 12 12 5"/>
   </svg>
 </a>
+
 
 <form id="profileForm" action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data" class="mt-3">
 @csrf
