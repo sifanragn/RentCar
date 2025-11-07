@@ -4,123 +4,142 @@
 
 @section('styles')
 <style>
-  .card-payment {
-    max-width: 500px;
-    margin: 15px auto 30px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    padding: 20px;
-  }
+  /* Card container */
+.card-payment {
+  max-width: 500px;
+  margin: 15px auto 30px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1.5px solid #e8e8e8;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+}
 
-  h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    font-weight: 700;
-    font-size: 20px;
-  }
+/* Title */
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 20px;
+  color: #111;
+}
 
-  .step-section { margin-bottom: 25px; }
+/* Section title */
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px 0 8px;
+  color: #222;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
 
-  .step-title {
-    font-size: 16px;
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
+/* Info box */
+.info-box {
+  background: #fafafa;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  margin-bottom: 14px;
+}
 
-  .methods {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+.info-row {
+  display: flex;
+  gap: 6px;
+  padding: 6px 0;
+  font-size: 14px;
+}
 
-  .m {
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    padding: 8px 10px;
-    width: 100px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.2s;
-  }
+.info-label {
+  width: 120px;
+  color: #666;
+  font-weight: 500;
+}
 
-  .m.active {
-    border-color: #000;
-    background: #f5f5f5;
-  }
+.info-separator {
+  color: #666;
+}
 
-  .metode-img {
-    width: 60px;
-    height: auto;
-  }
+.info-value {
+  flex: 1;
+  font-weight: 600;
+  color: #222;
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+.total-row .info-value {
+  color: #0d6efd;
+  font-weight: 700;
+}
 
-  td {
-    padding: 6px 0;
-    font-size: 14px;
-    border-bottom: 1px solid #eee;
-  }
+/* Payment methods */
+.methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 
-  td:first-child {
-    width: 160px;
-    font-weight: 600;
-  }
+.m {
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 8px 10px;
+  width: 100px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: .2s;
+  background: #fff;
+}
 
-  .btn {
-    display: block;
-    width: 100%;
-    background: #000;
-    color: #fff;
-    padding: 10px;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    margin-top: 25px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-bottom: 10px;
-  }
+.m.active {
+  border-color: #000;
+  background: #f5f5f5;
+}
 
-  .btn:hover { background: #222; }
+.metode-img { width: 60px; }
 
-  .btn-kembali {
-    display: block;
-    width: 100%;
-    background: #ccc;
-    color: #000;
-    padding: 9px;
-    border-radius: 10px;
-    font-weight: 600;
-    text-align: center;
-    text-decoration: none;
-    transition: 0.2s;
-  }
+/* Main Button */
+.btn-pay {
+  width: 100%;
+  background: #000;
+  color: #fff;
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: 14px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-pay:hover { background: #222; }
 
-  .btn-kembali:hover { background: #bbb; }
+/* Back Button */
+.btn-back {
+  width: 100%;
+  margin-top: 10px;
+  display: block;
+  background: #f1f1f1;
+  color: #333;
+  padding: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+  text-align: center;
+}
+.btn-back:hover { background: #e4e4e4; }
 
-  .alert {
-    background: #ffecec;
-    color: #b71c1c;
-    border: 1px solid #ffcdd2;
-    padding: 10px 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    font-size: 14px;
-  }
+/* Alert */
+.alert {
+  background: #ffecec;
+  color: #b71c1c;
+  border: 1px solid #ffcdd2;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
 
-  .back-link svg {
-    vertical-align: middle;
-    margin-left: -150px;
-  }
 </style>
 @endsection
 
@@ -144,91 +163,120 @@
     @endif
 
     {{-- ===================== STEP 1: METODE PEMBAYARAN ===================== --}}
-    <div class="step-section">
-      <h3 class="step-title">1. Pilih Metode Pembayaran</h3>
-      <div class="methods" id="methods">
-        @foreach (['qris', 'bca', 'bri', 'bni', 'mandiri'] as $m)
-          <div class="m {{ $loop->first ? 'active' : '' }}" data-method="{{ $m }}">
-            <img src="{{ asset('img/' . $m . '.png') }}" class="metode-img" alt="{{ strtoupper($m) }}">
-          </div>
-        @endforeach
+<div class="step-section">
+    <p class="section-title">1. Metode Pembayaran</p>
+
+  <div class="methods" id="methods">
+    @foreach (['qris', 'bca', 'bri', 'bni', 'mandiri'] as $m)
+      <div class="m {{ $loop->first ? 'active' : '' }}" data-method="{{ $m }}">
+        <img src="{{ asset('images/' . $m . '.png') }}" 
+             class="metode-img"
+             alt="{{ strtoupper($m) }}">
       </div>
-    </div>
+    @endforeach
+  </div>
+</div>
+
 
     {{-- ===================== STEP 2: INFORMASI PENYEWA ===================== --}}
-    <div class="step-section">
-      <h3 class="step-title">2. Informasi Penyewa</h3>
-      <table>
-        <tr><td>Nama Lengkap</td><td>: {{ $rental->user->nama_lengkap ?? '-' }}</td></tr>
-        <tr><td>Email</td><td>: {{ $rental->user->email ?? '-' }}</td></tr>
-      </table>
-    </div>
+<p class="section-title">2. Informasi Penyewa</p>
+<div class="info-box">
+   <div class="info-row">
+    <span class="info-label">Nama Lengkap</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">{{ $rental->user->nama_lengkap ?? '-' }}</span>
+  </div>
+
+    <div class="info-row">
+    <span class="info-label">Email</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">{{ $rental->user->email ?? '-' }}</span>
+  </div>
+</div>
 
     {{-- ===================== STEP 3: DETAIL PESANAN ===================== --}}
-    <div class="step-section">
-      <h3 class="step-title">3. Detail Pesanan</h3>
-      @php
-        $hargaMobil = $rental->car->harga_sewa_per_jam ?? 0;
-        $durasiJam  = $rental->durasi_jam ?? 0;
-        $mobilTarif = $hargaMobil * $durasiJam;
+    @php
+    $hargaMobil = $rental->car->harga_sewa_per_jam ?? 0;
+    $durasiJam  = $rental->durasi_jam ?? 0;
+    $mobilTarif = $hargaMobil * $durasiJam;
 
-        $driverTarif = 0;
-        if ($rental->driver === 'ya' && $rental->driverData) {
-            $hargaDriverPerJam = $rental->driverData->harga_per_jam ?? 0;
-            $driverTarif = $hargaDriverPerJam * $durasiJam;
-        }
+    $driverTarif = 0;
+    if ($rental->driver === 'ya' && $rental->driverData) {
+        $hargaDriverPerJam = $rental->driverData->harga_per_jam ?? 0;
+        $driverTarif = $hargaDriverPerJam * $durasiJam;
+    }
 
-        $totalKeseluruhan = $mobilTarif + $driverTarif;
-      @endphp
+    $totalKeseluruhan = $mobilTarif + $driverTarif;
+@endphp
 
-      <table>
-        <tr>
-          <td>Nama Mobil</td>
-          <td>: {{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '-' }}</td>
-        </tr>
-        <tr><td>Tahun Mobil</td><td>: {{ $rental->car->tahun ?? '-' }}</td></tr>
-        <tr><td>Harga Sewa</td><td>: Rp{{ number_format($hargaMobil, 0, ',', '.') }} / Jam</td></tr>
-        <tr><td>Durasi</td><td>: {{ $durasiJam }} Jam</td></tr>
-        <tr>
-          <td>Pakai Sopir</td>
-          <td>
-            @if($rental->driver === 'ya' && $rental->driverData)
-              Ya — {{ $rental->driverData->nama }}
-              (Rp{{ number_format($rental->driverData->harga_per_jam, 0, ',', '.') }}/jam × {{ $durasiJam }} jam =
-              <b>Rp{{ number_format($driverTarif, 0, ',', '.') }}</b>)
-            @else
-              Tidak
-            @endif
-          </td>
-        </tr>
-        <tr>
-          <td>Total Biaya Sewa</td>
-          <td>
-            : <b>Rp{{ number_format($totalKeseluruhan, 0, ',', '.') }}</b>
-            @if($driverTarif > 0)
-              <br><small>(Mobil: Rp{{ number_format($mobilTarif, 0, ',', '.') }} + Sopir: Rp{{ number_format($driverTarif, 0, ',', '.') }})</small>
-            @endif
-          </td>
-        </tr>
-        <tr>
-          <td>Dari - Sampai</td>
-          <td>:
-            {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m/Y H:i') }} s.d
-            {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m/Y H:i') }}
-          </td>
-        </tr>
-        <tr><td>Lokasi Pengambilan</td><td>: {{ $rental->car->lokasi ?? 'Lokasi belum ditentukan' }}</td></tr>
-      </table>
-    </div>
+    <p class="section-title">3. Detail Pesanan</p>
+<div class="info-box">
+
+  <div class="info-row">
+    <span class="info-label">Mobil</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">{{ $rental->car->brand->nama_merek }} {{ $rental->car->model }}</span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">Tahun</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">{{ $rental->car->tahun }}</span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">Harga/Jam</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">Rp{{ number_format($hargaMobil,0,',','.') }}</span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">Durasi</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">{{ $durasiJam }} Jam</span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">Driver</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">
+      @if($rental->driver === 'ya' && $rental->driverData)
+        Ya — {{ $rental->driverData->nama }}
+      @else 
+        Tidak 
+      @endif
+    </span>
+  </div>
+
+  <div class="info-row total-row">
+    <span class="info-label">Total</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">Rp{{ number_format($totalKeseluruhan,0,',','.') }}</span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">Waktu</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">
+      {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m H:i') }} → 
+      {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m H:i') }}
+    </span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">Lokasi</span>
+    <span class="info-separator">:</span>
+    <span class="info-value">{{ $rental->car->lokasi ?? '-' }}</span>
+  </div>
+
+</div>
 
     {{-- ===================== STEP 4: PEMBAYARAN ===================== --}}
     <form action="{{ route('user.payments.start', $rental->rental_id) }}" method="POST" id="startForm">
       @csrf
       <input type="hidden" name="metode" id="metode" value="qris">
-      <button type="submit" class="btn" id="payBtn">Lanjut ke Pembayaran Duitku</button>
+     <button type="submit" class="btn-pay" id="payBtn">Lanjut ke Pembayaran Duitku</button>
     </form>
-
-    <button type="button" class="btn-kembali" id="exitBtn">← Keluar</button>
   </div>
 
   @include('partials.bottom-navbar')
@@ -348,18 +396,36 @@
 </div>
 
 <script>
-  const exitBtn    = document.getElementById('exitBtn');
-  const exitModal  = document.getElementById('exitModal');
-  const cancelExit = document.getElementById('cancelExit');
+const backLink   = document.querySelector(".back-link");
+const exitModal  = document.getElementById("exitModal");
+const cancelExit = document.getElementById("cancelExit");
 
-  // buka modal
-  exitBtn.onclick = () => exitModal.style.display = 'flex';
+// Tambah state supaya tombol back browser ke-detect
+history.pushState(null, null, location.href);
 
-  // klik lanjutkan
-  cancelExit.onclick = () => exitModal.style.display = 'none';
+// intercept klik tombol back icon
+backLink.addEventListener("click", function(e) {
+    e.preventDefault(); // cegah pindah halaman
+    exitModal.style.display = "flex"; // munculkan modal
+});
 
-  // klik area luar close modal
-  exitModal.onclick = () => exitModal.style.display = 'none';
+// intercept swipe back / tombol back browser
+window.addEventListener("popstate", function(e){
+    exitModal.style.display = "flex";
+    history.pushState(null, null, location.href); // dorong state lagi agar tetap di halaman
+});
+
+// Tombol modal "Lanjutkan"
+cancelExit.addEventListener("click", function(){
+    exitModal.style.display = "none";
+});
+
+// Klik area luar modal untuk batal
+exitModal.addEventListener("click", function(e){
+    if(e.target === exitModal) {
+        exitModal.style.display = "none";
+    }
+});
 </script>
 
 @endsection

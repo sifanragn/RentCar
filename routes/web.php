@@ -60,7 +60,9 @@ Route::middleware(['guest', PreventBackHistory::class])->group(function () {
     Route::post('/register/verify-otp', [RegisterController::class, 'verifyOtp'])->name('register.verifyOtp');
     Route::get('/register/verify', fn() => view('auth.verify-otp'))->name('register.verifyPage');
     Route::post('/register/resend-otp', [RegisterController::class, 'resendOtp'])->name('register.resendOtp');
-
+    Route::get('/register/send-otp', function () {
+    return redirect()->route('register');
+});
 });
 
 // Logout

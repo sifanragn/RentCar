@@ -4,232 +4,171 @@
 
 @section('styles')
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-  }
+* {
+  margin: 0; padding: 0; box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
 
-  body {
-    background: #000;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+/* Wrapper */
+.register-wrap {
+  width: 100%;
+  max-width: 390px;
+  min-height: 100vh;
+  background: #fff;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 
-  .container {
-    width: 100%;
-    max-width: 360px;
-    background: #fff;
-    padding: 2rem;
-    text-align: center;
-    border-radius: 10px;
-  }
+/* pastikan semua sudut bulat */
+.register-wrap .input-group input {
+  border-radius: 10px !important;
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+/* Logo */
+.logo {
+  display: flex; align-items: center; gap: 6px;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.logo img { width: 40px; }
+.logo h3 { font-size: 1.05rem; font-weight: 600; }
 
-  /* Header */
-  .logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.2rem;
-  }
+.hero-box {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin: 4px auto 10px;
+  margin-top: -30px;
+}
 
-  .logo img {
-    width: 70px;
-    height: auto;
-    margin-top: 4px;
-  }
+.hero {
+  width: 130%; /* Besar banget, adjust kalau perlu */
+  object-fit: contain;
+  display: block;
+  margin-left: -110px; /* Geser lebih kiri */
+  margin-top: -25px;
+  margin-bottom: -100px; /* tambah ini */
+}
 
-  .logo h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #000;
-  }
+/* Titles */
+.title {
+  font-size: 1.55rem; font-weight: 700;
+  margin-top: -10px; text-align: center;
+  margin-bottom: 4px;
+}
+.subtitle {
+  font-size: .9rem; color: #666;
+  text-align: center; margin-bottom: 16px;
+}
 
-  .hero {
-    width: 100%;
-    max-width: 300px;
-    margin-left: -70px;
-    display: block;
-  }
+/* Form */
+form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 5px; }
+.input-group { display: flex; flex-direction: column; gap: 4px; }
+.input-group label { font-size: .88rem; font-weight: 600; color: #222; }
+.input-group input {
+  width: 100%; padding: 11px 12px; border: 1.6px solid #d4d4d4;
+  border-radius: 10px; background: #fafafa; font-size: .92rem;
+}
 
-  .title {
-    font-size: 25px;
-    font-weight: 800;
-    color: #000;
-    margin-top: 0.5rem;
-    margin-bottom: 0.4rem;
-  }
+/* Button */
+.btn-register {
+  background: #000; color: #fff;
+  padding: 12px; border: none; border-radius: 30px;
+  font-size: 1rem; font-weight: 600; margin-top: 6px;
+  cursor: pointer; transition: .25s; margin-bottom: 20px;
+}
+.btn-register:hover { background: #111; }
 
-  .subtitle {
-    font-size: 15px;
-    color: #444;
-    margin-bottom: 1.8rem;
-  }
+/* Bottom text */
+.login-text { text-align: center; font-size: .88rem; color: #555; margin-top: 8px; margin-bottom: -40px; }
+.login-text a { color: #000 !important; font-weight: 600; text-decoration: underline; }
 
-  /* Form */
-  form {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-  }
+/* Notification */
+.alert-custom {
+  background: #ffecec; color: #a40000;
+  border: 1px solid #ffb3b3; border-radius: 10px;
+  padding: 10px 12px; margin-bottom: 12px; font-size: .85rem;
+}
 
-  .input-group label {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.4rem;
-    color: #222;
-    display: block;
-  }
-
-  .input-group input {
-    width: 100%;
-    padding: 10px 10px;
-    border: 2px solid #ccc;
-    font-size: 1rem;
-    background: #f9f9f9;
-    border-radius: 10px;
-    transition: 0.3s;
-  }
-
-  .input-group input:focus {
-    border-color: #0077b6;
-    background: #fff;
-    outline: none;
-  }
-
-  /* Tombol */
-  .btn-register {
-    background: #000;
-    color: #fff;
-    padding: 8px;
-    border: none;
-    border-radius: 20px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-top: 0.8rem;
-  }
-
-  .btn-register:hover {
-    background: #222;
-  }
-
-  .login-text {
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 70px; /* supaya tidak ketutup navbar */
-    font-size: 1rem;
-    color: #333;
-  }
-
-  .login-text a {
-    color: #0077b6;
-    text-decoration: none;
-    font-weight: 600;
-  }
+/* remove card feel */
+.app-container {
+  background: #fff !important;
+  padding-top: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+}
 </style>
 @endsection
 
 @section('content')
+<div class="register-wrap">
+
   <div class="logo">
-    <img src="/images/logo.png" alt="Logo" />
+    <img src="/images/logo.png" alt="Logo">
     <h3>Selamat Datang!</h3>
   </div>
 
-  <img src="/images/car1.png" alt="Mobil" class="hero" />
+  <div class="hero-box">
+    <img src="/images/loreg.png" class="hero" alt="Hero">
+  </div>
 
   <h1 class="title">Get Started Free!</h1>
   <p class="subtitle">Ayo Buat Akun Dan Cari Mobilmu</p>
 
-  {{-- 🔔 Notifikasi error atau sukses --}}
   @if ($errors->any())
-    <div style="
-      background: #ffecec;
-      color: #a40000;
-      border: 1px solid #ffb3b3;
-      border-radius: 10px;
-      padding: 10px 12px;
-      margin-bottom: 1.2rem;
-      font-size: 14px;
-      text-align: left;
-    ">
-      <ul style="list-style:none; margin:0; padding:0;">
-        @foreach ($errors->all() as $error)
-          <li>⚠️ {{ $error }}</li>
-        @endforeach
-      </ul>
+    <div class="alert-custom">
+      @foreach ($errors->all() as $error)
+        ⚠️ {{ $error }}<br>
+      @endforeach
     </div>
   @endif
 
-  @if (session('success'))
-    <div style="
-      background: #e9ffe9;
-      color: #006400;
-      border: 1px solid #a3e6a3;
-      border-radius: 10px;
-      padding: 10px 12px;
-      margin-bottom: 1.2rem;
-      font-size: 14px;
-      text-align: center;
-    ">
-      ✅ {{ session('success') }}
-    </div>
-  @endif
-
-  <form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ route('register.sendOtp') }}" method="POST">
     @csrf
 
     <div class="input-group">
-      <label for="nama_lengkap">Nama Lengkap</label>
-      <input type="text" id="nama_lengkap" name="nama_lengkap" placeholder="Masukkan nama lengkap Anda" required>
+      <label>Nama Lengkap</label>
+      <input type="text" name="nama_lengkap" placeholder="Masukkan nama lengkap Anda" required>
     </div>
 
     <div class="input-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" placeholder="Masukkan username Anda" required>
+      <label>Username</label>
+      <input type="text" name="username" placeholder="Masukkan username Anda" required>
     </div>
 
     <div class="input-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required>
+      <label>Email</label>
+      <input type="email" name="email" placeholder="Masukkan email Anda" required>
     </div>
 
     <div class="input-group">
-  <label for="no_hp">No WhatsApp</label>
-  <input 
-    type="text" 
-    id="no_hp" 
-    name="no_hp" 
-    placeholder="08xxxxxxxx" 
-    value="{{ old('no_hp') }}"
-    required
-  >
-</div>
-
-
-    <div class="input-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required>
+      <label>No WhatsApp</label>
+      <input type="text" name="no_hp" placeholder="08xxxxxxxx" value="{{ old('no_hp') }}" required>
     </div>
 
     <div class="input-group">
-      <label for="password_confirmation">Konfirmasi Password</label>
-      <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password Anda" required>
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Masukkan password Anda" required>
     </div>
 
-    <button type="submit" formaction="{{ route('register.sendOtp') }}" class="btn-register">
-  Kirim Kode OTP
-</button>
+    <div class="input-group">
+      <label>Konfirmasi Password</label>
+      <input type="password" name="password_confirmation" placeholder="Ulangi password Anda" required>
+    </div>
 
-
-    <p class="login-text">
-      Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
-    </p>
+    <button type="submit" class="btn-register">
+      Kirim Kode OTP
+    </button>
   </form>
+
+  <p class="login-text">
+    Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
+  </p>
+
+</div>
 @endsection

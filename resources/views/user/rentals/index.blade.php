@@ -6,11 +6,10 @@
 <style>
 h2 {
   text-align: center;
-  color: #111;
-  font-weight: 600;
   margin-bottom: 20px;
-  font-size: 24px;
-  margin-left: -10px;
+  color: #222;
+  font-size: 25px;
+  font-weight: 600;
 }
 
 /* ===== CONTAINER ===== */
@@ -35,7 +34,7 @@ h2 {
   flex-direction: column;
   justify-content: space-between;
   margin-left: -10px;
-  margin-right: 25px;
+  margin-right: -1px;
 }
 
 .card:hover {
@@ -150,6 +149,7 @@ h2 {
   <i class="fa-solid fa-arrow-left"></i>
 </a>
 
+<div class="card-sewa">
   <h2>Riwayat Penyewaan Mobil</h2>
 
   {{-- Flash Message --}}
@@ -206,6 +206,7 @@ h2 {
 @endforeach
     </div>
   @endif
+</div>
   
 <script>
 document.addEventListener("DOMContentLoaded", () => {

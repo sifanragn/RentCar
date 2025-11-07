@@ -1,17 +1,17 @@
 <style>
 /* ===== Alert Styling ===== */
 .alert {
-  width: 110%;
+  width: 100%;
   max-width: 600px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 10px;
-  line-height: 1.4;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.45;
   font-weight: 500;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   font-family: 'Poppins', sans-serif;
-  margin-bottom: 25px;
-  height: 50px;
+  margin: 10px auto 20px;
+  display: block;
 }
 
 /* link di dalam alert */
@@ -20,7 +20,6 @@
   text-decoration: none;
   font-weight: 600;
 }
-
 .alert a:hover {
   text-decoration: underline;
 }
@@ -30,23 +29,34 @@
   background: #fff3cd;
   color: #856404;
 }
-
 .alert-info {
   background: #d1ecf1;
   color: #0c5460;
 }
-
-/* ❌ Warna untuk gagal verifikasi */
 .alert-danger {
-  background: #f8d7da; /* merah lembut */
-  color: #842029; /* teks merah gelap */
-  border: 1px solid #f5c2c7; /* outline senada */
+  background: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+
+/* ✅ Container biar tidak nempel pinggir */
+.alert-container {
+  padding: 0 12px;
+}
+
+/* extra untk tampilan HP */
+@media (max-width: 480px) {
+  .alert {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
 }
 </style>
 
-{{-- ✅ Alert dinamis sesuai status verifikasi --}}
+{{-- ✅ Alert Status Verifikasi --}}
 @if(auth()->check())
-  @php
+<div class="alert-container">
+  @php 
     $status = auth()->user()->status_verifikasi;
   @endphp
 
@@ -58,14 +68,14 @@
 
   @elseif($status === 'menunggu')
     <div class="alert alert-info">
-      ⏳ Dokumen kamu sedang dalam proses verifikasi. Mohon tunggu konfirmasi admin.
+      ⏳ Dokumen kamu sedang diperiksa admin. Harap tunggu ya!
     </div>
 
-  {{-- ❌ Verifikasi gagal --}}
   @elseif($status === 'ditolak')
     <div class="alert alert-danger">
       ❌ Verifikasi gagal. Silakan unggah ulang dokumen kamu.<br>
-      <a href="{{ route('user.verifikasi.index') }}">Verifikasi ulang</a>.
+      <a href="{{ route('user.verifikasi.index') }}">Verifikasi ulang</a>
     </div>
   @endif
+</div>
 @endif

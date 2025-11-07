@@ -99,7 +99,7 @@
     padding: 12px 0;
     border-radius: 10px;
     font-weight: 600;
-    color: white;
+    color: white !important;
     text-decoration: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
@@ -114,9 +114,17 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.25);
   }
 
-  .wa { background: linear-gradient(90deg, #25D366, #128C7E); }
-  .ig { background: linear-gradient(90deg, #f09433, #dc2743, #bc1888); }
-  .fb { background: linear-gradient(90deg, #1877f2, #145dbf); }
+/* ========== SOSIAL MEDIA BUTTONS DARK THEME ========== */
+.wa, .ig, .fb {
+  background: #222; /* abu gelap */
+  border: 1px solid #333;
+  color: #fff;
+}
+
+.wa:hover, .ig:hover, .fb:hover {
+  background: #000;
+  border-color: #000;
+}
 
   /* ========== FORM KONTAK ========== */
   form.contact-form {
@@ -160,7 +168,7 @@
   /* ========== LOGO FOOTER ========== */
   .footer-logo {
     margin-top: 40px;
-    margin-bottom: 20px;
+    margin-bottom: 70px;
     text-align: center;
   }
 

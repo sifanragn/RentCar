@@ -2,183 +2,198 @@
 
 @section('title', 'Login')
 
-
 @section('styles')
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
 
-  .container {
-    width: 100%;
-    max-width: 360px;
-    background: #fff;
-    padding: 1.5rem;
-    text-align: center;
-  }
+/* Wrapper */
+.login-wrap {
+  width: 100%;
+  max-width: 390px;
+  min-height: 100vh;
+  background: #fff;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+}
 
-  /* Logo + Judul atas */
-  .logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.2rem;
-  }
+/* pastikan semua sudut bulat */
+.login-wrap .input-group input {
+  border-radius: 10px !important;
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
 
-  .logo img {
-    width: 70px;
-    height: auto;
-    margin-top: 4px;
-  }
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 4px;
+}
 
-  .logo h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #000;
-  }
+.logo img {
+  width: 40px;
+}
 
-  /* Gambar mobil */
-  .hero {
-    width: 100%;
-    max-width: 300px;
-    margin-left: -70px;
-    display: block;
-  }
+.logo h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
 
-  /* Welcome text */
-  .title {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #000;
-    margin-bottom: 0.4rem;
-  }
+.hero-box {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin: 4px auto 10px;
+  margin-top: -25px;
+}
 
-  .subtitle {
-    font-size: 1rem;
-    color: #444;
-    margin-bottom: 2rem;
-  }
+.hero {
+  width: 130%; /* Besar banget, adjust kalau perlu */
+  object-fit: contain;
+  display: block;
+  margin-left: -110px; /* Geser lebih kiri */
+  margin-top: -25px;
+  margin-bottom: -100px; /* tambah ini */
+}
 
-  /* Form */
-  form {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    gap: 1.3rem;
-  }
+/* Title */
+.title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  margin-top: -5px;   /* sebelumnya -25px */
+  margin-bottom: 2px;
+  text-align: center;
+}
 
-  .input-group label {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.4rem;
-    color: #222;
-    display: block;
-  }
+.subtitle {
+  font-size: .9rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-  .input-group input {
-    width: 100%;
-    padding: 10px 10px;
-    border: 2px solid #ccc;
-    font-size: 1rem;
-    background: #f9f9f9;
-    transition: 0.3s;
-  }
+/* Form */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.input-group label {
+  font-size: .88rem;
+  font-weight: 600;
+  color: #222;
+}
+.input-group input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1.6px solid #d4d4d4;
+  border-radius: 10px;
+  background: #fafafa;
+  outline: none;
+  display: block; /* pastikan bukan inline */
+  overflow: visible; /* penting untuk border radius */
+}
 
-  .input-group input:focus {
-    border-color: #0077b6;
-    background: #fff;
-    outline: none;
-  }
+/* Button */
+.btn-login {
+  background: #000;
+  color: #fff;
+  padding: 12px;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: .25s;
+  margin-bottom: 20px;
+}
+.btn-login:hover {
+  background: #111;
+}
 
-  /* Tombol */
-  .btn-login {
-    background: #000;
-    color: #fff;
-    padding: 10px;
-    border: none;
-    border-radius: 20px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-top: 0.5rem;
-  }
+/* Bottom text */
+.register-text {
+  text-align: center;
+  font-size: .88rem;
+  color: #555;
+  margin-top: 8px;
+  margin-bottom: -50px;
+}
+.register-text a {
+  color: #000 !important;
+  font-weight: 600;
+  text-decoration: underline;
+}
 
-  .btn-login:hover {
-    background: #222;
-  }
-
-  /* Link daftar */
-  .register-text {
-    text-align: center;
-    margin-top: 1.8rem;
-      margin-bottom: 70px; /* tambah ini supaya nggak tertutup navbar */
-
-    font-size: 1rem;
-    color: #333;
-  }
-
-  .register-text a {
-    color: #0077b6;
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  /* Pesan error */
-  .error-message {
-    background: #ffe5e5;
-    color: #c00;
-    padding: 10px;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
+/* Remove card frame */
+.app-container {
+  background: #fff !important;
+  padding-top: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+}
 </style>
 @endsection
 
 
 @section('content')
+<div class="login-wrap">
+
+{{-- ALERTS --}}
 @if(session('error'))
-    <div style="background:#ffdddd;color:#b80000;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:500;text-align:center;">
-        ⚠️ {{ session('error') }}
-    </div>
+  <div style="background:#ffdddd;color:#b80000;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:500;text-align:center;">
+      ⚠️ {{ session('error') }}
+  </div>
 @endif
 
 @if(session('success'))
-    <div style="background:#ddffdd;color:#0d8500;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:500;text-align:center;">
-        ✅ {{ session('success') }}
-    </div>
-@endif
-  <!-- Logo dan teks atas -->
-  <div class="logo">
-    <img src="/images/logo.png" alt="Logo" />
-    <h3>Selamat Datang!</h3>
+  <div style="background:#ddffdd;color:#0d8500;padding:10px;border-radius:8px;margin-bottom:12px;font-weight:500;text-align:center;">
+      ✅ {{ session('success') }}
   </div>
+@endif
 
-  <!-- Gambar mobil -->
-  <img src="/images/car1.png" alt="Mobil" class="hero" />
+{{-- Logo --}}
+<div class="logo">
+  <img src="/images/logo.png" alt="Logo" />
+  <h3>Selamat Datang!</h3>
+</div>
 
-  <!-- Welcome text -->
-  <h1 class="title">Welcome Back!</h1>
-  <p class="subtitle">Silakan login kembali ke akun Anda</p>
+<div class="hero-box">
+  <img src="/images/loreg.png" class="hero" alt="">
+</div>
 
-  <!-- Form -->
+<h1 class="title">Welcome Back!</h1>
+<p class="subtitle">Silakan login kembali ke akun Anda</p>
+
 <form action="{{ route('login.submit') }}" method="POST">
-    @csrf
+  @csrf
 
-    {{-- Pesan error login --}}
-    @if ($errors->has('login_error'))
-      <div class="error-message">
-        {{ $errors->first('login_error') }}
-      </div>
-    @endif
+  {{-- Error login --}}
+  @if ($errors->has('login_error'))
+    <div style="background:#ffeaea;color:#b30000;padding:8px;border-radius:8px;font-size:.85rem;margin-bottom:6px;">
+      {{ $errors->first('login_error') }}
+    </div>
+  @endif
 
-    <div class="input-group">
+  {{-- Email / No HP --}}
+  <div class="input-group">
     <label for="login_id">Email / No HP</label>
     <input 
       type="text" 
@@ -190,21 +205,18 @@
     />
   </div>
 
-    <div class="input-group">
-      <label for="password">Password</label>
-      <input 
-        type="password" 
-        id="password" 
-        name="password" 
-        placeholder="Masukkan password Anda" 
-        required 
-      />
-    </div>
+  {{-- Password --}}
+  <div class="input-group">
+    <label>Password</label>
+    <input type="password" name="password" placeholder="Masukkan password Anda" required>
+  </div>
 
-    <button type="submit" class="btn-login">Login</button>
+  <button type="submit" class="btn-login">Login</button>
+</form>
 
-    <p class="register-text">
-      Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
-    </p>
-  </form>
+<p class="register-text">Belum punya akun?
+  <a href="{{ route('register') }}">Daftar di sini</a>
+</p>
+
+</div>
 @endsection

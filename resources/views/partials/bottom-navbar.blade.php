@@ -1,24 +1,31 @@
 {{-- partial bottom-navbar.blade.php --}}
 <style>
 .bottom-nav {
-  width: 100%;
-  height: 60px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  width: 100% !important; /* ✅ ikut layar, bukan 100vw */
+  height: 70px;
   background: #000;
-  border-radius: 20px 20px 0 0;
+  border-radius: 26px 26px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.25);
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  box-shadow: 0 -10px 25px rgba(0,0,0,0.25);
+  padding: 0 16px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 6px);
   z-index: 100;
-  max-width: 360px;
-  padding: 0 12px;
+  
+  transform: none !important;
+  max-width: 100% !important; /* ✅ anti kotak */
+  inset-inline: 0; /* ✅ pastikan nempel kiri kanan */
+
+  backdrop-filter: blur(18px);
 }
 
-/* nav-item */
+/* nav item */
 .bottom-nav .nav-item {
   display: flex;
   flex-direction: column;
@@ -26,7 +33,7 @@
   justify-content: center;
   color: rgba(255,255,255,0.65);
   text-decoration: none;
-  font-size: 10px;
+  font-size: 11px;
   width: 60px;
   gap: 2px;
   transition: color .18s ease, transform .12s ease;
@@ -37,19 +44,19 @@
   transform: translateY(-2px);
 }
 
-/* icon svg */
-.bottom-nav .nav-item svg {
-  width: 22px;
-  height: 22px;
-  fill: currentColor;
-}
-
-/* active state */
+/* active */
 .bottom-nav .nav-item.active,
 .bottom-nav .nav-item.active svg,
 .bottom-nav .nav-item.active span {
   color: #fff;
   fill: #fff;
+}
+
+/* icon */
+.bottom-nav .nav-item svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
 }
 
 /* center button */
@@ -58,26 +65,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -28px;
   width: 60px;
+  margin-top: -37px; /* ✅ tambah dikit supaya lingkaran teu kegunting */
+  z-index: 200;
 }
 
 .bottom-nav .center-btn {
-  width: 50px;
-  height: 50px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
-  background: #000; /* bisa ganti ke ITWM gradien */
+  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 12px 24px rgba(0,0,0,0.35), 0 0 18px rgba(90,86,255,0.14);
-  border: 6px solid rgba(255,255,255,0.98); /* border putih tetap ada */
-  z-index: 70;
+  border: 6px solid rgba(255,255,255,0.98);
+  z-index: 201;
   transition: transform .12s ease;
-}
-
-.bottom-nav .center-btn.active img {
-  filter: brightness(1.2);
 }
 
 .bottom-nav .center-btn img {
@@ -85,6 +89,7 @@
   height: 32px;
 }
 
+/* label */
 .bottom-nav .nav-item span,
 .bottom-nav .center-label {
   font-size: 10px;
@@ -93,17 +98,58 @@
   color: #f5f6f7;
 }
 
-.bottom-nav .muted { color: rgba(255,255,255,0.55); }
+/* ✅ Desktop: FIXED bawah, sama persis mobile, tapi ikut lebar app-container */
+@media (min-width: 769px) {
+  
+  body {
+    background: #f2f2f2;
+    display: flex;
+    justify-content: center;
+  }
 
-/* responsive */
-@media (max-width: 480px) {
-  .bottom-nav { padding: 10px 14px; }
-  .bottom-nav .nav-item { width: 56px; font-size: 11px; }
-  .bottom-nav .center-wrap { margin-top: -30px; width: 100px; }
-  .bottom-nav .center-btn { width: 68px; height: 68px; }
-  .bottom-nav .center-btn img { width: 30px; height: 30px; }
+  .app-container {
+    max-width: 420px;
+    width: 100%;
+    margin: 0 auto;
+    padding-bottom: 90px !important; /* biar konten ga ketutup */
+    background: #fff;
+  }
+
+  .bottom-nav {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+
+    width: 100% !important;
+    max-width: 420px !important;  /* ✅ ikut container */
+
+    height: 70px !important;
+    border-radius: 26px 26px 0 0 !important;
+    background: #000 !important;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.25);
+    padding: 0 16px !important;
+  }
+
+  .bottom-nav .center-wrap {
+    margin-top: -37px !important;
+  }
+
+  .bottom-nav .center-btn {
+    width: 68px !important;
+    height: 68px !important;
+    border: 6px solid rgba(255,255,255,0.98) !important;
+    background: #000;
+  }
+
+  .bottom-nav .center-btn img {
+    width: 32px !important;
+    height: 32px !important;
+  }
 }
+
 </style>
+
 
 <nav class="bottom-nav" role="navigation" aria-label="Bottom Navigation">
   {{-- Home --}}

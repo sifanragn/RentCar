@@ -1,150 +1,174 @@
-@extends('partials.container')
+@extends('layouts.otp')
 
-@section('styles')
+@section('title', 'Verifikasi OTP')
+
+@push('styles')
 <style>
- body {
-  background: #f8f8f8;
+body {
+  background: #ffffff !important;
   font-family: 'Poppins', sans-serif;
 }
+html, body { height: 100%; }
 
-/* Fullscreen override */
-.container-wrapper,
-.container {
-  max-width: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
+/* Page wrapper */
+.otp-page-container {
+  display: flex;
+  justify-content: center;
+  padding: 0 18px;
 }
 
+/* Card */
 .otp-wrapper {
-  max-width: 380px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 400px;
   margin-top: 55px;
-  padding: 30px 20px;
+  padding: 28px 22px;
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.07);
   text-align: center;
 }
 
+/* Icon */
+.otp-icon-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f5f6f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 8px;
+  font-size: 29px;
+  color: #25D366;
+}
+
+/* Success badge */
+.otp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e7f9eb;
+  color: #2fa74b;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+/* Title */
 .otp-title {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 700;
-  color: #000;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
-
 .otp-subtitle {
-  font-size: 14px;
+  font-size: 13.5px;
   color: #555;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
-/* ✅ OTP Boxes */
+/* OTP box */
 .otp-inputs {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 22px;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 0 6px;
 }
-
 .otp-inputs input {
-  width: 48px;
-  height: 54px;
+  width: 42px;
+  height: 50px;
   font-size: 20px;
+  font-weight: 600;
   text-align: center;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  background: #fafafa;
-  font-weight: 600;
-  outline: none;
-  transition: .2s ease;
-}
-
-.otp-inputs input:focus {
-  border-color: #000;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
   background: #fff;
-}
-
-/* Button verify */
-.btn-verify {
-  width: 100%;
-  background: #000;
-  color: #fff;
-  font-weight: 600;
-  padding: 12px;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
   transition: .2s;
 }
-
-.btn-verify:hover {
-  background: #111;
+.otp-inputs input:focus {
+  border-color: #000;
+  box-shadow: 0 0 6px rgba(0,0,0,0.15);
 }
 
-/* Text info */
+/* Button */
+.btn-verify {
+  width: 100%;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: #000;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: .22s;
+}
+.btn-verify:hover {
+  background: #111;
+  transform: scale(.98);
+}
+
+/* Text */
 .otp-info {
   font-size: 13px;
   color: #666;
-  margin-top: 18px;
-}
-
-/* Resend */
-.resend-btn {
-  margin-top: 4px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  background: none;
-  color: #000;
-  transition: .2s;
-}
-
-.resend-btn.disabled {
-  color: #aaa;
-  pointer-events: none;
+  margin-top: 16px;
 }
 
 /* Timer */
 .otp-timer {
-  margin-top: 5px;
-  font-size: 14px;
-  color: #444;
+  margin-top: 4px;
+  font-size: 13.5px;
   font-weight: 500;
-  opacity: .95;
+  color: #333;
 }
 
-.otp-timer span {
-  font-weight: 700;
-  color: #000;
-  animation: tick 1s linear infinite;
+/* Resend */
+.resend-btn {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #25D366;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: .2s;
 }
-
-@keyframes tick {
-  0% { opacity: 1 }
-  50% { opacity: .5 }
-  100% { opacity: 1 }
+.resend-btn.disabled {
+  opacity: .4;
+  pointer-events: none;
 }
 </style>
-@endsection
+@endpush
 
 
 @section('content')
+<div class="otp-page-container">
 <div class="otp-wrapper">
 
-  <h3 class="otp-title">Verifikasi WhatsApp</h3>
-  <p class="otp-subtitle">Masukkan 6 digit kode yang kami kirim ke WhatsApp kamu</p>
+  {{-- Icon --}}
+  <div class="otp-icon-box">
+    <i class="fab fa-whatsapp"></i>
+  </div>
 
-  @if(session('error'))
-    <div style="color:#d9534f;margin-bottom:10px;font-weight:500">
-      ⚠️ {{ session('error') }}
+  {{-- Badge --}}
+  @if(session('success'))
+    <div class="otp-badge">
+      <i class="fas fa-check-circle"></i> OTP terkirim
     </div>
   @endif
 
-  @if(session('success'))
-    <div style="color:#28a745;margin-bottom:10px;font-weight:500">
-      ✅ {{ session('success') }}
+  <h3 class="otp-title">Verifikasi WhatsApp</h3>
+  <p class="otp-subtitle">Masukkan 6 digit kode dari WhatsApp</p>
+
+  {{-- Error --}}
+  @if(session('error'))
+    <div style="color:#d9534f; margin-bottom:10px; font-size:13px;">
+      <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
     </div>
   @endif
 
@@ -153,7 +177,7 @@
 
     <div class="otp-inputs">
       @for ($i = 0; $i < 6; $i++)
-        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-box">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
       @endfor
     </div>
 
@@ -163,19 +187,24 @@
 
     <p class="otp-info">Belum menerima kode?</p>
 
-<p class="otp-timer" id="timerWrapper">
-  Kirim ulang dalam <span id="timer">60</span> detik
-</p>
+    <p class="otp-timer" id="timerWrapper">
+      Kirim ulang dalam <span id="timer">60</span> detik
+    </p>
 
-<button type="button" class="resend-btn disabled" id="resendBtn">
-  Kirim Ulang Kode
-</button>
+    <button type="button" class="resend-btn disabled" id="resendBtn">
+      <i class="fa fa-redo"></i> Kirim Ulang Kode
+    </button>
 
   </form>
-</div>
 
+</div>
+</div>
+@endsection
+
+
+@push('scripts')
 <script>
-  const inputs = document.querySelectorAll('.otp-box');
+const inputs = document.querySelectorAll('.otp-inputs input');
 const otpValue = document.getElementById('otpValue');
 const resendBtn = document.getElementById('resendBtn');
 const timerEl = document.getElementById('timer');
@@ -185,102 +214,88 @@ let countdown;
 const OTP_KEY = "otp_expire_time";
 const OTP_CAN_RESEND = "otp_can_resend";
 
-// ===== TIMER =====
+/* TIMER */
 function startTimer(duration = 60) {
-  const expireTime = Date.now() + duration * 1000;
-  localStorage.setItem(OTP_KEY, expireTime);
-  localStorage.setItem(OTP_CAN_RESEND, "0"); // 🚫 belum bisa resend
+  const expire = Date.now() + duration * 1000;
+  localStorage.setItem(OTP_KEY, expire);
+  localStorage.setItem(OTP_CAN_RESEND, "0");
   runTimer();
 }
 
 function runTimer() {
   clearInterval(countdown);
-
   countdown = setInterval(() => {
-    const expireTime = localStorage.getItem(OTP_KEY);
+    const expire = localStorage.getItem(OTP_KEY);
     const canResend = localStorage.getItem(OTP_CAN_RESEND) === "1";
-    const diff = Math.floor((expireTime - Date.now()) / 1000);
+    const left = Math.floor((expire - Date.now()) / 1000);
 
-    // ✅ Sudah boleh resend (expired)
     if (canResend) {
       timerWrapper.style.display = "none";
       resendBtn.classList.remove("disabled");
       return;
     }
 
-    // ✅ Countdown habis
-    if (diff <= 0) {
+    if (left <= 0) {
       clearInterval(countdown);
       timerWrapper.style.display = "none";
       resendBtn.classList.remove("disabled");
-      localStorage.setItem(OTP_CAN_RESEND, "1"); // tandai siap resend
+      localStorage.setItem(OTP_CAN_RESEND, "1");
       return;
     }
 
-    // ⏳ Countdown jalan
     timerWrapper.style.display = "block";
-    timerEl.textContent = diff;
-    resendBtn.classList.add("disabled");
-
+    timerEl.textContent = left;
   }, 1000);
 }
 
-// ===== INIT ON PAGE LOAD =====
-let savedTime = localStorage.getItem(OTP_KEY);
+/* INIT */
+let saved = localStorage.getItem(OTP_KEY);
 let canResend = localStorage.getItem(OTP_CAN_RESEND) === "1";
 
-if (savedTime && savedTime > Date.now() && !canResend) {
+if (saved && saved > Date.now() && !canResend) {
   runTimer();
 } else {
-  // langsung siap resend (jika waktu habis sebelumnya)
   timerWrapper.style.display = "none";
   resendBtn.classList.remove("disabled");
   localStorage.setItem(OTP_CAN_RESEND, "1");
 }
 
-// ===== INPUT BOXES =====
+/* OTP input jump */
 inputs[0].focus();
-inputs.forEach((input, index) => {
-  input.addEventListener('input', () => {
-    input.value = input.value.replace(/\D/g, '');
-    if (input.value && index < 5) inputs[index + 1].focus();
-    otpValue.value = [...inputs].map(i => i.value).join('');
+inputs.forEach((box,i) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/\D/g,'');
+    if (box.value && i < 5) inputs[i+1].focus();
+    otpValue.value = [...inputs].map(x=>x.value).join('');
   });
 
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Backspace' && !input.value && index > 0) {
-      inputs[index - 1].focus();
-    }
+  box.addEventListener('keydown', e => {
+    if (e.key === "Backspace" && !box.value && i > 0)
+      inputs[i-1].focus();
   });
 });
 
-// ===== RESEND ACTION =====
+/* RESEND BUTTON */
 resendBtn.addEventListener('click', function () {
-  if (resendBtn.classList.contains("disabled")) return;
+  if (this.classList.contains("disabled")) return;
 
-  resendBtn.textContent = "Mengirim...";
-  resendBtn.classList.add("disabled");
+  this.textContent = "Mengirim...";
+  this.classList.add("disabled");
 
   fetch("{{ route('register.resendOtp') }}", {
     method: "POST",
     headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status === true) {
-      resendBtn.textContent = "Kirim Ulang Kode";
-      startTimer(60); // Reset timer
-    } else {
-      resendBtn.textContent = "Kirim Ulang Kode";
-      alert(data.message);
-    }
+  .then(r => r.json())
+  .then(d => {
+    this.textContent = "Kirim Ulang Kode";
+    d.status ? startTimer(60) : alert(d.message);
   })
   .catch(() => {
-    resendBtn.textContent = "Kirim Ulang Kode";
-    resendBtn.classList.remove("disabled");
+    this.textContent = "Kirim Ulang Kode";
+    this.classList.remove("disabled");
     alert("Gagal mengirim OTP, coba lagi.");
   });
 });
-
 </script>
-@endsection
+@endpush

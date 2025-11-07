@@ -7,62 +7,75 @@
 body {
   background: #f8f9fa;
   font-family: 'Poppins', sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 40px 15px;
+  padding: 20px 15px 90px;
 }
+
+
+/* ===== CARD WRAPPER ===== */
+.detail-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 22px 18px;
+  border: 1.5px solid #e8e8e8;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+  max-width: 550px;
+  margin: 0 auto 20px;
+  margin-top: 10px;
+}
+
+/* ===== TITLE ===== */
+.detail-card h2 {
+  text-align: center;
+  color: #111;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 18px;
+}
+
 
 /* ===== TITLE ===== */
 h2 {
   text-align: center;
   color: #111;
-  font-weight: 600;
-  font-size: 22px;
-  margin-bottom: 22px;
-  letter-spacing: 0.3px;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 18px;
 }
 
-/* ===== CARD ===== */
-.detail-card {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-  padding: 26px 28px;
-  max-width: 600px;
-  width: 100%;
-  transition: 0.25s ease;
-}
-.detail-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
-/* ===== DETAIL ROW ===== */
+/* ===== ROW ===== */
 .detail-row {
-  display: grid;
-  grid-template-columns: 150px 1fr;
-  align-items: start;
+  display: flex;
+  justify-content: center;   /* ❗ bukan space-between lagi */
+  align-items: flex-start;
   margin-bottom: 10px;
-  row-gap: 2px;
-}
-.label {
-  font-weight: 600;
-  color: #111827;
   font-size: 14px;
+  gap: 8px;
 }
-.value {
-  color: #1e293b;
-  font-size: 14.5px;
+
+/* label | separator | value */
+.detail-row .label {
+  color: #6b7280;
   font-weight: 500;
-  word-wrap: break-word;
+  min-width: 120px;
+}
+
+.detail-row .sep {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.detail-row .value {
+  font-weight: 600;
+  color: #111;
+  text-align: left;          /* value kanan label */
+  flex: 1;
+  word-break: break-word;
 }
 
 /* ===== DIVIDER ===== */
 .divider {
   border-top: 1px solid #e5e7eb;
-  margin: 18px 0;
+  margin: 14px 0;
 }
 
 /* ===== STATUS BADGE ===== */
@@ -70,157 +83,148 @@ h2 {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px 10px;
   border-radius: 8px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
-  text-transform: capitalize;
-  margin-top: 3px;
 }
 .status::before {
   content: '●';
   font-size: 10px;
 }
-.status.menunggu   { background: #fff3cd; color: #856404; }
-.status.berjalan   { background: #dcfce7; color: #166534; }
-.status.selesai    { background: #d4edda; color: #155724; } /* 💚 hijau lembut */
-.status.dibatalkan { background: #fee2e2; color: #991b1b; }
+.status.menunggu     { background: #fff3cd; color: #856404; }
+.status.berjalan     { background: #dcfce7; color: #166534; }
+.status.selesai      { background: #d4edda; color: #155724; }
+.status.dibatalkan   { background: #fee2e2; color: #991b1b; }
 
-/* ===== LOKASI PICKUP ===== */
+/* Pickup highlight */
 .highlight {
-  background: #e5e5e5;
+  background: #f3f4f6;
   padding: 6px 10px;
   border-radius: 8px;
-  color: #000;
-  font-size: 13.5px;
-  font-weight: 500;
   display: inline-block;
-  margin-top: 3px;
+  font-weight: 500;
 }
 
-/* ===== BUTTON (ubah biru → item) ===== */
+/* ===== BUTTON ===== */
 .back-btn {
   display: block;
   width: 100%;
-  text-align: center;
   background: #000;
   color: #fff;
-  padding: 10px 0;
+  padding: 11px 0;
   border-radius: 10px;
+  margin-top: 22px;
+  text-align: center;
   text-decoration: none;
   font-weight: 600;
-  font-size: 14.5px;
-  margin-top: 25px;
-  transition: all 0.25s;
-  letter-spacing: 0.3px;
+  transition: .2s;
 }
 .back-btn:hover {
-  background: #333;
-  transform: translateY(-1px);
+  background: #222;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 600px) {
-  body {
-    align-items: flex-start;
-    padding: 25px 10px;
-  }
-  .detail-card {
-    padding: 22px 18px;
-  }
+/* ===== MOBILE ===== */
+@media(max-width: 600px) {
   .detail-row {
-    grid-template-columns: 1fr;
-    margin-bottom: 10px;
-  }
-  .label {
-    margin-bottom: 2px;
+    grid-template-columns: 1fr 10px 1fr;
   }
   .value {
-    font-size: 14px;
-  }
-  .back-btn {
-    font-size: 14px;
-    padding: 9px 0;
+    text-align: right;
   }
 }
 </style>
 @endsection
 
 @section('content')
+{{-- 🔙 Link Kembali --}}
+<a href="{{ route('user.rentals.index') }}" class="back-link" aria-label="Kembali">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+    class="feather feather-arrow-left">
+    <line x1="19" y1="12" x2="5" y2="12"/>
+    <polyline points="12 19 5 12 12 5"/>
+  </svg>
+</a>
+
+
 <div class="detail-card">
   <h2>Detail Penyewaan Mobil</h2>
 
-  {{-- === INFORMASI MOBIL === --}}
-  <div class="detail-row">
-    <span class="label">Mobil</span>
-    <span class="value">
-      {{ $rental->car->tahun ?? '' }} 
-      {{ $rental->car->brand->nama_merek ?? '-' }} 
-      {{ $rental->car->model }}
-    </span>
-  </div>
+<div class="detail-row">
+  <span class="label">Mobil</span>
+  <span class="sep">:</span>
+  <span class="value">{{ $rental->car->brand->nama_merek }} {{ $rental->car->model }} ({{ $rental->car->tahun }})</span>
+</div>
 
-  <div class="detail-row">
-    <span class="label">Warna</span>
-    <span class="value">{{ ucfirst($rental->car->warna ?? '-') }}</span>
-  </div>
+<div class="detail-row">
+  <span class="label">Warna</span>
+  <span class="sep">:</span>
+  <span class="value">{{ ucfirst($rental->car->warna ?? '-') }}</span>
+</div>
 
-  <div class="divider"></div>
+<div class="divider"></div>
 
-  {{-- === WAKTU PENYEWAAN === --}}
-  <div class="detail-row">
-    <span class="label">Tanggal Mulai</span>
-    <span class="value">{{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d M Y') }}</span>
-  </div>
+<div class="detail-row">
+  <span class="label">Mulai</span>
+  <span class="sep">:</span>
+  <span class="value">{{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d M Y H:i') }}</span>
+</div>
 
-  <div class="detail-row">
-    <span class="label">Tanggal Selesai</span>
-    <span class="value">{{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d M Y') }}</span>
-  </div>
+<div class="detail-row">
+  <span class="label">Selesai</span>
+  <span class="sep">:</span>
+  <span class="value">{{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d M Y H:i') }}</span>
+</div>
 
-  <div class="detail-row">
-    <span class="label">Durasi</span>
-    <span class="value">{{ $rental->durasi_hari }} hari</span>
-  </div>
+<div class="detail-row">
+  <span class="label">Durasi</span>
+  <span class="sep">:</span>
+  <span class="value">
+    @if(isset($rental->durasi_jam))
+      {{ $rental->durasi_jam }} Jam
+    @else
+      {{ $rental->durasi_hari }} Hari
+    @endif
+  </span>
+</div>
 
-  <div class="divider"></div>
+<div class="divider"></div>
 
-  {{-- === METODE PICKUP & DRIVER === --}}
-  <div class="detail-row">
-    <span class="label">Metode Pickup</span>
-    <span class="value">{{ ucfirst(str_replace('_', ' ', $rental->metode_pickup)) }}</span>
-  </div>
+<div class="detail-row">
+  <span class="label">Pickup</span>
+  <span class="sep">:</span>
+  <span class="value">{{ ucfirst(str_replace('_', ' ', $rental->metode_pickup)) }}</span>
+</div>
 
-  <div class="detail-row">
-    <span class="label">Driver</span>
-    <span class="value">{{ ucfirst($rental->driver) }}</span>
-  </div>
+<div class="detail-row">
+  <span class="label">Driver</span>
+  <span class="sep">:</span>
+  <span class="value">{{ ucfirst($rental->driver) }}</span>
+</div>
 
-  <div class="detail-row">
-    <span class="label">Lokasi Jemput</span>
-    <span class="value">
-      <span class="highlight">
-        {{ $rental->lokasi_pickup ?? 'Tidak ada lokasi jemput (ambil di tempat)' }}
-      </span>
-    </span>
-  </div>
+<div class="detail-row">
+  <span class="label">Lokasi</span>
+  <span class="sep">:</span>
+  <span class="value"><span class="highlight">{{ $rental->lokasi_pickup ?? 'Ambil di tempat' }}</span></span>
+</div>
 
-  <div class="divider"></div>
+<div class="divider"></div>
 
-  {{-- === TOTAL BIAYA & STATUS === --}}
-  <div class="detail-row">
-    <span class="label">Total Biaya</span>
-    <span class="value">Rp {{ number_format($rental->total_biaya, 0, ',', '.') }}</span>
-  </div>
+<div class="detail-row">
+  <span class="label">Total Biaya</span>
+  <span class="sep">:</span>
+  <span class="value">Rp{{ number_format($rental->total_biaya,0,',','.') }}</span>
+</div>
 
-  <div class="detail-row">
-    <span class="label">Status</span>
-    <span class="value">
-      <span class="status {{ $rental->status_rental }}">{{ ucfirst($rental->status_rental) }}</span>
-    </span>
-  </div>
+<div class="detail-row">
+  <span class="label">Status</span>
+  <span class="sep">:</span>
+  <span class="value">
+    <span class="status {{ $rental->status_rental }}">{{ ucfirst($rental->status_rental) }}</span>
+  </span>
+</div>
 
-  <a href="{{ route('user.rentals.index') }}" class="back-btn">← Kembali ke Riwayat</a>
 </div>
 
 @include('partials.bottom-navbar')

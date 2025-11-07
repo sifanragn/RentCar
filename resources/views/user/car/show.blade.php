@@ -24,9 +24,10 @@
 
   .car-info {
     background-color:#262625; color:#fff;
-    border-radius:20px; padding:16px;
+      border-radius:20px 20px 0 0; /* ✅ cuma atas yang bulat */ 
+    padding:16px;
     margin-top:-30px; margin-left:-10px; margin-right:-10px;
-    padding-bottom:60px;
+    padding-bottom: 40px;
   }
   .car-info h2 { font-size:16px; font-weight:600; }
   .car-info .price {
