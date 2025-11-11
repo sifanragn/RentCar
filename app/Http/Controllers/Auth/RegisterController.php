@@ -122,15 +122,17 @@ class RegisterController extends Controller
         $otp->delete();
 
         // ✅ Buat user
+       // ✅ Buat user baru dengan status default belum verifikasi dokumen
         $user = User::create([
             'nama_lengkap' => $data['nama_lengkap'],
             'username' => $data['username'] ?? strtok($data['email'], '@'),
             'email' => $data['email'],
             'no_hp' => $phone,
             'password' => Hash::make($data['password']),
-            'status_verifikasi' => 'disetujui',
+            'status_verifikasi' => 'belum_upload', // 🔹 default: belum upload dokumen
             'role' => 'user',
         ]);
+
 
         Session::forget('register_data');
 
