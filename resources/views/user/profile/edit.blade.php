@@ -103,7 +103,15 @@ button:focus, .btn:focus { box-shadow: none !important; }
   background: #222;
 }
 
-
+.btn-update {
+  display: none;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.btn-update.show {
+  display: block !important;
+  opacity: 1;
+}
 
 </style>
 @endsection
@@ -148,7 +156,20 @@ button:focus, .btn:focus { box-shadow: none !important; }
 
 {{-- Fields --}}
 <div class="mb-3"><label class="form-label">Nama Lengkap</label><input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $user->nama_lengkap) }}" class="form-control"></div>
-<div class="mb-3"><label class="form-label">Username</label><input type="text" name="username" value="{{ old('username', $user->username) }}" class="form-control"></div>
+<div class="mb-3">
+  <label class="form-label">Username</label>
+  <input type="text" name="username" id="usernameInput"
+         value="{{ old('username', $user->username) }}"
+         class="form-control"
+         {{ !$canChangeUsername ? 'disabled' : '' }}>
+  <small class="text-muted" style="font-size: 13px;">
+    {{ $canChangeUsername
+        ? 'Username dapat diganti kembali setelah 7 hari.'
+        : '⏳ Kamu baru bisa mengganti username lagi dalam ' . $daysLeftToChangeUsername . ' hari.'
+    }}
+  </small>
+</div>
+
 <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" value="{{ old('email', $user->email) }}" class="form-control"></div>
 
 {{-- Password Verify --}}
@@ -198,8 +219,39 @@ button:focus, .btn:focus { box-shadow: none !important; }
 
 @include('partials.bottom-navbar')
 
+<script>
+// ======== SHOW "UPDATE" BUTTON WHEN ANY CHANGE DETECTED ========
+const form = document.getElementById('profileForm');
+const updateBtn = document.querySelector('.btn-update');
+
+// Simpan nilai awal hanya untuk field yang bisa diubah
+const initialValues = {};
+form.querySelectorAll('input, select, textarea').forEach(input => {
+  if (input.name && input.type !== 'hidden') {
+    initialValues[input.name] = input.value;
+  }
+});
+
+form.addEventListener('input', () => {
+  let changed = false;
+  form.querySelectorAll('input, select, textarea').forEach(input => {
+    if (input.name && input.type !== 'hidden') {
+      // kalau ada beda value dari awal, aktifkan tombol
+      if (initialValues[input.name] !== input.value) {
+        changed = true;
+      }
+    }
+  });
+  if (changed) {
+    updateBtn.classList.add('show');
+  } else {
+    updateBtn.classList.remove('show');
+  }
+});
+</script>
 
 <script>
+
 const fotoInput = document.getElementById('fotoInput'),
       previewFoto = document.getElementById('previewFoto');
 if (fotoInput){

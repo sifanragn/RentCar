@@ -133,9 +133,11 @@ class RegisterController extends Controller
         ]);
 
         Session::forget('register_data');
-        auth()->login($user);
 
-        return redirect()->route('user.dashboard')->with('success', 'Akun berhasil dibuat!');
+return redirect()
+    ->route('login')
+    ->with('success', 'Verifikasi berhasil! Akun kamu sudah aktif. Silakan login untuk melanjutkan.');
+
     }
 
 
