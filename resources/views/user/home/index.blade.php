@@ -49,7 +49,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   line-height: 1;
-    text-decoration: none; /* tambahkan ini */
+  text-decoration: none; /* tambahkan ini */
   display: inline-block; 
 }
 
