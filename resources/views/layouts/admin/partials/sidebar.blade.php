@@ -76,5 +76,10 @@
     <a href="{{ route('admin.invoices.index') }}" class="{{ request()->routeIs('admin.invoices.*') ? 'active' : '' }}">
       <i class="bi bi-receipt"></i><span>Invoice</span>
     </a>
+
+     {{-- 🚨 Nomor Darurat --}}
+    <a href="{{ route('admin.emergency.index') }}" class="{{ request()->routeIs('admin.emergency.*') ? 'active' : '' }}">
+      <i class="bi bi-telephone-outbound"></i><span>Nomor Darurat</span>
+    </a>
   </nav>
 </aside>
