@@ -22,7 +22,7 @@
     }
 
     body {
-      background: #f2f2f2;
+      background: #fff;
       min-height: 100vh;
       overflow-x: hidden;
       display: flex;
