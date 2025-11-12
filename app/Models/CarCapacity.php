@@ -8,7 +8,9 @@ class CarCapacity extends Model
 {
     protected $table = 'car_capacities';
     protected $primaryKey = 'capacity_id';
-    protected $fillable = ['jumlah_orang'];
+    public $timestamps = false;
+
+    protected $fillable = ['kapasitas_orang'];
 
     public function cars()
     {
