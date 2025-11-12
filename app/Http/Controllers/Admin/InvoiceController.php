@@ -145,8 +145,11 @@ class InvoiceController extends Controller
      */
     private function createDuitkuPayment($rental, $payment, $invoiceId, $method, $amount, $prefix)
     {
-        $merchantCode = 'DS25394';
-        $apiKey = '06a924ce717ea70f6522e5c51241ccc6';
+        $merchantCode = env('DUITKU_MERCHANT_CODE');
+        $apiKey       = env('DUITKU_API_KEY');
+        $callbackUrl  = env('DUITKU_CALLBACK_URL');
+        $duitkuUrl    = env('DUITKU_SANDBOX_URL');
+
         $merchantOrderId = $payment->merchant_order_id ?? ('INV' . $invoiceId . '-P' . $payment->id);
         $amount = (int) $amount;
         $signature = md5($merchantCode . $merchantOrderId . $amount . $apiKey);
@@ -160,7 +163,7 @@ class InvoiceController extends Controller
             "email"            => $rental->user->email,
             "phoneNumber"      => $rental->user->no_hp ?? '08123456789',
             "customerVaName"   => $rental->user->nama_lengkap ?? 'Penyewa',
-            "callbackUrl"      => "https://amiyah-mouselike-stably.ngrok-free.dev/api/payment/callback",
+            "callbackUrl"      => $callbackUrl,
             "returnUrl"        => url('/user/payments'),
             "signature"        => $signature,
             "expiryPeriod"     => 30,
