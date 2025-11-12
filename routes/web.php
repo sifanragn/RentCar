@@ -30,6 +30,10 @@ use App\Http\Controllers\User\ContactController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\PickupController;
 
+
+use App\Http\Controllers\Admin\EmergencyController as AdminEmergencyController;
+use App\Http\Controllers\User\EmergencyController as UserEmergencyController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -127,6 +131,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/payments/{id}/download', [PaymentController::class, 'downloadReceipt'])->name('payments.download');
     Route::get('/payments/{id}/json', [PaymentController::class, 'json'])->name('payments.json');
 
+    Route::get('/nomor-darurat', [UserEmergencyController::class, 'index'])
+    ->name('emergency.index');
+
     // Ongkir / Pickup Distance
     Route::post('/pickup/distance', [PickupController::class, 'distance'])->name('pickup.distance');
 });
@@ -136,6 +143,8 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
 
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard.index');
+
+    Route::resource('emergency', AdminEmergencyController::class);
 
     // Kelola Admin
     Route::get('/kelola-admin', [ManageAdminController::class, 'index'])->name('manage.index');
