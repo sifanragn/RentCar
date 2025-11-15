@@ -35,7 +35,8 @@
   <link rel="stylesheet" href="{{ asset('css/admin/invoice-show.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('css/admin/invoice-create.css?v=' . time()) }}">
 
-
+  {{--Social Media--}}
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 

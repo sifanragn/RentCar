@@ -39,12 +39,11 @@
   border: 1px solid #f5c2c7;
 }
 
-/* ✅ Container biar tidak nempel pinggir */
+/* Container biar tidak nempel pinggir */
 .alert-container {
   padding: 0 12px;
 }
 
-/* extra untk tampilan HP */
 @media (max-width: 480px) {
   .alert {
     font-size: 11px;
@@ -53,29 +52,62 @@
 }
 </style>
 
-{{-- ✅ Alert Status Verifikasi --}}
 @if(auth()->check())
 <div class="alert-container">
-  @php 
-    $status = auth()->user()->status_verifikasi;
-  @endphp
 
-  @if($status === 'belum_upload')
-    <div class="alert alert-warning">
-      ⚠️ Kamu belum mengunggah dokumen identitas (KTP & KK).<br>
-      <a href="{{ route('user.verifikasi.index') }}">Klik di sini untuk verifikasi sekarang</a>
-    </div>
+@php
+  $u = auth()->user();
 
-  @elseif($status === 'menunggu')
-    <div class="alert alert-info">
-      Dokumen kamu sedang diperiksa admin. Harap tunggu ya!
-    </div>
+  // cek sosmed
+  $sosmed_tertaut = (
+      $u->facebook_id ||
+      $u->instagram_username ||
+      $u->tiktok_username
+  );
 
-  @elseif($status === 'ditolak')
-    <div class="alert alert-danger">
-      Verifikasi gagal. Silakan unggah ulang dokumen kamu.<br>
-      <a href="{{ route('user.verifikasi.index') }}">Verifikasi ulang</a>
-    </div>
-  @endif
+  // cek dokumen (belum_upload = belum verifikasi)
+  $belum_verifikasi_dokumen = $u->status_verifikasi === 'belum_upload';
+@endphp
+
+{{-- ========================= --}}
+{{-- KONDISI GABUNGAN --}}
+{{-- ========================= --}}
+
+{{-- ❌ DOKUMEN BELUM + SOSMED BELUM --}}
+@if($belum_verifikasi_dokumen && !$sosmed_tertaut)
+<div class="alert alert-warning">
+    ⚠️ Kamu belum memverifikasi dokumen dan menautkan akun sosial media.<br>
+    <a href="{{ route('user.verifikasi.index') }}">Klik di sini untuk melengkapi verifikasi.</a>
+</div>
+
+{{-- ❌ DOKUMEN BELUM --}}
+@elseif($belum_verifikasi_dokumen && $sosmed_tertaut)
+<div class="alert alert-warning">
+    ⚠️ Kamu belum memverifikasi dokumen identitas kamu.<br>
+    <a href="{{ route('user.verifikasi.index') }}">Klik di sini untuk verifikasi</a>
+</div>
+
+{{-- ❌ SOSMED BELUM --}}
+@elseif(!$belum_verifikasi_dokumen && !$sosmed_tertaut)
+<div class="alert alert-warning">
+    ⚠️ Kamu belum menautkan akun sosial media.<br>
+    <a href="{{ route('user.verifikasi.index') }}">Klik di sini untuk menautkan akun sosial media</a>
+</div>
+
+{{-- ⛔ VERIFIKASI DITOLAK --}}
+@elseif($u->status_verifikasi === 'ditolak')
+<div class="alert alert-danger">
+    Verifikasi gagal. Silakan unggah ulang dokumen kamu.<br>
+    <a href="{{ route('user.verifikasi.index') }}">Verifikasi ulang</a>
+</div>
+
+{{-- ⏳ VERIFIKASI MENUNGGU --}}
+@elseif($u->status_verifikasi === 'menunggu')
+<div class="alert alert-info">
+    Dokumen kamu sedang diperiksa admin. Mohon tunggu ya!
+</div>
+
+@endif
+
 </div>
 @endif

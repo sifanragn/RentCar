@@ -379,6 +379,37 @@ button:hover { background: #222; transform: scale(1.03); }
 
   </div>
 </div>
+<!-- ✅ MODAL WAJIB TAUTKAN SOSMED -->
+<div id="modalSosmed" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:350px; text-align:center; padding:25px; position:relative;">
+
+    <button id="btnCloseSosmed" class="modal-close-btn">✕</button>
+
+    <div style="
+      width:70px; height:70px; background:#fff4e6; 
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      margin:0 auto 12px auto; font-size:32px; color:#ff9800;">
+      📱
+    </div>
+
+    <h3 style="margin:6px 0 8px; font-size:19px; font-weight:700; color:#111;">
+      Sosial Media Belum Tertaut
+    </h3>
+
+    <p style="
+      font-size:14px; color:#444; background:#f8f8f8; padding:12px;
+      border-radius:10px; margin-bottom:18px;">
+      Anda harus menautkan minimal 1 akun sosial media untuk melanjutkan penyewaan.
+    </p>
+
+    <button id="btnSosmedNow" style="
+      background:#ff9800; color:#fff; width:100%; padding:12px; font-weight:600;
+      border:none; border-radius:10px; cursor:pointer; margin-bottom:10px;">
+      Hubungkan Sekarang
+    </button>
+
+  </div>
+</div>
 
 
     </form>
@@ -537,8 +568,30 @@ btnUnggahNow.onclick = () => {
 btnCloseVerify.onclick = () => {
     modalVerify.style.display = "none";
 };
+// === Modal Sosmed ===
+const modalSosmed    = document.getElementById('modalSosmed');
+const btnSosmedNow   = document.getElementById('btnSosmedNow');
+const btnCloseSosmed = document.getElementById('btnCloseSosmed');
+
+// Jika server kirim session('warning_sosmed') → tampilkan modal
+@if(session('warning_sosmed'))
+setTimeout(() => {
+    if (modalSosmed) modalSosmed.style.display = "flex";
+}, 300);
+@endif
+
+// Tombol ke halaman sosial media
+btnSosmedNow.onclick = () => {
+    window.location.href = "{{ route('user.social.index') }}";
+};
+
+// Tutup modal
+btnCloseSosmed.onclick = () => {
+    modalSosmed.style.display = "none";
+};
 
 });
+
 </script>
   @include('partials.bottom-navbar')
 @endsection

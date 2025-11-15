@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\URL;   // ← TAMBAHKAN INI
 use App\Models\Payment;
 use Carbon\Carbon;
 
@@ -16,11 +17,16 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // FORCE HTTPS kalau kamu akses dari ngrok
+        if (request()->isSecure() || str_contains(env('APP_URL'), 'ngrok')) {
+            URL::forceScheme('https');
+        }
+
         // Composer untuk semua layout admin
         View::composer(['layouts.admin.*', 'layouts.admin.partials.*'], function ($view) {
+            
             $totalPendapatan = Payment::where('status_pembayaran', 'success')
-            ->sum('total_bayar');
-
+                ->sum('total_bayar');
 
             $now = Carbon::now('Asia/Jakarta');
 
@@ -34,7 +40,6 @@ class AppServiceProvider extends ServiceProvider
 
             $penambahan = $mingguIni - $mingguLalu;
 
-            // 🔹 Tentukan teks dan arah perubahan
             $penambahanTeks = null;
             $statusPendapatan = 'stabil';
 
@@ -49,7 +54,6 @@ class AppServiceProvider extends ServiceProvider
                 $statusPendapatan = 'stabil';
             }
 
-            // kirim semua data ke view
             $view->with(compact('totalPendapatan', 'penambahanTeks', 'statusPendapatan'));
         });
     }

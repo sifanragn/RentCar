@@ -7,6 +7,7 @@ use App\Http\Middleware\PreventBackHistory;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\InstagramController;
 
 // ===== ADMIN CONTROLLERS =====
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\DriverAdminController;
+use App\Http\Controllers\Admin\AdminSocialController;
 
 // ===== USER CONTROLLERS =====
 use App\Http\Controllers\User\HomeController;
@@ -29,6 +31,9 @@ use App\Http\Controllers\User\UserVerifikasiController;
 use App\Http\Controllers\User\ContactController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\PickupController;
+use App\Http\Controllers\User\SocialMediaController;
+use App\Http\Controllers\User\VerifikasiController;
+
 
 
 use App\Http\Controllers\Admin\EmergencyController as AdminEmergencyController;
@@ -39,6 +44,9 @@ use App\Http\Controllers\User\EmergencyController as UserEmergencyController;
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+Route::view('/privacy-policy', 'policy.privacy')->name('privacy.policy');
+Route::view('/terms-of-service', 'policy.terms')->name('terms.service');
 
 // ==================== DEBUG / TEST ==================== //
 Route::get('/test-log', function () {
@@ -89,13 +97,26 @@ Route::get('/payments', fn() => view('user.payments.guest'))->name('user.payment
 // ==================== USER AREA (LOGIN WAJIB) ==================== //
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 
+    // 🔹 STATUS VERIFIKASI (utama)
+    Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.index');
+
+    // 🔹 UPLOAD DOKUMEN (KTP & KK)
+    Route::get('/verifikasi/upload', [UserVerifikasiController::class, 'index'])->name('verifikasi.upload');
+    Route::post('/verifikasi/upload', [UserVerifikasiController::class, 'store'])->name('verifikasi.store');
+
+    // 🔹 VERIFIKASI SOSIAL MEDIA
+    Route::get('/social-media', [SocialMediaController::class, 'index'])->name('social.index');
+    Route::get('/social-media/connect/{platform}', [SocialMediaController::class, 'connect'])->name('social.connect');
+    Route::get('/social-media/callback/{platform}', [SocialMediaController::class, 'callback'])->name('social.callback');
+    Route::get('/social-media/disconnect/{platform}', [SocialMediaController::class, 'disconnect'])->name('social.disconnect');
+
+    // 📌 Instagram OAuth
+    Route::get('/auth/instagram', [InstagramController::class, 'redirect'])->name('instagram.redirect');
+    Route::get('/auth/instagram/callback', [InstagramController::class, 'callback'])->name('instagram.callback');
+
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-    // Verifikasi
-    Route::get('/verifikasi', [UserVerifikasiController::class, 'index'])->name('verifikasi.index');
-    Route::post('/verifikasi', [UserVerifikasiController::class, 'store'])->name('verifikasi.store');
 
     // Mobil
     Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
@@ -146,6 +167,12 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
 
     Route::resource('emergency', AdminEmergencyController::class);
 
+   Route::get('/social-media', 
+        [AdminSocialController::class, 'index'])->name('social.index');
+
+    Route::get('/social-media/{id}', 
+        [AdminSocialController::class, 'show'])->name('social.show');
+    
     // Kelola Admin
     Route::get('/kelola-admin', [ManageAdminController::class, 'index'])->name('manage.index');
     Route::get('/kelola-admin/create', [ManageAdminController::class, 'create'])->name('manage.create');
@@ -198,3 +225,6 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
 Route::post('/api/payment/callback', [PaymentController::class, 'callback'])
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
     ->name('payment.callback');
+
+
+

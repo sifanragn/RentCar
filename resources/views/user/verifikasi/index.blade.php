@@ -1,155 +1,211 @@
 @extends('partials.container')
 
-@section('title', 'Upload Dokumen')
+@section('title', 'Verifikasi Akun')
 
 @section('styles')
 <style>
+
 body {
-  font-family: 'Poppins', sans-serif;
-  background: #f2f2f2;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 15px;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(180deg, #f5f7fa, #eef1f7);
+    padding: 18px;
 }
 
-.cards-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 100%;
-  max-width: 380px;
+/* ===== PAGE TITLE ===== */
+.page-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 26px;
+    color: #0f172a;
 }
 
-.card {
-  background: #fff;
-  border-radius: 15px;
-  padding: 20px;
-  width: 100%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* ===== CARD ===== */
+.section-card {
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 22px 20px;
+    margin-bottom: 32px;
+    border: 1px solid rgba(255,255,255,0.65);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+    position: relative; /* penting untuk floating button */
 }
 
-h3 {
-  font-weight: 600;
-  text-align: center;
-  font-size: 18px;
+/* ===== HEADER ===== */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
 }
 
-.upload-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  border: 2px dashed #ccc;
-  border-radius: 10px;
-  padding: 15px;
-  cursor: pointer;
-  transition: 0.3s;
+.section-header .icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: #ecf3ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1d4ed8;
+    font-size: 18px;
 }
 
-.upload-section:hover { border-color: #007bff; }
-.upload-section img { width: 90px; height: 90px; object-fit: cover; border-radius: 10px; }
-input[type="file"] { display: none; }
-.file-name { font-size: 13px; color: #333; text-align: center; }
-.upload-guideline { font-size: 12px; color: #555; padding-left: 20px; }
-.upload-guideline li { margin-bottom: 5px; }
-.back-link { color: #000; text-decoration: none; font-weight: 250; font-size: 14px; margin-bottom: 8px; }
-.back-link:hover { text-decoration: underline; }
-
-.submit-button {
-  margin-top: 20px;
-  padding: 10px 0;
-  border-radius: 8px;
-  background: #000;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  width: 100%;
-  max-width: 380px;
-  text-align: center;
-  margin-bottom: 30px;
+.section-header h4 {
+    font-weight: 600;
+    font-size: 16px;
+    color: #111827;
 }
-.submit-button:hover { background: #333; }
 
-@media (max-width: 360px) {
-  .card { padding: 15px; }
-  .upload-section img { width: 80px; height: 80px; }
-  h3 { font-size: 16px; }
-  .file-name { font-size: 12px; }
+/* ===== STATUS BADGE ===== */
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    margin-bottom: 10px;
 }
+
+.status.pending {
+    background: #fff7e6;
+    color: #b77900;
+    border-color: #ffe8b8;
+}
+
+.status.verified {
+    background: #e7f9f0;
+    color: #15803d;
+    border-color: #bcf0d0;
+}
+
+.status.none {
+    background: #ffeaea;
+    color: #d61f1f;
+    border-color: #f5c2c2;
+}
+
+/* ===== FLOATING CORNER BUTTON ===== */
+.btn-floating {
+    width: 48px;
+    height: 48px;
+    background: #111827;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+
+    position: absolute;
+    bottom: -16px;    /* keluar sedikit dari card */
+    right: 16px;
+
+    box-shadow: 0 6px 16px rgba(0,0,0,0.20);
+    transition: 0.25s ease;
+}
+
+.btn-floating:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 22px rgba(0,0,0,0.25);
+}
+
 </style>
 @endsection
 
 @section('content')
-<form action="{{ route('user.verifikasi.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    <input type="hidden" name="redirect_to" value="{{ $redirectTo }}">
+<div class="container mt-1 mb-5">
 
-    <div class="cards-container">
-        <a href="{{ $redirectTo }}" class="back-link">←</a>
+    <h3 class="page-title">Verifikasi Akun Anda</h3>
 
-        <div class="card">
-            <h3>Upload KTP</h3>
-            <label for="input-ktp" class="upload-section">
-                <img src="{{ asset('images/upload.png') }}" alt="Upload KTP" id="preview-ktp">
-                <input type="file" accept="image/*" id="input-ktp" name="ktp" required>
-                <div class="file-name" id="filename-ktp">Belum ada file dipilih</div>
-            </label>
-            <ul class="upload-guideline">
-                <li>Pastikan tidak buram atau terpotong</li>
-                <li>Seluruh bagian terlihat jelas</li>
-                <li>Gunakan format JPG, JPEG, atau PNG</li>
-                <li>Ukuran maksimal file 2 MB</li>
-            </ul>
+
+    {{-- ================== VERIFIKASI DOKUMEN ================== --}}
+    <div class="section-card">
+
+        <div class="section-header">
+            <div class="icon-box">📄</div>
+            <h4>Verifikasi Dokumen</h4>
         </div>
 
-        <div class="card">
-            <h3>Upload KK</h3>
-            <label for="input-kk" class="upload-section">
-                <img src="{{ asset('images/upload.png') }}" alt="Upload KK" id="preview-kk">
-                <input type="file" accept="image/*" id="input-kk" name="kk" required>
-                <div class="file-name" id="filename-kk">Belum ada file dipilih</div>
-            </label>
-            <ul class="upload-guideline">
-                <li>Pastikan tidak buram atau terpotong</li>
-                <li>Seluruh bagian terlihat jelas</li>
-                <li>Gunakan format JPG, JPEG, atau PNG</li>
-                <li>Ukuran maksimal file 2 MB</li>
-            </ul>
-        </div>
+        @if ($user->status_verifikasi === 'menunggu')
+            <span class="status pending">
+                <i class="fa-solid fa-clock"></i> Menunggu verifikasi admin
+            </span>
 
-        <button class="submit-button" type="submit">Kirim</button>
+        @elseif ($user->status_verifikasi === 'disetujui')
+            <span class="status verified">
+                <i class="fa-solid fa-circle-check"></i> Dokumen sudah diverifikasi
+            </span>
+
+        @elseif ($user->status_verifikasi === 'ditolak')
+            <span class="status none">
+                <i class="fa-solid fa-circle-xmark"></i> Verifikasi ditolak, silakan upload ulang
+            </span>
+
+            <a href="{{ route('user.verifikasi.upload') }}" class="btn-floating">
+                <i class="fa-solid fa-upload"></i>
+            </a>
+
+        @else
+            <span class="status none">
+                <i class="fa-solid fa-circle-exclamation"></i> Belum memverifikasi dokumen
+            </span>
+
+            <a href="{{ route('user.verifikasi.upload') }}" class="btn-floating">
+                <i class="fa-solid fa-upload"></i>
+            </a>
+        @endif
+
     </div>
-</form>
+
+
+
+    {{-- ================== SOSIAL MEDIA ================== --}}
+    <div class="section-card">
+
+        <div class="section-header">
+            <div class="icon-box">📱</div>
+            <h4>Tautan Sosial Media</h4>
+        </div>
+
+        <p>Minimal menautkan 1 akun media sosial untuk keamanan akun.</p>
+
+        @php
+            $total = $totalPlatform;
+            $linked = $linkedCount;
+        @endphp
+
+        @if ($linked === 0)
+            <span class="status none">
+                <i class="fa-solid fa-link-slash"></i> Belum menautkan akun sosial media
+            </span>
+
+            <a href="{{ route('user.social.index') }}" class="btn-floating">
+                <i class="fa-solid fa-link"></i>
+            </a>
+
+        @elseif ($linked < $total)
+            <span class="status pending">
+                <i class="fa-solid fa-link"></i> {{ $linked }}/{{ $total }} akun tertaut
+            </span>
+
+            <a href="{{ route('user.social.index') }}" class="btn-floating">
+                <i class="fa-solid fa-link"></i>
+            </a>
+
+        @else
+            <span class="status verified">
+                <i class="fa-solid fa-circle-check"></i> Semua akun sosial media telah tertaut 🎉
+            </span>
+        @endif
+
+    </div>
+
+</div>
 
 @include('partials.bottom-navbar')
-
-<script>
-function previewImage(inputId, previewId, filenameId) {
-    const input = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
-    const filename = document.getElementById(filenameId);
-
-    input.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = e => preview.src = e.target.result;
-            reader.readAsDataURL(file);
-            filename.textContent = file.name;
-        } else {
-            preview.src = "{{ asset('images/upload.png') }}";
-            filename.textContent = 'Belum ada file dipilih';
-        }
-    });
-}
-
-previewImage('input-ktp', 'preview-ktp', 'filename-ktp');
-previewImage('input-kk', 'preview-kk', 'filename-kk');
-</script>
 @endsection
