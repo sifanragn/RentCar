@@ -13,7 +13,7 @@
   /* ========== SECTION: HUBUNGI KAMI ========== */
   .contact-section {
     text-align: center;
-    padding: 40px 10px;
+  padding: 5px 10px 40px; /* 🟢 dari 40px jadi 25px supaya lebih naik */
   }
 
   .contact-section h1 {

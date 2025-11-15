@@ -118,12 +118,20 @@
     </a>
 
         <a href="{{ route('admin.laporan.index') }}" class="menu-item">
-      <img src="{{ asset('img/icons/laporan.png') }}" class="menu-icon" alt="Data User">
+      <img src="{{ asset('img/icons/laporan.png') }}" class="menu-icon" alt="Laporan">
       <div class="menu-text">
         <h3>Laporan</h3>
         <p>Lihat ringkasan penyewaan dan pendapatan secara lengkap.</p>
       </div>
     </a>
+
+<a href="{{ route('admin.emergency.index') }}" class="menu-item">
+    <img src="{{ asset('img/icons/emergency.png') }}" class="menu-icon" alt="Nomor Darurat">
+    <div class="menu-text">
+        <h3>Nomor Darurat</h3>
+        <p>Kelola dan lihat nomor penting untuk bantuan darurat.</p>
+    </div>
+</a>
 
   </div>
 </div>

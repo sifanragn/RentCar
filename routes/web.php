@@ -39,6 +39,10 @@ use App\Http\Controllers\User\VerifikasiController;
 use App\Http\Controllers\Admin\EmergencyController as AdminEmergencyController;
 use App\Http\Controllers\User\EmergencyController as UserEmergencyController;
 
+
+use App\Http\Controllers\Admin\EmergencyController as AdminEmergencyController;
+use App\Http\Controllers\User\EmergencyController as UserEmergencyController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -211,7 +215,8 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
     Route::post('/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
     Route::post('/invoices/{id}/manual-update', [InvoiceController::class, 'manualUpdate'])->name('invoices.manualUpdate');
     Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
-    Route::post('/invoices/{id}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('invoices.retryPayment');
+    Route::post('/invoices/{id}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('invoices.retry-payment');
+
 
     // Drivers
     Route::resource('drivers', DriverAdminController::class);

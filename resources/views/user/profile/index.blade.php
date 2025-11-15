@@ -257,6 +257,18 @@
     </div>
     <i class="fas fa-chevron-right"></i>
   </div>
+
+  {{-- 🔹 Nomor Darurat (sekarang nyatu sama card menu utama) --}}
+  <div class="menu-item" onclick="window.location='{{ route('user.emergency.index') }}'">
+    <div class="menu-item-left">
+      <i class="fas fa-triangle-exclamation"></i>
+      <div class="menu-text">
+        <span>Nomor Darurat</span>
+        <small>Hubungi kami dalam keadaan mendesak</small>
+      </div>
+    </div>
+    <i class="fas fa-chevron-right"></i>
+  </div>
 </div>
 
 {{-- ==== LOG OUT ==== --}}
@@ -274,7 +286,7 @@
 </div>
 
 @include('partials.bottom-navbar')
-@endsection  {{-- ⛔ PENTING: tutup content dulu sebelum modal --}}
+@endsection
 
 {{-- ==== MODAL KONFIRMASI LOGOUT ==== --}}
 <div id="logoutOverlay" class="modal-overlay">
@@ -314,9 +326,8 @@ function submitLogout() {
   document.getElementById('logoutForm').submit();
 }
 
-// Tutup modal jika klik di luar box
-window.onclick = e=>{
-  const overlay=document.getElementById('logoutOverlay');
-  if(e.target===overlay) closeLogoutModal();
+window.onclick = e => {
+  const overlay = document.getElementById('logoutOverlay');
+  if (e.target === overlay) closeLogoutModal();
 };
 </script>

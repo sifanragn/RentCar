@@ -4,6 +4,9 @@
 
 @section('styles')
 <style>
+body, html {
+    overflow-x: hidden !important;
+}
 /* ===== Header ===== */
 .header {
   background: linear-gradient(to right, #000, #333);

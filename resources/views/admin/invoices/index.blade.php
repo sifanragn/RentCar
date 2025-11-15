@@ -18,9 +18,6 @@
     <a href="{{ route('admin.rentals.index') }}" class="btn-back">
       ← Kembali ke Penyewaan
     </a>
-    <a href="{{ route('admin.invoices.create', ['rental_id' => 0]) }}" class="btn-create">
-      + Buat Invoice
-    </a>
   </div>
 
   {{-- 🔹 Tabel Data --}}
