@@ -83,6 +83,8 @@ p {
   display: flex;
   flex-direction: column;
   gap: 16px;
+    padding-bottom: 50px; /* 🟢 tambah jarak dari bottom navbar */
+
 }
 
 .payment-card {
@@ -96,10 +98,52 @@ p {
   transition: 0.25s ease;
   margin-left: -1px;
   margin-right: -1px;
+  border:1px solid #ccc;
 }
+
 .payment-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+}
+
+/* ===== STATUS BADGE ICON (FINAL) ===== */
+.payment-card {
+    position: relative;
+}
+
+.payment-card .status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    font-size: 15px;
+    color: #fff;
+}
+
+/* Pending */
+.status.pending {
+    background: #ffc107;
+    color: #000;
+}
+
+/* Success */
+.status.success {
+    background: #198754; /* hijau modern */
+    color: #fff;
+}
+
+/* Failed */
+.status.failed {
+    background: #dc3545;
+    color: #fff;
 }
 
 .card-left { display: flex; align-items: center; gap: 14px; }
@@ -116,19 +160,7 @@ p {
 .car-meta { font-size: 13px; color: #777; }
 
 .card-right { text-align: right; }
-.price { font-weight: 700; color: #000; font-size: 15px; margin-bottom: 5px; }
-
-.status {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-.pending { background: #fff3cd; color: #856404; }
-.success { background: #d4edda; color: #155724; }
-.failed  { background: #f8d7da; color: #721c24; }
+.price { font-weight: 700; color: #000; font-size: 15px; margin-bottom: 5px; margin-left: 44px;}
 
 /* Tombol dasar */
 .btn,
@@ -150,6 +182,7 @@ p {
   border: none;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  margin-left: 44px;
 }
 
 /* Default tombol */
@@ -284,6 +317,11 @@ button.btn:focus-visible {
   text-align: left;
   font-family: 'Poppins', sans-serif;
 }
+
+.modal-box .btn {
+    color: #fff !important;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95) translateY(15px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
@@ -399,6 +437,11 @@ button.btn:focus-visible {
   color: #fff !important;
 }
 
+.btn-download {
+    display: block !important;
+    margin: 12px auto 0 auto !important; /* tengah */
+    width: fit-content;
+}
 
 @media (max-width:700px) {
   .payment-card {
@@ -495,16 +538,15 @@ button.btn:focus-visible {
 
           <div class="card-right">
             <div class="price">Rp{{ number_format($p->total_bayar, 0, ',', '.') }}</div>
-            <div class="status {{ strtolower($p->status_pembayaran) }}">
-              @if($p->status_pembayaran === 'pending')
-                Menunggu (<span class="cd" data-s="{{ max(0,$exp) }}">--:--</span>)
-              @elseif($p->status_pembayaran === 'success')
-                Lunas
-              @else
-                Dibatalkan
-              @endif
-            </div>
-
+<div class="status {{ strtolower($p->status_pembayaran) }}">
+    @if($p->status_pembayaran === 'pending')
+        <i class="fa-solid fa-clock"></i>
+    @elseif($p->status_pembayaran === 'success')
+        <i class="fa-solid fa-check"></i>
+    @else
+        <i class="fa-solid fa-xmark"></i>
+    @endif
+</div>
             @if($p->status_pembayaran === 'pending')
 <a class="btn btn-lanjut" href="{{ route('user.payments.continue', $p->payment_id) }}">Lanjutkan</a>
 
@@ -616,7 +658,9 @@ function openReceipt(id){
         <tr><th>Status</th><td>${p.status_pembayaran}</td></tr>
       </table>
       ${p.status_pembayaran==='success'
-        ? `<button onclick="downloadPDF(${p.payment_id})" class="btn" style="margin-top:10px;">⬇️ Download PDF</button>`
+        ? `<button onclick="downloadPDF(...)" class="btn btn-download">
+    ⬇️ Download PDF
+</button>`
         : (p.status_pembayaran==='pending'
             ? `<a href="${p.payment_token}" target="_blank" class="btn" style="margin-top:10px;">Lanjutkan Pembayaran</a>`
             : ``)}

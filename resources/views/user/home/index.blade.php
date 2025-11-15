@@ -4,6 +4,9 @@
 
 @section('styles')
 <style>
+body, html {
+    overflow-x: hidden !important;
+}
 /* ===== Header ===== */
 .header {
   background: linear-gradient(to right, #000, #333);
@@ -49,7 +52,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   line-height: 1;
-  text-decoration: none; /* tambahkan ini */
+    text-decoration: none; /* tambahkan ini */
   display: inline-block; 
 }
 

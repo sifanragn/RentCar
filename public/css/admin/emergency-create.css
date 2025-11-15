@@ -1,0 +1,175 @@
+/* =========================================
+   FORM CONTAINER
+========================================= */
+.emergency-form {
+    width: 100%;
+    max-width: 860px;
+    background: #181c25;
+    padding: 40px 45px;
+    border-radius: 20px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    margin: auto;
+}
+
+body.light-mode .emergency-form {
+    background: #ffffff;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+}
+
+/* =========================================
+   FORM TITLE
+========================================= */
+.emergency-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: #c8d9ff;
+    margin-bottom: 30px;
+}
+
+body.light-mode .emergency-title {
+    color: #1e3a8a;
+}
+
+/* =========================================
+   INPUT GROUP
+========================================= */
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-weight: 500;
+    color: #a9c7ff;
+    font-size: 14.5px;
+}
+
+body.light-mode label {
+    color: #333;
+}
+
+input,
+select,
+textarea {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 12px 15px;
+    color: #f2f5fa;
+    font-size: 15px;
+}
+
+body.light-mode input,
+body.light-mode select,
+body.light-mode textarea {
+    background: #f9fafb;
+    border: 1px solid #d9dee5;
+    color: #222;
+}
+
+/* =========================================
+   ACTION BUTTON WRAPPER
+========================================= */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+/* =========================================
+   SAVE BUTTON
+========================================= */
+.btn-save {
+    padding: 10px 26px;
+    background: linear-gradient(135deg, #1e4ed8, #2563eb);
+    border-radius: 10px;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: .25s ease;
+}
+
+.btn-save:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+.btn-back {
+    padding: 10px 26px;
+    background: #374151;
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: .25s ease;
+}
+
+.btn-back:hover {
+    background: #1f2937;
+    transform: translateY(-2px);
+}
+
+.btn-back::before,
+.btn-back::after {
+    content: none !important;
+}
+
+/* ========== SELECT TEXT COLOR ========== */
+/* DARK MODE */
+select {
+    color: #ffffff !important;
+}
+
+/* LIGHT MODE */
+body.light-mode select {
+    color: #111827 !important;
+}
+
+/* ========== OPTION TEXT COLOR (dropdown terbuka) ========== */
+/* DARK MODE */
+select option {
+    background-color: #181c25 !important;
+    color: #ffffff !important;
+}
+
+/* LIGHT MODE */
+body.light-mode select option {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+}
+
+
+/* === LIGHT MODE BACK BUTTON === */
+body.light-mode .btn-back {
+    background: #e5e7eb;
+    color: #222;
+}
+
+body.light-mode .btn-back:hover {
+    background: #d1d5db;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 600px) {
+    .emergency-form {
+        padding: 25px;
+    }
+}

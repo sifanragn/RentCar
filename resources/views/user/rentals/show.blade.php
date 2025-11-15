@@ -7,9 +7,13 @@
 body {
   background: #f8f9fa;
   font-family: 'Poppins', sans-serif;
-  padding: 20px 15px 90px;
+  padding: 20px 15px 10px;
 }
 
+html, body {
+  height: 100%;
+  overflow: hidden; /* ⛔ Nonaktifkan scroll */
+}
 
 /* ===== CARD WRAPPER ===== */
 .detail-card {
@@ -54,7 +58,7 @@ h2 {
 
 /* label | separator | value */
 .detail-row .label {
-  color: #6b7280;
+  color: #000;
   font-weight: 500;
   min-width: 120px;
 }
@@ -65,8 +69,8 @@ h2 {
 }
 
 .detail-row .value {
-  font-weight: 600;
-  color: #111;
+  font-weight: 500;
+  color: #000;
   text-align: left;          /* value kanan label */
   flex: 1;
   word-break: break-word;

@@ -66,6 +66,7 @@
   flex-direction:column;
   gap:15px;
   padding:0 5px;
+  margin-bottom: 35px;
 }
 
 .car-card{

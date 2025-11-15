@@ -181,7 +181,7 @@
 
 
     <div class="back-wrapper">
-      <a href="{{ route('admin.invoices.index') }}" class="btn-back">← Kembali ke Daftar</a>
+      <a href="{{ route('admin.invoices.index') }}" class="btn-back">Kembali ke Daftar</a>
     </div>
   </div>
 </div>

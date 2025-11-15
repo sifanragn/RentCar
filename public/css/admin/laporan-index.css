@@ -1,211 +1,255 @@
 /* ===============================
-   LAPORAN PENYEWAAN ADMIN
+   LAPORAN PENYEWAAN ADMIN (CLEAN)
 =============================== */
 
+/* WRAPPER */
 .admin-content-wrapper {
-  padding: 28px 40px;
-  color: #e5e7eb;
+    padding: 28px 40px;
+    color: #e5e7eb;
 }
 
+/* ===============================
+   PAGE HEADER
+=============================== */
 .page-header h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #23c8ff;
-  margin-bottom: 6px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #23c8ff;
+    margin-bottom: 6px;
 }
 
 .page-header p {
-  color: #9ca3af;
-  font-size: 15px;
-  margin-bottom: 24px;
+    color: #9ca3af;
+    font-size: 15px;
+    margin-bottom: 24px;
 }
 
-/* ===== Tombol Cetak ===== */
+/* ===============================
+   TOMBOL CETAK
+=============================== */
 .laporan-actions {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .btn-cetak {
-  background: linear-gradient(135deg, #007bff, #23c8ff);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 14px rgba(35,200,255,0.25);
+    background: linear-gradient(135deg, #007bff, #23c8ff);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: .3s ease;
+    box-shadow: 0 4px 14px rgba(35,200,255,0.25);
 }
 
 .btn-cetak:hover {
-  background: linear-gradient(135deg, #0dcaf0, #006ad1);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(35,200,255,0.35);
+    background: linear-gradient(135deg, #0dcaf0, #006ad1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(35,200,255,0.35);
 }
 
 body.light-mode .btn-cetak {
-  background: linear-gradient(135deg, #0d6efd, #23c8ff);
+    background: linear-gradient(135deg, #0d6efd, #23c8ff);
 }
 
-/* ===== Table ===== */
+/* ===============================
+   TABLE WRAPPER
+=============================== */
 .table-wrapper {
-  background: rgba(255,255,255,0.03);
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.08);
-  overflow: hidden;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    background: rgba(255,255,255,0.03);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
 
 .laporan-table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .laporan-table th,
 .laporan-table td {
-  padding: 12px 16px;
-  text-align: left;
-  font-size: 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
+/* Header */
 .laporan-table th {
-  background: rgba(35,200,255,0.12);
-  color: #23c8ff;
-  font-weight: 600;
+    background: rgba(35,200,255,0.12);
+    color: #23c8ff;
+    font-weight: 600;
 }
 
+/* Hover */
 .laporan-table tr:hover td {
-  background: rgba(35,200,255,0.06);
+    background: rgba(35,200,255,0.06);
 }
 
+/* Light Mode */
 body.light-mode .laporan-table th {
-  background: #f1f5ff;
-  color: #0d6efd;
+    background: #f1f5ff;
+    color: #0d6efd;
 }
 
 body.light-mode .laporan-table td {
-  color: #333;
-  border-bottom-color: #eee;
+    color: #333;
+    border-bottom-color: #eee;
 }
 
-/* ===== Status Label ===== */
+/* ===============================
+   STATUS LABEL
+=============================== */
 .status {
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-.status.berjalan {
-  background: rgba(35,200,255,0.12);
-  color: #23c8ff;
-}
-.status.selesai {
-  background: rgba(46,213,115,0.15);
-  color: #2ed573;
-}
-.status.dibatalkan {
-  background: rgba(255,100,100,0.15);
-  color: #ff6b6b;
-}
-
-/* ===== Total Box ===== */
-.total-box {
-  margin-top: 20px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 16px 22px;
-  font-size: 15px;
-  color: #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-}
-
-body.light-mode .total-box {
-  background: #fff;
-  border-color: #eee;
-  color: #111;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-}
-
-.filter-form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.filter-form label {
-  font-weight: 500;
-  color: #333;
-}
-
-.filter-form select {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #fff;
-}
-
-.btn-filter {
-  background: #0d6efd;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.btn-filter:hover {
-  background: #0b5ed7;
-}
-
-.badge-utama {
-  background: #e3f2fd;
-  color: #0d6efd;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.badge-tambahan {
-  background: #f8f9fa;
-  color: #28a745;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    text-transform: capitalize;
 }
 
 .status.success {
-  background: #d1fae5;
-  color: #059669;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-}
-
-.status.pending {
-  background: #fef9c3;
-  color: #b45309;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 12px;
+    background: #d1fae5;
+    color: #059669;
 }
 
 .status.failed {
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 12px;
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.status.pending {
+    background: #fef9c3;
+    color: #b45309;
+}
+
+/* ===============================
+   JENIS KUITANSI (TEXT ONLY)
+=============================== */
+
+/* Dark Mode */
+.badge-utama,
+.badge-tambahan {
+    background: none !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+/* Light Mode */
+body.light-mode .badge-utama,
+body.light-mode .badge-tambahan {
+    color: #222 !important;
+}
+
+/* ===============================
+   FILTER FORM
+=============================== */
+.filter-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-form label {
+    font-weight: 500;
+    color: #ccc;
+}
+
+body.light-mode .filter-form label {
+    color: #333;
+}
+
+.filter-form select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-size: 14px;
+}
+
+/* Button Filter */
+.btn-filter {
+    background: #0d6efd;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: .2s ease;
+}
+
+.btn-filter:hover {
+    background: #0b5ed7;
+}
+
+/* ===============================
+   TOTAL BOX
+=============================== */
+.total-box {
+    margin-top: 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px 22px;
+    font-size: 15px;
+    color: #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+/* Light Mode */
+body.light-mode .total-box {
+    background: #fff;
+    border-color: #eee;
+    color: #111;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+/* =====================================
+   DROPDOWN SELECT - DARK & LIGHT MODE
+===================================== */
+
+/* DARK MODE */
+select {
+    background: #0f1b2b !important; /* biru gelap */
+    border: 1px solid #1e90ff !important; /* biru soft */
+    color: #ffffff !important; /* teks putih */
+}
+
+/* Hover + Focus */
+select:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(30,144,255,0.4);
+}
+
+/* OPTION di dropdown dark mode */
+select option {
+    background: #0f1b2b !important;
+    color: #ffffff !important;
+}
+
+
+/* LIGHT MODE */
+body.light-mode select {
+    background: #ffffff !important;
+    border: 1px solid #ccc !important;
+    color: #111 !important;
+}
+
+body.light-mode select option {
+    background: #ffffff !important;
+    color: #111 !important;
 }
