@@ -122,6 +122,11 @@
   transform: translateY(-2px);
 }
 
+.btn-back::after,
+.btn-back::before {
+    content: none !important;
+}
+
 /* ===== Form ===== */
 .form-inline {
   margin-top: 25px;
@@ -217,4 +222,29 @@ body.light-mode .form-inline select {
 }
 .manual-update-wrapper button:hover {
   background: #5a6268;
+}
+
+/* =====================================
+   DARK MODE — Ganti putih jadi biru gelap
+===================================== */
+body:not(.light-mode) .manual-update-wrapper {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(8px);
+    color: #e5e7eb !important;
+}
+
+body:not(.light-mode) .manual-update-wrapper label {
+    color: #e5e7eb !important;
+}
+
+body:not(.light-mode) .manual-update-wrapper select {
+    background: rgba(255,255,255,0.06) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+}
+
+body:not(.light-mode) .manual-update-wrapper button {
+    background: #0d6efd !important;
+    color: #fff !important;
 }

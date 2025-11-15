@@ -58,6 +58,7 @@ form {
 .btn-danger {
   width: 100%; height: 48px; border-radius: 12px;
   font-weight: 600; font-size: 15px;
+  margin-bottom: 25px; /* bebas, nilai 70–110px tergantung tinggi navbar kamu */
 }
 
 .btn-outline-danger { border: 1px solid #dc3545; color: #dc3545; }

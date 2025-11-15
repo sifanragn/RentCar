@@ -75,60 +75,61 @@
     </div>
   @endif
 
-<!-- Modal Detail Driver -->
+<!-- ===================== MODAL DETAIL DRIVER ===================== -->
 <div id="driverModal" class="driver-modal-overlay" style="display:none;">
   <div class="driver-modal">
 
+    <!-- Tombol close -->
     <button class="driver-modal-close" onclick="closeDriverDetail()">✖</button>
 
-    <!-- Foto -->
-    <img id="modalFoto" src="" class="driver-detail-foto">
+    <!-- Foto Driver -->
+    <img id="modalFoto" class="driver-modal-foto" src="">
 
-    <h2 id="modalNama" class="driver-name"></h2>
+    <h2 id="modalNama" class="driver-modal-name"></h2>
 
-    <div class="driver-info-grid">
-      <div><strong>Nomor HP</strong><span id="modalHp"></span></div>
-      <div><strong>Email</strong><span id="modalEmail"></span></div>
-      <div><strong>No. SIM</strong><span id="modalSim"></span></div>
-      <div><strong>Lokasi</strong><span id="modalLokasi"></span></div>
-      <div><strong>Pengalaman</strong><span id="modalPengalaman"></span></div>
-      <div><strong>Tarif / Jam</strong><span id="modalHarga"></span></div>
-      <div style="grid-column: 1 / -1;">
-        <strong>Deskripsi</strong><span id="modalDeskripsi"></span>
+    <!-- GRID INFO -->
+    <div class="modal-info-grid">
+
+      <div class="info-box"><label>Nomor HP</label><span id="modalHp"></span></div>
+      <div class="info-box"><label>Email</label><span id="modalEmail"></span></div>
+      <div class="info-box"><label>No. SIM</label><span id="modalSim"></span></div>
+      <div class="info-box"><label>Lokasi</label><span id="modalLokasi"></span></div>
+      <div class="info-box"><label>Pengalaman</label><span id="modalPengalaman"></span></div>
+      <div class="info-box"><label>Tarif / Jam</label><span id="modalHarga"></span></div>
+
+      <div class="info-box" style="grid-column: span 2;">
+        <label>Deskripsi</label>
+        <span id="modalDeskripsi"></span>
       </div>
     </div>
 
-    <!-- Dokumen -->
-    <div class="driver-docs">
-      <h4>📎 Dokumen Identitas</h4>
+    <!-- DOKUMEN -->
+    <h3 class="docs-title">📎 Dokumen Identitas</h3>
 
-      <div class="doc-grid">
-        <div class="doc-card">
-          <p><strong>SIM</strong></p>
-          <img id="docSim" src="" class="doc-img" onclick="showFullImage(this.src)">
-        </div>
+    <div class="modal-doc-grid">
+      <div class="doc-card">
+        <p>SIM</p>
+        <img id="docSim" class="doc-img" onclick="showFullImage(this.src)">
+      </div>
 
-        <div class="doc-card">
-          <p><strong>KTP</strong></p>
-          <img id="docKtp" src="" class="doc-img" onclick="showFullImage(this.src)">
-        </div>
+      <div class="doc-card">
+        <p>KTP</p>
+        <img id="docKtp" class="doc-img" onclick="showFullImage(this.src)">
+      </div>
 
-        <div class="doc-card">
-          <p><strong>KK</strong></p>
-          <img id="docKk" src="" class="doc-img" onclick="showFullImage(this.src)">
-        </div>
+      <div class="doc-card">
+        <p>KK</p>
+        <img id="docKk" class="doc-img" onclick="showFullImage(this.src)">
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- Full Image Preview -->
+<!-- FULL IMAGE PREVIEW -->
 <div id="fullImgOverlay">
   <img id="fullImg">
 </div>
-</div>
-
 
 
 {{-- ========================================= --}}
@@ -345,197 +346,189 @@ body.light-mode .btn-view:hover {
 }
 
 
-/* MODAL WRAPPER */
+/* === MODAL OVERLAY === */
 .driver-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 3000;
 }
 
-/* MODAL BOX */
+/* === MODAL BOX === */
 .driver-modal {
-  background: var(--bg);
-  padding: 28px;
-  border-radius: 18px;
   width: 520px;
-  max-height: 85vh;
+  max-height: 88vh;
   overflow-y: auto;
+  background: #141821;
+  padding: 32px;
+  border-radius: 20px;
   text-align: center;
-  box-shadow: 0 6px 28px rgba(0,0,0,.25);
-  position: relative;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
 }
-body.light-mode .driver-modal { --bg:#fff; }
-body:not(.light-mode) .driver-modal { --bg:#171c26; }
+body.light-mode .driver-modal { background: #fff; }
 
-/* Close btn */
+/* Close Button (FIX) */
 .driver-modal-close {
   position: absolute;
   top: 12px;
   right: 12px;
-  border: none;
-  background: #ff5c5c;
+  background: #ff4d4d;
   color: #fff;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  font-size: 13px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
   cursor: pointer;
+  border: none;
+  transition: 0.2s;
+  position: relative; 
+  margin-left: 490px;  
+  margin-top: -20px;
+}
+.driver-modal-close:hover {
+  background: #ff6666;
+  transform: scale(1.08);
 }
 
-/* FOTO DRIVER */
-.driver-detail-foto {
-  width: 120px;
-  height: 120px;
-  border-radius: 12px;
+/* Foto besar */
+.driver-modal-foto {
+  width: 140px;
+  height: 140px;
+  border-radius: 16px;
   object-fit: cover;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+  border: 3px solid rgba(255,255,255,0.18);
 }
 
-/* INFO */
-.driver-modal p {
-  margin: 4px 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
+/* Nama */
+.driver-modal-name {
+  color: #fff;
+  font-size: 23px;
+  font-weight: 700;
+  margin-bottom: 22px;
 }
-.driver-modal strong {
-  color: var(--primary);
-}
-body.light-mode .driver-modal { --text:#222; --primary:#007bff }
-body:not(.light-mode) .driver-modal { --text:#dce2f0; --primary:#4da3ff }
+body.light-mode .driver-modal-name { color:#222; }
 
-/* ACTION buttons */
-.driver-modal-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 14px 0;
+/* GRID INFO */
+.modal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 15px 20px;
+  margin-bottom: 28px;
 }
 
-/* DOC SECTION */
-.driver-docs h4 {
-  margin: 12px 0 8px;
-  font-size: 15px;
+.info-box {
+  background: #1f2633;
+  padding: 15px 18px;
+  border-radius: 14px;
+  text-align: left;
+}
+body.light-mode .info-box { background: #f3f4f6; }
+
+.info-box label {
+  display: block;
+  opacity: 0.7;
+  font-size: 12px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.info-box span {
+  font-size: 16px;
   font-weight: 600;
-  color: var(--text);
+  color: #e6ecf5;
 }
+body.light-mode .info-box span { color:#222; }
 
-/* Thumbnail docs */
-.doc-grid {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
+/* DOKUMEN */
+.docs-title {
+  margin-bottom: 15px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+}
+body.light-mode .docs-title { color:#222; }
+
+.modal-doc-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 18px;
 }
 
 .doc-card {
-  width: 95px;
+  background: #1f2633;
+  padding: 12px;
+  border-radius: 14px;
 }
+body.light-mode .doc-card { background:#ececec; }
 
 .doc-card p {
-  font-size: 12px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .doc-img {
-  width: 95px;
-  height: 95px;
+  width: 100%;
+  height: 110px;
   object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 10px;
   cursor: pointer;
-  transition: .15s;
+  border: 2px solid rgba(255,255,255,0.12);
+  transition: 0.15s;
 }
-.doc-img:hover {
-  transform: scale(1.05);
-}
+.doc-img:hover { transform: scale(1.04); }
 
-/* FULL IMAGE */
+/* FULL IMAGE PREVIEW */
 #fullImgOverlay {
   position: fixed;
   inset: 0;
+  background: rgba(0,0,0,0.9);
   display: none;
   justify-content: center;
   align-items: center;
-  background: rgba(0,0,0,.9);
   z-index: 5000;
 }
-
 #fullImg {
   max-width: 90%;
   max-height: 90%;
   border-radius: 12px;
 }
-
-.driver-name {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--text);
-}
-
-.driver-info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px 30px;
-  justify-content: center;
-  margin: 0 auto 18px;
-  max-width: 320px; /* sebelumnya 380px */
-  text-align: center; /* pusatkan isi */
-}
-.driver-info-grid div {
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-  align-items: center; /* biar label & value sejajar */
-}
-.driver-info-grid strong {
-  font-size: 12px;
-  color: #6d6d6d;
-  margin-bottom: 2px;
-}
-.driver-info-grid span {
-  font-weight: 600;
-  color: var(--text);
-}
-
-
 </style>
+
 <script>
 function openDriverDetail(driver) {
-  document.getElementById("modalFoto").src = driver.foto_url;
-  document.getElementById("modalNama").innerText = driver.nama;
-  document.getElementById("modalHp").innerText = driver.no_hp ?? "-";
-  document.getElementById("modalEmail").innerText = driver.email ?? "-";
-  document.getElementById("modalSim").innerText = driver.sim_number ?? "-";
-  document.getElementById("modalLokasi").innerText = driver.lokasi ?? "-";
-  document.getElementById("modalPengalaman").innerText = driver.pengalaman ?? "-";
-  document.getElementById("modalHarga").innerText = driver.harga_formatted;
-  document.getElementById("modalDeskripsi").innerText = driver.deskripsi ?? "-";
+  modalFoto.src = driver.foto_url;
+  modalNama.innerText = driver.nama;
+  modalHp.innerText = driver.no_hp ?? "-";
+  modalEmail.innerText = driver.email ?? "-";
+  modalSim.innerText = driver.sim_number ?? "-";
+  modalLokasi.innerText = driver.lokasi ?? "-";
+  modalPengalaman.innerText = driver.pengalaman ?? "-";
+  modalHarga.innerText = driver.harga_formatted;
+  modalDeskripsi.innerText = driver.deskripsi ?? "-";
 
-  document.getElementById("docSim").src = driver.foto_sim_url;
-  document.getElementById("docKtp").src = driver.foto_ktp_url;
-  document.getElementById("docKk").src = driver.foto_kk_url;
+  docSim.src = driver.foto_sim_url;
+  docKtp.src = driver.foto_ktp_url;
+  docKk.src = driver.foto_kk_url;
 
-  document.getElementById("driverModal").style.display = "flex";
+  driverModal.style.display = "flex";
 }
 
 function closeDriverDetail() {
-  document.getElementById("driverModal").style.display = "none";
+  driverModal.style.display = "none";
 }
 
 function showFullImage(src) {
-  document.getElementById("fullImg").src = src;
-  document.getElementById("fullImgOverlay").style.display = "flex";
+  fullImg.src = src;
+  fullImgOverlay.style.display = "flex";
 }
-
-document.getElementById("fullImgOverlay").onclick = () => {
-  document.getElementById("fullImgOverlay").style.display = "none";
-};
-
+fullImgOverlay.onclick = () => fullImgOverlay.style.display = "none";
 </script>
 @endsection

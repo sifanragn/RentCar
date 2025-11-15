@@ -131,6 +131,8 @@ h2 {
     }
 
   .back-link:hover { text-decoration:underline; }
+
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
   h2 { font-size: 20px; }
@@ -176,7 +178,7 @@ h2 {
       <h4>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '' }}</h4>
       <p><b>Tanggal Sewa:</b> {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d M Y') }}</p>
       <p><b>Selesai:</b> {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d M Y') }}</p>
-      <p><b>Durasi:</b> {{ $rental->durasi_hari }} hari</p>
+      <p><b>Durasi:</b> {{ $rental->durasi_hari }} Jam</p>
       <p><b>Total:</b> Rp {{ number_format($rental->total_biaya, 0, ',', '.') }}</p>
 
       {{-- 🚨 Peringatan untuk Draft --}}

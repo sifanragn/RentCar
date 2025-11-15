@@ -131,8 +131,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/payments/{id}/download', [PaymentController::class, 'downloadReceipt'])->name('payments.download');
     Route::get('/payments/{id}/json', [PaymentController::class, 'json'])->name('payments.json');
 
-    Route::get('/nomor-darurat', [UserEmergencyController::class, 'index'])
-    ->name('emergency.index');
+    Route::get('/nomor-darurat', [UserEmergencyController::class, 'index'])->name('emergency.index');
 
     // Ongkir / Pickup Distance
     Route::post('/pickup/distance', [PickupController::class, 'distance'])->name('pickup.distance');
@@ -184,7 +183,8 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
     Route::post('/invoices/{id}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
     Route::post('/invoices/{id}/manual-update', [InvoiceController::class, 'manualUpdate'])->name('invoices.manualUpdate');
     Route::post('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
-    Route::post('/invoices/{id}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('invoices.retryPayment');
+    Route::post('/invoices/{id}/retry-payment', [InvoiceController::class, 'retryPayment'])->name('invoices.retry-payment');
+
 
     // Drivers
     Route::resource('drivers', DriverAdminController::class);

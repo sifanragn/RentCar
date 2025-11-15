@@ -188,7 +188,7 @@ body.light-mode select option {
   display: inline-block !important;   /* ⬅️ pastikan bukan flex! */
   width: auto !important;             /* ⬅️ jangan pakai width penuh */
   height: auto !important;            /* ⬅️ tinggi menyesuaikan isi */
-  padding: 10px 26px !important;      /* ⬅️ padding seimbang */
+  padding: 10px 30px !important;      /* ⬅️ padding seimbang */
   border-radius: 8px;
   font-size: 15px;
   font-weight: 500;
@@ -205,6 +205,7 @@ body.light-mode select option {
   color: #fff;
   box-shadow: 0 4px 10px rgba(46,204,113,0.3);
 }
+
 .btn-submit:hover {
   background: #27ae60;
   transform: translateY(-2px);

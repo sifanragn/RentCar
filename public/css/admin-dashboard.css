@@ -170,6 +170,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   filter: drop-shadow(0 0 20px rgba(35,200,255,0.35));
   transition: transform 0.3s ease, filter 0.3s ease;
 }
+
 .menu-item:hover .menu-icon {
   transform: scale(1.1);
   filter: drop-shadow(0 0 30px rgba(35,200,255,0.45));
@@ -672,3 +673,16 @@ body.light-mode .mobil-strip-container {
   background: linear-gradient(180deg, #f9fafb 0%, #eef1f5 100%);
 }
 
+/* === CENTER ONLY THE LAST MENU ITEM === */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+}
+
+/* Kalau jumlah item ganjil → item terakhir ke tengah */
+.menu-grid > .menu-item:last-child:nth-child(odd) {
+    grid-column: 1 / span 2;
+    justify-self: center;
+    width: 80%; /* biar ukuran tetap besar, tidak mengecil */
+}

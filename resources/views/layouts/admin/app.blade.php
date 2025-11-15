@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,22 +24,27 @@
   <link rel="stylesheet" href="{{ asset('css/admin/rentals-index.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('css/admin/rentals-show.css?v=' . time()) }}">
 
-  {{--USERS--}}
+  {{-- USERS --}}
   <link rel="stylesheet" href="{{ asset('css/admin/users-index.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('css/admin/users-show.css?v=' . time()) }}">
 
-  {{--Laporan--}}
+  {{-- LAPORAN --}}
   <link rel="stylesheet" href="{{ asset('css/admin/laporan-index.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('css/admin/laporan-cetak.css?v=' . time()) }}">
 
-  {{--invoice--}}
+  {{-- INVOICE --}}
   <link rel="stylesheet" href="{{ asset('css/admin/invoice-index.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('css/admin/invoice-show.css?v=' . time()) }}">
   <link rel="stylesheet" href="{{ asset('css/admin/invoice-create.css?v=' . time()) }}">
 
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  {{-- ⬇⬇⬇ WAJIB ADA DI SINI --}}
+  @yield('styles')
+
+  @stack('styles')
 </head>
+
 
 <body>
   <div class="admin-wrapper">
