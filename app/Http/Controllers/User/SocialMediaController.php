@@ -29,13 +29,9 @@ class SocialMediaController extends Controller
     return view('user.social-media.index', compact('user', 'linkedCount', 'totalPlatform'));
 }
 
-
+    
     public function connect($platform)
     {
-        // === INSTAGRAM ===
-        if ($platform === 'instagram') {
-            return redirect()->route('user.instagram.redirect');
-        }
 
         // === FACEBOOK ===
         if ($platform === 'facebook') {
@@ -112,6 +108,23 @@ if ($platform === 'linkedin') {
     return redirect()->away($url);
 }
 
+if ($platform === 'instagram') {
+
+    $appId = env('INSTAGRAM_APP_ID');
+    $redirect = route('user.social.callback', 'instagram'); // gunakan route yang benar!
+
+    $url = "https://api.instagram.com/oauth/authorize?" . http_build_query([
+        'client_id' => $appId,
+        'redirect_uri' => $redirect,
+        'scope' => 'user_profile,user_media',
+        'response_type' => 'code'
+    ]);
+
+    return redirect()->away($url);
+}
+
+
+
         abort(404);
     }
 
@@ -127,6 +140,37 @@ if ($platform === 'linkedin') {
         }
 
 
+if ($platform === 'instagram') {
+
+    $tokenResponse = Http::asForm()->post('https://api.instagram.com/oauth/access_token', [
+        'client_id' => env('INSTAGRAM_APP_ID'),
+        'client_secret' => env('INSTAGRAM_APP_SECRET'),
+        'grant_type' => 'authorization_code',
+        'redirect_uri' => route('user.social.callback', 'instagram'),
+        'code' => $request->code,
+    ]);
+
+    if (!$tokenResponse->ok()) {
+        return back()->with('error', 'Instagram login gagal.');
+    }
+
+    $accessToken = $tokenResponse->json()['access_token'];
+    $instagramUserId = $tokenResponse->json()['user_id'];
+
+    // Ambil data user Instagram
+    $profile = Http::get("https://graph.instagram.com/{$instagramUserId}", [
+        'fields' => 'id,username,account_type',
+        'access_token' => $accessToken
+    ])->json();
+
+    // Simpan DB
+    $user->instagram_id = $profile['id'] ?? null;
+    $user->instagram_username = $profile['username'] ?? null;
+    $user->instagram_token = $accessToken;
+    $user->save();
+
+    return redirect()->route('social.index')->with('success', 'Instagram berhasil ditautkan.');
+}
 
         // ============================================
         // =============== FACEBOOK ====================

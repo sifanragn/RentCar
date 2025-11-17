@@ -39,10 +39,6 @@ use App\Http\Controllers\User\VerifikasiController;
 use App\Http\Controllers\Admin\EmergencyController as AdminEmergencyController;
 use App\Http\Controllers\User\EmergencyController as UserEmergencyController;
 
-
-use App\Http\Controllers\Admin\EmergencyController as AdminEmergencyController;
-use App\Http\Controllers\User\EmergencyController as UserEmergencyController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -113,10 +109,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/social-media/connect/{platform}', [SocialMediaController::class, 'connect'])->name('social.connect');
     Route::get('/social-media/callback/{platform}', [SocialMediaController::class, 'callback'])->name('social.callback');
     Route::get('/social-media/disconnect/{platform}', [SocialMediaController::class, 'disconnect'])->name('social.disconnect');
-
-    // 📌 Instagram OAuth
-    Route::get('/auth/instagram', [InstagramController::class, 'redirect'])->name('instagram.redirect');
-    Route::get('/auth/instagram/callback', [InstagramController::class, 'callback'])->name('instagram.callback');
+    
 
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');

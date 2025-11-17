@@ -272,38 +272,6 @@ $verifiedBadge = '
         @endif
     </div>
 </div>
-
-
-{{-- ================= LINKEDIN ================= --}}
-<div class="connection-item">
-    <div class="conn-left">
-        <img src="{{ asset('img/icons/linkedin.png') }}" class="platform-icon">
-        <div>
-            <div class="conn-name">LinkedIn</div>
-            @if($user->linkedin_name)
-                <div class="conn-username">
-                    {{ $user->linkedin_name }} {!! $verifiedBadge !!}
-                </div>
-            @else
-                <div class="conn-username text-danger">Belum tertaut</div>
-            @endif
-        </div>
-    </div>
-
-    <div class="right-actions">
-        @if($user->linkedin_name)
-            <a href="{{ route('user.social.disconnect','linkedin') }}" class="action-icon unlink">
-                <i class="fa-solid fa-link-slash"></i>
-            </a>
-        @else
-            <a href="{{ route('user.social.connect','linkedin') }}" class="action-icon plus">
-                <i class="fa-solid fa-link"></i>
-            </a>
-        @endif
-    </div>
-</div>
-
-
 </div>
 @include('partials.bottom-navbar')
 @endsection

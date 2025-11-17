@@ -5,60 +5,111 @@
 @section('styles')
 <style>
 
+/* =================== GLOBAL =================== */
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg, #f5f7fa, #eef1f7);
+    background: #f5f7fa;
     padding: 18px;
 }
 
-/* ===== PAGE TITLE ===== */
+/* PAGE TITLE */
 .page-title {
     text-align: center;
     font-size: 20px;
     font-weight: 700;
-    margin-bottom: 26px;
+    margin-bottom: 28px;
     color: #0f172a;
 }
 
-/* ===== CARD ===== */
+/* =================== CARD =================== */
 .section-card {
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(12px);
-    border-radius: 18px;
-    padding: 22px 20px;
-    margin-bottom: 32px;
-    border: 1px solid rgba(255,255,255,0.65);
-    box-shadow: 0 10px 28px rgba(0,0,0,0.06);
-    position: relative; /* penting untuk floating button */
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 22px 24px 16px;
+    margin-bottom: 30px;
+    border: 1px solid #eef1f5;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    margin-left: -12px;
+    margin-right: -12px;
+    position: relative;
 }
 
-/* ===== HEADER ===== */
-.section-header {
+/* =================== TITLE =================== */
+.section-header h4 {
+    font-weight: 600;         /* lebih halus dari 700 */
+    font-size: 16px;
+    color: #111827;
+
+    line-height: 1.25;        /* stabil */
+    margin-top: 2px;          /* sedikit turun biar center */
+    letter-spacing: -0.2px;   /* biar keliatan premium */
+}
+
+/* align lebih rapih */
+.section-left {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    align-items: center;      /* center vertical ketemu icon */
+    gap: 12px;
 }
 
-.section-header .icon-box {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    background: #ecf3ff;
+
+/* ICON KIRI — PREMIUM */
+.icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 25%;
+    background: #1f2937;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #1d4ed8;
-    font-size: 18px;
+    font-size: 15px;
+    color: rgba(255,255,255,0.92);
+    box-shadow: 
+        0 3px 10px rgba(0,0,0,0.10),
+        inset 0 0 3px rgba(255,255,255,0.06);
 }
 
-.section-header h4 {
-    font-weight: 600;
+/* =================== BUTTON ACTION VERIFIKASI =================== */
+.btn-action-verifikasi {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 16px;
-    color: #111827;
+    color: #0f172a;
+
+    position: absolute;
+    top: 73px;
+    right: 22px;
+
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    transition: 0.2s ease;
 }
 
-/* ===== STATUS BADGE ===== */
+/* =================== BUTTON ACTION SOSMED =================== */
+.btn-action-sosmed {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: #0f172a;
+
+    position: absolute;
+    top: 130px; /* sudah ok */
+    right: 22px;
+
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    transition: 0.2s ease;
+}
+
+/* =================== STATUS BADGE GLOBAL =================== */
 .status {
     display: inline-flex;
     align-items: center;
@@ -67,55 +118,29 @@ body {
     font-size: 13px;
     font-weight: 500;
     border-radius: 10px;
-    border: 1px solid transparent;
-    margin-bottom: 10px;
+    margin-top: 12px; /* default untuk verifikasi */
 }
 
-.status.pending {
-    background: #fff7e6;
-    color: #b77900;
-    border-color: #ffe8b8;
+.status.pending { background: #fff7e6; color: #b77900; }
+.status.none { background: #ffeaea; color: #d61f1f; }
+.status.verified { background: #e7f9f0; color: #15803d; }
+
+/* =================== STATUS SOSMED — NAIK  =================== */
+.status-sosmed {
+    margin-top: 6px !important; /* lebih naik */
 }
 
-.status.verified {
-    background: #e7f9f0;
-    color: #15803d;
-    border-color: #bcf0d0;
-}
-
-.status.none {
-    background: #ffeaea;
-    color: #d61f1f;
-    border-color: #f5c2c2;
-}
-
-/* ===== FLOATING CORNER BUTTON ===== */
-.btn-floating {
-    width: 48px;
-    height: 48px;
-    background: #111827;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 18px;
-
-    position: absolute;
-    bottom: -16px;    /* keluar sedikit dari card */
-    right: 16px;
-
-    box-shadow: 0 6px 16px rgba(0,0,0,0.20);
-    transition: 0.25s ease;
-}
-
-.btn-floating:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 9px 22px rgba(0,0,0,0.25);
+/* TEXT */
+.section-card p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 8px 0 14px;
 }
 
 </style>
 @endsection
+
+
 
 @section('content')
 <div class="container mt-1 mb-5">
@@ -123,12 +148,21 @@ body {
     <h3 class="page-title">Verifikasi Akun Anda</h3>
 
 
+
     {{-- ================== VERIFIKASI DOKUMEN ================== --}}
     <div class="section-card">
 
         <div class="section-header">
-            <div class="icon-box">📄</div>
-            <h4>Verifikasi Dokumen</h4>
+            <div class="section-left">
+                <div class="icon-box">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <h4>Verifikasi Dokumen</h4>
+            </div>
+
+            <a href="{{ route('user.verifikasi.upload') }}" class="btn-action-verifikasi">
+                <i class="fa-solid fa-upload"></i>
+            </a>
         </div>
 
         @if ($user->status_verifikasi === 'menunggu')
@@ -146,18 +180,10 @@ body {
                 <i class="fa-solid fa-circle-xmark"></i> Verifikasi ditolak, silakan upload ulang
             </span>
 
-            <a href="{{ route('user.verifikasi.upload') }}" class="btn-floating">
-                <i class="fa-solid fa-upload"></i>
-            </a>
-
         @else
             <span class="status none">
                 <i class="fa-solid fa-circle-exclamation"></i> Belum memverifikasi dokumen
             </span>
-
-            <a href="{{ route('user.verifikasi.upload') }}" class="btn-floating">
-                <i class="fa-solid fa-upload"></i>
-            </a>
         @endif
 
     </div>
@@ -168,37 +194,32 @@ body {
     <div class="section-card">
 
         <div class="section-header">
-            <div class="icon-box">📱</div>
-            <h4>Tautan Sosial Media</h4>
+            <div class="section-left">
+                <div class="icon-box">
+                    <i class="fa-solid fa-globe"></i>
+                </div>
+                <h4>Tautan Sosial Media</h4>
+            </div>
+
+            <a href="{{ route('user.social.index') }}" class="btn-action-sosmed">
+                <i class="fa-solid fa-link"></i>
+            </a>
         </div>
 
         <p>Minimal menautkan 1 akun media sosial untuk keamanan akun.</p>
 
-        @php
-            $total = $totalPlatform;
-            $linked = $linkedCount;
-        @endphp
-
-        @if ($linked === 0)
-            <span class="status none">
-                <i class="fa-solid fa-link-slash"></i> Belum menautkan akun sosial media
+        @if ($linkedCount === 0)
+            <span class="status status-sosmed none">
+                <i class="fa-solid fa-link-slash"></i> Belum menautkan sosial media
             </span>
 
-            <a href="{{ route('user.social.index') }}" class="btn-floating">
-                <i class="fa-solid fa-link"></i>
-            </a>
-
-        @elseif ($linked < $total)
-            <span class="status pending">
-                <i class="fa-solid fa-link"></i> {{ $linked }}/{{ $total }} akun tertaut
+        @elseif ($linkedCount < $totalPlatform)
+            <span class="status status-sosmed pending">
+                <i class="fa-solid fa-link"></i> {{ $linkedCount }}/{{ $totalPlatform }} akun tertaut
             </span>
-
-            <a href="{{ route('user.social.index') }}" class="btn-floating">
-                <i class="fa-solid fa-link"></i>
-            </a>
 
         @else
-            <span class="status verified">
+            <span class="status status-sosmed verified">
                 <i class="fa-solid fa-circle-check"></i> Semua akun sosial media telah tertaut 🎉
             </span>
         @endif
