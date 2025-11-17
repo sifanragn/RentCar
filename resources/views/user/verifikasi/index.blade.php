@@ -1,155 +1,232 @@
 @extends('partials.container')
 
-@section('title', 'Upload Dokumen')
+@section('title', 'Verifikasi Akun')
 
 @section('styles')
 <style>
+
+/* =================== GLOBAL =================== */
 body {
-  font-family: 'Poppins', sans-serif;
-  background: #f2f2f2;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 15px;
+    font-family: 'Poppins', sans-serif;
+    background: #f5f7fa;
+    padding: 18px;
 }
 
-.cards-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 100%;
-  max-width: 380px;
+/* PAGE TITLE */
+.page-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    color: #0f172a;
 }
 
-.card {
-  background: #fff;
-  border-radius: 15px;
-  padding: 20px;
-  width: 100%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* =================== CARD =================== */
+.section-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 22px 24px 16px;
+    margin-bottom: 30px;
+    border: 1px solid #eef1f5;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    margin-left: -12px;
+    margin-right: -12px;
+    position: relative;
 }
 
-h3 {
-  font-weight: 600;
-  text-align: center;
-  font-size: 18px;
+/* =================== TITLE =================== */
+.section-header h4 {
+    font-weight: 600;         /* lebih halus dari 700 */
+    font-size: 16px;
+    color: #111827;
+
+    line-height: 1.25;        /* stabil */
+    margin-top: 2px;          /* sedikit turun biar center */
+    letter-spacing: -0.2px;   /* biar keliatan premium */
 }
 
-.upload-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  border: 2px dashed #ccc;
-  border-radius: 10px;
-  padding: 15px;
-  cursor: pointer;
-  transition: 0.3s;
+/* align lebih rapih */
+.section-left {
+    display: flex;
+    align-items: center;      /* center vertical ketemu icon */
+    gap: 12px;
 }
 
-.upload-section:hover { border-color: #007bff; }
-.upload-section img { width: 90px; height: 90px; object-fit: cover; border-radius: 10px; }
-input[type="file"] { display: none; }
-.file-name { font-size: 13px; color: #333; text-align: center; }
-.upload-guideline { font-size: 12px; color: #555; padding-left: 20px; }
-.upload-guideline li { margin-bottom: 5px; }
-.back-link { color: #000; text-decoration: none; font-weight: 250; font-size: 14px; margin-bottom: 8px; }
-.back-link:hover { text-decoration: underline; }
 
-.submit-button {
-  margin-top: 20px;
-  padding: 10px 0;
-  border-radius: 8px;
-  background: #000;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  width: 100%;
-  max-width: 380px;
-  text-align: center;
-  margin-bottom: 30px;
+/* ICON KIRI — PREMIUM */
+.icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 25%;
+    background: #1f2937;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: rgba(255,255,255,0.92);
+    box-shadow: 
+        0 3px 10px rgba(0,0,0,0.10),
+        inset 0 0 3px rgba(255,255,255,0.06);
 }
-.submit-button:hover { background: #333; }
 
-@media (max-width: 360px) {
-  .card { padding: 15px; }
-  .upload-section img { width: 80px; height: 80px; }
-  h3 { font-size: 16px; }
-  .file-name { font-size: 12px; }
+/* =================== BUTTON ACTION VERIFIKASI =================== */
+.btn-action-verifikasi {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: #0f172a;
+
+    position: absolute;
+    top: 73px;
+    right: 22px;
+
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    transition: 0.2s ease;
 }
+
+/* =================== BUTTON ACTION SOSMED =================== */
+.btn-action-sosmed {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: #0f172a;
+
+    position: absolute;
+    top: 130px; /* sudah ok */
+    right: 22px;
+
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    transition: 0.2s ease;
+}
+
+/* =================== STATUS BADGE GLOBAL =================== */
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 10px;
+    margin-top: 12px; /* default untuk verifikasi */
+}
+
+.status.pending { background: #fff7e6; color: #b77900; }
+.status.none { background: #ffeaea; color: #d61f1f; }
+.status.verified { background: #e7f9f0; color: #15803d; }
+
+/* =================== STATUS SOSMED — NAIK  =================== */
+.status-sosmed {
+    margin-top: 6px !important; /* lebih naik */
+}
+
+/* TEXT */
+.section-card p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 8px 0 14px;
+}
+
 </style>
 @endsection
 
+
+
 @section('content')
-<form action="{{ route('user.verifikasi.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    <input type="hidden" name="redirect_to" value="{{ $redirectTo }}">
+<div class="container mt-1 mb-5">
 
-    <div class="cards-container">
-        <a href="{{ $redirectTo }}" class="back-link">←</a>
+    <h3 class="page-title">Verifikasi Akun Anda</h3>
 
-        <div class="card">
-            <h3>Upload KTP</h3>
-            <label for="input-ktp" class="upload-section">
-                <img src="{{ asset('images/upload.png') }}" alt="Upload KTP" id="preview-ktp">
-                <input type="file" accept="image/*" id="input-ktp" name="ktp" required>
-                <div class="file-name" id="filename-ktp">Belum ada file dipilih</div>
-            </label>
-            <ul class="upload-guideline">
-                <li>Pastikan tidak buram atau terpotong</li>
-                <li>Seluruh bagian terlihat jelas</li>
-                <li>Gunakan format JPG, JPEG, atau PNG</li>
-                <li>Ukuran maksimal file 2 MB</li>
-            </ul>
+
+
+    {{-- ================== VERIFIKASI DOKUMEN ================== --}}
+    <div class="section-card">
+
+        <div class="section-header">
+            <div class="section-left">
+                <div class="icon-box">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <h4>Verifikasi Dokumen</h4>
+            </div>
+
+            <a href="{{ route('user.verifikasi.upload') }}" class="btn-action-verifikasi">
+                <i class="fa-solid fa-upload"></i>
+            </a>
         </div>
 
-        <div class="card">
-            <h3>Upload KK</h3>
-            <label for="input-kk" class="upload-section">
-                <img src="{{ asset('images/upload.png') }}" alt="Upload KK" id="preview-kk">
-                <input type="file" accept="image/*" id="input-kk" name="kk" required>
-                <div class="file-name" id="filename-kk">Belum ada file dipilih</div>
-            </label>
-            <ul class="upload-guideline">
-                <li>Pastikan tidak buram atau terpotong</li>
-                <li>Seluruh bagian terlihat jelas</li>
-                <li>Gunakan format JPG, JPEG, atau PNG</li>
-                <li>Ukuran maksimal file 2 MB</li>
-            </ul>
-        </div>
+        @if ($user->status_verifikasi === 'menunggu')
+            <span class="status pending">
+                <i class="fa-solid fa-clock"></i> Menunggu verifikasi admin
+            </span>
 
-        <button class="submit-button" type="submit">Kirim</button>
+        @elseif ($user->status_verifikasi === 'disetujui')
+            <span class="status verified">
+                <i class="fa-solid fa-circle-check"></i> Dokumen sudah diverifikasi
+            </span>
+
+        @elseif ($user->status_verifikasi === 'ditolak')
+            <span class="status none">
+                <i class="fa-solid fa-circle-xmark"></i> Verifikasi ditolak, silakan upload ulang
+            </span>
+
+        @else
+            <span class="status none">
+                <i class="fa-solid fa-circle-exclamation"></i> Belum memverifikasi dokumen
+            </span>
+        @endif
+
     </div>
-</form>
+
+
+
+    {{-- ================== SOSIAL MEDIA ================== --}}
+    <div class="section-card">
+
+        <div class="section-header">
+            <div class="section-left">
+                <div class="icon-box">
+                    <i class="fa-solid fa-globe"></i>
+                </div>
+                <h4>Tautan Sosial Media</h4>
+            </div>
+
+            <a href="{{ route('user.social.index') }}" class="btn-action-sosmed">
+                <i class="fa-solid fa-link"></i>
+            </a>
+        </div>
+
+        <p>Minimal menautkan 1 akun media sosial untuk keamanan akun.</p>
+
+        @if ($linkedCount === 0)
+            <span class="status status-sosmed none">
+                <i class="fa-solid fa-link-slash"></i> Belum menautkan sosial media
+            </span>
+
+        @elseif ($linkedCount < $totalPlatform)
+            <span class="status status-sosmed pending">
+                <i class="fa-solid fa-link"></i> {{ $linkedCount }}/{{ $totalPlatform }} akun tertaut
+            </span>
+
+        @else
+            <span class="status status-sosmed verified">
+                <i class="fa-solid fa-circle-check"></i> Semua akun sosial media telah tertaut 🎉
+            </span>
+        @endif
+
+    </div>
+
+</div>
 
 @include('partials.bottom-navbar')
-
-<script>
-function previewImage(inputId, previewId, filenameId) {
-    const input = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
-    const filename = document.getElementById(filenameId);
-
-    input.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = e => preview.src = e.target.result;
-            reader.readAsDataURL(file);
-            filename.textContent = file.name;
-        } else {
-            preview.src = "{{ asset('images/upload.png') }}";
-            filename.textContent = 'Belum ada file dipilih';
-        }
-    });
-}
-
-previewImage('input-ktp', 'preview-ktp', 'filename-ktp');
-previewImage('input-kk', 'preview-kk', 'filename-kk');
-</script>
 @endsection

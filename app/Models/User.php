@@ -25,7 +25,11 @@ class User extends Authenticatable
         'foto_ktp',
         'foto_kk',
         'role',
-        'status_verifikasi'
+        'status_verifikasi',
+        'instagram_id', 'instagram_username', 'instagram_token',
+        'facebook_id', 'facebook_name', 'facebook_token', 'facebook_email', 'facebook_avatar', 'facebook_link',
+        'tiktok_id', 'tiktok_username', 'tiktok_token',
+        'discord_id', 'discord_username', 'discord_global_name', 'discord_email' , 'discord_avatar', 'discord_profile_url', 'discord_token',
     ];
 
     protected $hidden = [
@@ -49,4 +53,25 @@ class User extends Authenticatable
     {
         return $this->status_verifikasi === 'disetujui';
     }
+
+    public function verificationLabel()
+    {
+        return match($this->status_verifikasi) {
+            'disetujui' => '✅ Terverifikasi',
+            'menunggu' => '⏳ Menunggu Verifikasi',
+            'ditolak' => '❌ Ditolak',
+            default => 'Belum Upload',
+        };
+    }
+
+    public function verificationColor()
+    {
+        return match($this->status_verifikasi) {
+            'disetujui' => 'success',
+            'menunggu' => 'warning',
+            'ditolak' => 'danger',
+            default => 'secondary',
+        };
+    }
+
 }

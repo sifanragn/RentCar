@@ -25,8 +25,6 @@
       background: #fff;
       min-height: 100vh;
       overflow-x: hidden;
-      display: flex;
-      justify-content: center;
     }
 
     /* ✅ container utama halaman */
@@ -34,7 +32,7 @@
       width: 100%;
       min-height: 100vh;
       padding: 16px;
-      padding-bottom: 70px; /* space untuk bottom nav */
+padding-bottom: calc(env(safe-area-inset-bottom) + 180px);
     }
 
     /* ✅ tampilan saat buka di laptop */

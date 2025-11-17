@@ -20,7 +20,7 @@
 .profile-photo {
   width: 58px;
   height: 58px;
-  border-radius: 50px;
+  border-radius: 50%;
   object-fit: cover;
 }
 .profile-info {
@@ -97,15 +97,30 @@
   font-size: 15px;
 }
 
+/* === SECTION BOX (Bantuan & Logout) === */
+.section-box {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin: 10px auto 0;
+  width: 92%;
+}
+
 /* === LOGOUT SECTION === */
 .logout-section {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  margin: 20px auto 80px;
+
+  /* ⭐ JARAK DITAMBAH BIAR 100% AMAN DI SAFARI + BOTTOM NAV */
+  margin: 28px auto calc(env(safe-area-inset-bottom) + 150px);
+
   width: 92%;
+  margin-bottom: -20px;
 }
+
 
 /* === MODAL LOGOUT === */
 .modal-overlay {
@@ -179,23 +194,11 @@
 }
 .btn-logout:hover { background: #b02a37; }
 
-/* === RESPONSIVE === */
-@media (max-width: 480px) {
-  .profile-header { width: 94%; padding: 8px 14px; gap: 12px; }
-  .profile-photo { width: 50px; height: 50px; border-radius: 10px; }
-  .profile-info h5 { font-size: 15px; }
-  .profile-info .username { font-size: 12.5px; }
-  .menu-section, .logout-section { width: 94%; margin-top: 18px; }
-  .menu-item { padding: 12px 14px; }
-  .menu-item-left i { width: 32px; height: 32px; font-size: 14px; margin-right: 12px; }
-  .menu-text span { font-size: 14px; }
-  .menu-text small { font-size: 12px; }
-  .fa-chevron-right { font-size: 13px; }
-}
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endsection
+
 
 @section('content')
 @php
@@ -204,6 +207,7 @@
     : asset('images/guest.png');
 @endphp
 
+{{-- ==== HEADER PROFILE ==== --}}
 <div class="profile-header">
   <img src="{{ $foto }}" alt="Foto Profil" class="profile-photo">
   <div class="profile-info">
@@ -213,6 +217,10 @@
 </div>
 
 {{-- ==== MENU UTAMA ==== --}}
+<div style="width:92%; margin:22px auto 6px; font-weight:600; color:#333; font-size:14px;">
+  Menu Utama
+</div>
+
 <div class="menu-section">
   <div class="menu-item" onclick="window.location='{{ route('user.profile.edit') }}'">
     <div class="menu-item-left">
@@ -220,6 +228,17 @@
       <div class="menu-text">
         <span>Edit Profile</span>
         <small>Update data Anda dengan mudah</small>
+      </div>
+    </div>
+    <i class="fas fa-chevron-right"></i>
+  </div>
+
+  <div class="menu-item" onclick="window.location='{{ route('user.verifikasi.index') }}'">
+    <div class="menu-item-left">
+      <i class="fas fa-shield-halved"></i>
+      <div class="menu-text">
+        <span>Verifikasi Saya</span>
+        <small>Status verifikasi dokumen & akun Anda</small>
       </div>
     </div>
     <i class="fas fa-chevron-right"></i>
@@ -247,24 +266,33 @@
     <i class="fas fa-chevron-right"></i>
   </div>
 
-  <div class="menu-item" onclick="window.location='{{ route('user.kontak.index', ['from' => 'profile']) }}'">
+</div>
+
+{{-- ==== BANTUAN & LAYANAN TITLE ==== --}}
+<div style="width:92%; margin:22px auto 6px; font-weight:600; color:#333; font-size:14px;">
+  Bantuan & Layanan
+</div>
+
+{{-- ==== BANTUAN & LAYANAN BOX ==== --}}
+<div class="section-box">
+
+  <div class="menu-item" onclick="window.location='{{ route('user.kontak.index') }}'">
     <div class="menu-item-left">
       <i class="fas fa-envelope"></i>
       <div class="menu-text">
         <span>Hubungi Kami</span>
-        <small>Butuh bantuan? Kami siap!</small>
+        <small>Butuh bantuan? Kami siap membantu!</small>
       </div>
     </div>
     <i class="fas fa-chevron-right"></i>
   </div>
 
-  {{-- 🔹 Nomor Darurat (sekarang nyatu sama card menu utama) --}}
   <div class="menu-item" onclick="window.location='{{ route('user.emergency.index') }}'">
     <div class="menu-item-left">
       <i class="fas fa-triangle-exclamation"></i>
       <div class="menu-text">
         <span>Nomor Darurat</span>
-        <small>Hubungi kami dalam keadaan mendesak</small>
+        <small>Tersedia untuk keadaan mendesak</small>
       </div>
     </div>
     <i class="fas fa-chevron-right"></i>
