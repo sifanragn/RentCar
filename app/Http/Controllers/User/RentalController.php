@@ -69,6 +69,12 @@ public function store(Request $request, $car_id)
         return back()->with('warning', 'Akun perlu verifikasi terlebih dahulu.');
     }
 
+    // ❌ Cek apakah sosmed sudah ditautkan
+    if (!$user->facebook_id && !$user->instagram_username && !$user->tiktok_username && !$user->discord_id) {
+        return back()->with('warning_sosmed', 'Anda harus menautkan minimal 1 akun sosial media.');
+    }
+
+
     // 🚫 Cegah transaksi ganda (pending payment belum selesai)
     $hasPendingPayment = Payment::whereHas('rental', function ($q) use ($user) {
             $q->where('user_id', $user->user_id);
