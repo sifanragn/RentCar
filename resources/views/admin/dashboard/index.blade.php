@@ -133,6 +133,14 @@
     </div>
 </a>
 
+<a href="{{ route('admin.social.index') }}" class="menu-item">
+    <img src="{{ asset('img/icons/sosmed.png') }}" class="menu-icon" alt="Social Media">
+    <div class="menu-text">
+        <h3>Social Media</h3>
+        <p>Kelola informasi media sosial milik user.</p>
+    </div>
+</a>
+
   </div>
 </div>
 

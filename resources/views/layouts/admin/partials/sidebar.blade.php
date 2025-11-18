@@ -81,5 +81,10 @@
     <a href="{{ route('admin.emergency.index') }}" class="{{ request()->routeIs('admin.emergency.*') ? 'active' : '' }}">
       <i class="bi bi-telephone-outbound"></i><span>Nomor Darurat</span>
     </a>
+
+    <a href="{{ route('admin.social.index') }}" class="{{ request()->routeIs('admin.social-media.*') ? 'active' : '' }}">
+      <i class="bi bi-share"></i><span>Social Media</span>
+    </a>
+
   </nav>
 </aside>
