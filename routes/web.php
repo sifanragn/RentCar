@@ -40,9 +40,6 @@ use App\Http\Controllers\Admin\EmergencyController as AdminEmergencyController;
 use App\Http\Controllers\User\EmergencyController as UserEmergencyController;
 
 
-use App\Http\Controllers\Admin\EmergencyController as AdminEmergencyController;
-use App\Http\Controllers\User\EmergencyController as UserEmergencyController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -183,13 +180,25 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
     Route::post('/kelola-admin/{id}/deactivate', [ManageAdminController::class, 'deactivate'])->name('manage.deactivate');
 
     // Mobil
-    Route::get('cars/brands', [CarAdminController::class, 'brandIndex'])->name('cars.brands');
-    Route::post('cars/brands', [CarAdminController::class, 'brandStore'])->name('cars.brands.store');
-    Route::delete('cars/brands/{id}', [CarAdminController::class, 'brandDestroy'])->name('cars.brands.destroy');
-    Route::get('cars/models', [CarAdminController::class, 'modelIndex'])->name('cars.models');
-    Route::post('cars/models', [CarAdminController::class, 'modelStore'])->name('cars.models.store');
-    Route::get('api/models/{brand_id}', [CarAdminController::class, 'getModelsByBrand']);
-    Route::resource('cars', CarAdminController::class);
+
+// DELETE FOTO TAMBAHAN — taruh di atas route resource!
+Route::delete('cars/delete-photo/{photo}', [CarAdminController::class, 'deletePhoto'])
+    ->name('cars.deletePhoto');
+
+// BRAND
+Route::get('cars/brands', [CarAdminController::class, 'brandIndex'])->name('cars.brands');
+Route::post('cars/brands', [CarAdminController::class, 'brandStore'])->name('cars.brands.store');
+Route::delete('cars/brands/{id}', [CarAdminController::class, 'brandDestroy'])->name('cars.brands.destroy');
+
+// MODEL
+Route::get('cars/models', [CarAdminController::class, 'modelIndex'])->name('cars.models');
+Route::post('cars/models', [CarAdminController::class, 'modelStore'])->name('cars.models.store');
+Route::get('api/models/{brand_id}', [CarAdminController::class, 'getModelsByBrand']);
+
+// RESOURCE (taruh PALING BAWAH)
+Route::resource('cars', CarAdminController::class);
+
+
 
     // Verifikasi User
     Route::get('/users', [UserVerificationController::class, 'index'])->name('users.index');

@@ -113,10 +113,10 @@ public function store(Request $request)
     }
 
     public function update(Request $request, $id)
-    {
-        $car = Car::findOrFail($id);
+{
+    $car = Car::with('photos')->findOrFail($id);
 
-        $request->validate([
+    $request->validate([
         'brand_id' => 'required|exists:car_brands,brand_id',
         'model' => 'required|string|max:100',
         'tahun' => 'required|integer|min:1900|max:' . date('Y'),
@@ -131,35 +131,80 @@ public function store(Request $request)
         'deskripsi' => 'nullable|string',
         'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         'gallery.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+        'delete_gallery' => 'array',
     ]);
 
-        $path = $car->foto;
-        if ($request->hasFile('foto')) {
-            if ($car->foto && Storage::disk('public')->exists($car->foto)) {
-                Storage::disk('public')->delete($car->foto);
-            }
-            $path = $request->file('foto')->store('cars', 'public');
+    // =========================
+    // FOTO UTAMA
+    // =========================
+    $path = $car->foto;
+
+    if ($request->hasFile('foto')) {
+
+        if ($car->foto && Storage::disk('public')->exists($car->foto)) {
+            Storage::disk('public')->delete($car->foto);
         }
 
-        $car->update([
-            'brand_id' => $request->brand_id,
-            'model' => $request->model,
-            'tahun' => $request->tahun,
-            'warna' => $request->warna,
-            'tipe_transmisi' => $request->tipe_transmisi,
-            'capacity_id' => $request->capacity_id,
-            'bahan_bakar' => $request->bahan_bakar,
-            'harga_sewa_per_jam' => $request->harga_sewa_per_jam,
-            'status' => 'tersedia',
-            'lokasi' => $request->lokasi,
-            'kilometer' => $request->kilometer,
-            'liter_tangki' => $request->liter_tangki,
-            'deskripsi' => $request->deskripsi,
-            'foto' => $path,
-        ]);
-
-        return redirect()->route('admin.cars.index')->with('success', 'Data mobil berhasil diperbarui.');
+        $path = $request->file('foto')->store('cars', 'public');
     }
+
+    // =========================
+    // HAPUS FOTO TAMBAHAN LAMA
+    // =========================
+    if ($request->delete_gallery) {
+        foreach ($request->delete_gallery as $photoId) {
+
+            $photo = CarPhoto::find($photoId);
+
+            if ($photo && Storage::disk('public')->exists($photo->path)) {
+                Storage::disk('public')->delete($photo->path);
+            }
+
+            if ($photo) {
+                $photo->delete();
+            }
+        }
+    }
+
+    // =========================
+    // TAMBAH FOTO BARU
+    // =========================
+    if ($request->hasFile('gallery')) {
+        foreach ($request->file('gallery') as $file) {
+
+            $galleryPath = $file->store('cars/gallery', 'public');
+
+            CarPhoto::create([
+                'car_id' => $car->car_id,
+                'path' => $galleryPath,
+            ]);
+        }
+    }
+
+    // =========================
+    // UPDATE DATA MOBIL
+    // =========================
+    $car->update([
+        'brand_id' => $request->brand_id,
+        'model' => $request->model,
+        'tahun' => $request->tahun,
+        'warna' => $request->warna,
+        'tipe_transmisi' => $request->tipe_transmisi,
+        'capacity_id' => $request->capacity_id,
+        'bahan_bakar' => $request->bahan_bakar,
+        'harga_sewa_per_jam' => $request->harga_sewa_per_jam,
+        'status' => 'tersedia',
+        'lokasi' => $request->lokasi,
+        'kilometer' => $request->kilometer,
+        'liter_tangki' => $request->liter_tangki,
+        'deskripsi' => $request->deskripsi,
+        'foto' => $path,
+    ]);
+
+    return redirect()->route('admin.cars.index')
+        ->with('success', 'Data mobil berhasil diperbarui.');
+}
+
 
     public function destroy($id)
 {
@@ -293,4 +338,17 @@ public function brandDestroy($id)
 
         return response()->json($models);
     }
+    public function deletePhoto(CarPhoto $photo)
+{
+    // hapus file dari storage
+    if ($photo->path && Storage::disk('public')->exists($photo->path)) {
+        Storage::disk('public')->delete($photo->path);
+    }
+
+    // hapus row database
+    $photo->delete();
+
+    return response()->json(['success' => true]);
+}
+
 }
