@@ -127,20 +127,58 @@ body.light-mode .nav-dropdown .dropdown-toggle:hover .arrow {
 }
 .dropdown-inner a:hover { color: #fff; }
 
-/* ==== CARD TOTAL PENDAPATAN ==== */
+/* =====================================================
+   TOTAL PENDAPATAN — DARK MODE DEFAULT
+===================================================== */
 .sidebar-stats {
-  background: #f9fafc;
-  padding: 16px;
-  border-radius: 16px;
-  margin-bottom: 26px;
-  text-align: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
+    background: #1e293b;               /* biru gelap */
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 26px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+    transition: all 0.3s ease;
 }
-.sidebar-stats .stats-label { font-size: 14px; color: #6b7280; margin-bottom: 5px; }
-.sidebar-stats .stats-value { font-size: 22px; font-weight: 700; color: #000; margin-bottom: 6px; }
-.sidebar-stats.up .stats-growth { color: #22c55e; }
-.sidebar-stats.down .stats-growth { color: #ef4444; }
+
+/* Label kecil */
+.sidebar-stats .stats-label {
+    font-size: 14px;
+    color: #cbd5e1;
+    margin-bottom: 5px;
+}
+
+/* Angka besar */
+.sidebar-stats .stats-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 6px;
+}
+
+/* Warna kenaikan/penurunan */
+.sidebar-stats.up .stats-growth  { color: #22c55e; }   /* hijau naik */
+.sidebar-stats.down .stats-growth { color: #ef4444; }  /* merah turun */
+
+
+/* =====================================================
+   LIGHT MODE
+===================================================== */
+body.light-mode .sidebar-stats {
+    background: #f9fafc;           /* putih soft */
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+body.light-mode .sidebar-stats .stats-label {
+    color: #6b7280;
+}
+
+body.light-mode .sidebar-stats .stats-value {
+    color: #000;
+}
+
+body.light-mode .sidebar-stats.up .stats-growth  { color: #16a34a; }
+body.light-mode .sidebar-stats.down .stats-growth { color: #dc2626; }
+
 
 /* ==== LIGHT MODE ==== */
 body.light-mode .admin-sidebar {

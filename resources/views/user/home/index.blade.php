@@ -524,7 +524,6 @@ width: 100%;
   }
 }
 
-
 /* Tambahan agar tampilan tetap proporsional di layar sangat kecil */
 @media (max-width: 380px) {
   .car-image {
@@ -540,8 +539,6 @@ width: 100%;
     font-size: 8px;
   }
 }
-
-
 
 </style>
 @endsection
