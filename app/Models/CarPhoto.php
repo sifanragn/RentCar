@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class CarPhoto extends Model
 {
+
     use HasFactory;
 
     protected $fillable = ['car_id', 'path'];
+    protected $primaryKey = 'id'; // FIX DI SINI
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     public function car()
     {

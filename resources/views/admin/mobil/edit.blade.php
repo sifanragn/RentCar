@@ -134,39 +134,47 @@
     </div>
 
     {{-- FOTO TAMBAHAN --}}
-    <div class="form-group form-wide">
-      <label>Foto Tambahan Saat Ini</label>
-      @if($car->photos && count($car->photos))
-        <div class="preview-container">
-          @foreach($car->photos as $p)
-            <div class="preview-wrapper">
-              <img src="{{ asset('storage/' . $p->path) }}" class="preview-img" alt="Foto Tambahan">
-            </div>
-          @endforeach
-        </div>
-      @else
-        <small>Tidak ada foto tambahan.</small>
-      @endif
+<div class="form-group form-wide">
+    <label>Foto Tambahan Saat Ini</label>
 
-      <label>Tambah / Ganti Foto Tambahan</label>
-      <div class="upload-box" id="galleryUploadBox">
+    @if($car->photos && count($car->photos))
+        <div class="preview-container">
+            @foreach($car->photos as $p)
+                <div class="preview-wrapper existing-photo" data-id="{{ $p->id }}">
+                    <img src="{{ asset('storage/' . $p->path) }}" class="preview-img" alt="Foto Tambahan">
+
+                    {{-- Tombol Hapus --}}
+                    <button type="button" class="delete-btn delete-existing"
+                        data-photo-id="{{ $p->id }}">×</button>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <small>Tidak ada foto tambahan.</small>
+    @endif
+
+    <label>Tambah Foto Tambahan</label>
+
+    <div class="upload-box" id="galleryUploadBox">
         <input type="file" name="gallery[]" id="gallery" accept="image/*" multiple hidden>
         <div class="upload-content" onclick="document.getElementById('gallery').click()">
-          <i class="bi bi-images"></i>
-          <p>Tarik & lepaskan beberapa gambar<br><span>atau klik untuk upload</span></p>
-          <small>Format: JPG, PNG — Maksimal 2 MB per file</small>
+            <i class="bi bi-images"></i>
+            <p>Tarik & lepaskan beberapa gambar<br><span>atau klik untuk upload</span></p>
+            <small>Format: JPG, PNG — Maksimal 2 MB per file</small>
         </div>
-      </div>
-      <div id="preview-container" class="preview-container"></div>
     </div>
-  </div>
 
-  <div class="form-actions">
+    <div id="preview-container" class="preview-container"></div>
+</div>
+
+<div id="delete-gallery-wrapper"></div>
+
+<div class="form-actions">
     <button type="submit" class="btn-submit">Perbarui</button>
     <a href="{{ route('admin.cars.index') }}" class="btn-cancel">Kembali</a>
-  </div>
-</form>
+</div>
 
+</form>
 {{-- Script tetap sama --}}
 <script>
  {{-- ===================== SCRIPT ===================== --}}
@@ -283,5 +291,31 @@ document.addEventListener('DOMContentLoaded', () => {
   setupUploadBox('mainUploadBox', 'foto', 'preview-main', false);
   setupUploadBox('galleryUploadBox', 'gallery', 'preview-container', true);
 });
+
+/// HAPUS FOTO LAMA LANGSUNG (AJAX)
+document.querySelectorAll('.delete-existing').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const photoId = this.dataset.photoId;
+        const wrapper = this.parentElement;
+
+        if (!confirm('Hapus foto ini?')) return;
+
+        fetch(`/admin/cars/delete-photo/${photoId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                wrapper.remove(); // hilangkan langsung dari UI
+            }
+        })
+        .catch(() => alert('Gagal menghapus foto'));
+    });
+});
+
+
 </script>
 @endsection
