@@ -1,0 +1,156 @@
+/* ===============================
+   CARD WRAPPER — Base (Dark Mode Default)
+================================ */
+.social-table-wrapper {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+    transition: 0.3s ease-in-out;
+}
+
+/* LIGHT MODE */
+body.light-mode .social-table-wrapper {
+    background: #ffffff;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* ===============================
+   TABLE BASE
+================================ */
+.social-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* ===============================
+   TABLE HEADER
+================================ */
+/* DARK MODE (default) */
+.social-table thead th {
+    background: #273548;
+    color: #38bdf8;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 14px 12px;
+    text-align: center;
+}
+
+/* LIGHT MODE */
+body.light-mode .social-table thead th {
+    background: #e8f2ff;
+    color: #0b63dd;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+/* ===============================
+   TABLE BODY ROWS
+================================ */
+/* DARK MODE */
+.social-table tbody td {
+    padding: 14px 12px;
+    font-size: 14px;
+    color: #e5e7eb;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    text-align: center;
+}
+
+/* LIGHT MODE */
+body.light-mode .social-table tbody td {
+    color: #111;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.social-table td:nth-child(2) {
+    text-align: left;
+}
+
+/* ===============================
+   HOVER ROW
+================================ */
+.social-table tbody tr:hover td {
+    background: rgba(255,255,255,0.05);
+}
+
+body.light-mode .social-table tbody tr:hover td {
+    background: rgba(0,0,0,0.03);
+}
+
+/* ===============================
+   BADGES
+================================ */
+.badge-connected {
+    background: rgba(6, 95, 70, 0.2);
+    color: #34d399;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.badge-not {
+    background: rgba(127, 29, 29, 0.2);
+    color: #f87171;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* LIGHT MODE BADGES */
+body.light-mode .badge-connected {
+    background: #10b98122;
+    color: #059669;
+}
+
+body.light-mode .badge-not {
+    background: #ef444422;
+    color: #dc2626;
+}
+
+/* ===============================
+   EMAIL TEXT
+================================ */
+/* dark mode */
+.user-email {
+    font-size: 14px;
+    color: #cbd5e1;
+    display: block;
+    margin-top: 2px;
+}
+
+/* light mode */
+body.light-mode .user-email {
+    color: #6b7280;
+}
+
+/* ===============================
+   DETAIL BUTTON
+================================ */
+.btn-detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #1d4ed8;
+    color: #fff !important;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: none;
+    transition: .2s;
+}
+
+.btn-detail:hover {
+    background: #2563eb;
+}
+
+/* LIGHT MODE BUTTON */
+body.light-mode .btn-detail {
+    background: #0ea5e9;
+}
+
+body.light-mode .btn-detail:hover {
+    background: #0284c7;
+}

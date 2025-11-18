@@ -38,7 +38,9 @@
   <link rel="stylesheet" href="{{ asset('css/admin/invoice-create.css?v=' . time()) }}">
 
   {{--Social Media--}}
-  
+  <link rel="stylesheet" href="{{ asset('css/admin/sosmed-index.css?v=' . time()) }}">
+  <link rel="stylesheet" href="{{ asset('css/admin/sosmed-show.css?v=' . time()) }}">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
   {{-- ⬇⬇⬇ WAJIB ADA DI SINI --}}
@@ -64,6 +66,18 @@
   </div>
 
     <script src="{{ asset('js/admin-theme.js?v=' . time()) }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let saved = localStorage.getItem("theme");
+
+    // kalau sebelumnya user pilih dark mode → body dikasih class
+    if (saved === "dark") {
+        document.body.classList.add("dark-mode");
+    } else {
+        document.body.classList.remove("dark-mode");
+    }
+});
+</script>
 
   {{-- tambahkan ini sebelum body tutup --}}
   @stack('scripts')

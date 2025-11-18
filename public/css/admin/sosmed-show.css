@@ -1,0 +1,218 @@
+/* =====================================
+   WRAPPER
+===================================== */
+.social-wrapper {
+    width: 100%;
+    padding: 5px 0;
+}
+
+.detail-wrapper {
+    padding-bottom: 40px;
+}
+
+/* =====================================
+   CARD (DARK MODE DEFAULT)
+===================================== */
+.social-card {
+    max-width: 1015px;
+    width: 100%;
+    background: #1e293b;
+    border-radius: 16px;
+    padding: 25px 28px;
+    border: none;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+    transition: 0.25s ease;
+    margin-bottom: 32px;
+}
+
+/* LIGHT MODE */
+body.light-mode .social-card {
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+}
+
+/* =====================================
+   SECTION TITLE
+===================================== */
+/* DARK */
+.social-card h5 {
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+/* LIGHT */
+body.light-mode .social-card h5 {
+    color: #0b63dd;
+}
+
+/* =====================================
+   LABELS
+===================================== */
+.label {
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+body.light-mode .label {
+    color: #111;
+}
+
+.text-muted {
+    opacity: .7;
+}
+
+/* =====================================
+   PROFILE IMAGE & ROW
+===================================== */
+.profile-pic {
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #475569;
+    margin-right: 18px;
+}
+
+/* LIGHT */
+body.light-mode .profile-pic {
+    border-color: #e2e8f0;
+}
+
+.info-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* =====================================
+   PROFILE LINK
+===================================== */
+/* DARK */
+a.profile-link {
+    font-weight: 500;
+    color: #38bdf8;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+a.profile-link:hover {
+    text-decoration: underline;
+}
+
+/* LIGHT */
+body.light-mode a.profile-link {
+    color: #0b63dd;
+}
+
+/* =====================================
+   UNLINKED TEXT
+===================================== */
+.not-connected {
+    font-weight: 700;
+    color: #ef4444;
+}
+
+/* =====================================
+   VIEW BUTTON (BLUE)
+===================================== */
+/* LIGHT */
+.btn-view {
+    padding: 7px 15px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    background: #0b63dd;
+    color: white;
+    transition: .25s;
+}
+
+.btn-view:hover {
+    background: #084bb1;
+}
+
+/* DARK (agar lebih sesuai palette) */
+body:not(.light-mode) .btn-view {
+    background: #2563eb;
+}
+
+body:not(.light-mode) .btn-view:hover {
+    background: #1e40af;
+}
+
+/* =====================================
+   NOT CONNECTED ICON
+===================================== */
+.not-connected-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.not-connected-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* =====================================
+   PROFILE BUTTON (KUNJUNGI)
+===================================== */
+/* DARK */
+.btn-profile {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #2563eb;
+    color: #fff !important;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-profile:hover {
+    background: #1e40af;
+}
+
+/* LIGHT */
+body.light-mode .btn-profile {
+    background: #0b63dd;
+}
+
+body.light-mode .btn-profile:hover {
+    background: #084bb1;
+}
+
+/* =====================================
+   BACK BUTTON
+===================================== */
+/* LIGHT */
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #e2e8f0;
+    color: #1e293b;
+    font-size: 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: .2s ease;
+}
+
+.btn-back:hover {
+    background: #cbd5e1;
+}
+
+/* DARK */
+body:not(.light-mode) .btn-back {
+    background: #334155;
+    color: #f1f5f9;
+}
+
+body:not(.light-mode) .btn-back:hover {
+    background: #475569;
+}

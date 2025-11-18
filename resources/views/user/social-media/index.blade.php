@@ -272,6 +272,9 @@ $verifiedBadge = '
         @endif
     </div>
 </div>
+
+
+
 </div>
 @include('partials.bottom-navbar')
 @endsection

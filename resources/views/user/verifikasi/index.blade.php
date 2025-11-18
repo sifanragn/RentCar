@@ -4,7 +4,6 @@
 
 @section('styles')
 <style>
-
 /* =================== GLOBAL =================== */
 body {
     font-family: 'Poppins', sans-serif;
@@ -25,35 +24,38 @@ body {
 .section-card {
     background: #ffffff;
     border-radius: 20px;
-    padding: 22px 24px 16px;
+    padding: 22px 24px 20px;
     margin-bottom: 30px;
     border: 1px solid #eef1f5;
     box-shadow: 0 8px 20px rgba(0,0,0,0.05);
     margin-left: -12px;
     margin-right: -12px;
-    position: relative;
 }
 
-/* =================== TITLE =================== */
+/* =================== SECTION HEADER =================== */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* TITLE */
 .section-header h4 {
-    font-weight: 600;         /* lebih halus dari 700 */
+    font-weight: 600;
     font-size: 16px;
     color: #111827;
-
-    line-height: 1.25;        /* stabil */
-    margin-top: 2px;          /* sedikit turun biar center */
-    letter-spacing: -0.2px;   /* biar keliatan premium */
+    line-height: 1.25;
+    letter-spacing: -0.2px;
+    margin: 0;
 }
 
-/* align lebih rapih */
 .section-left {
     display: flex;
-    align-items: center;      /* center vertical ketemu icon */
+    align-items: center;
     gap: 12px;
 }
 
-
-/* ICON KIRI — PREMIUM */
+/* ICON KIRI */
 .icon-box {
     width: 40px;
     height: 40px;
@@ -64,32 +66,11 @@ body {
     justify-content: center;
     font-size: 15px;
     color: rgba(255,255,255,0.92);
-    box-shadow: 
-        0 3px 10px rgba(0,0,0,0.10),
-        inset 0 0 3px rgba(255,255,255,0.06);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.10);
 }
 
-/* =================== BUTTON ACTION VERIFIKASI =================== */
-.btn-action-verifikasi {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    background: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    color: #0f172a;
-
-    position: absolute;
-    top: 73px;
-    right: 22px;
-
-    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
-    transition: 0.2s ease;
-}
-
-/* =================== BUTTON ACTION SOSMED =================== */
+/* =================== BUTTON ACTION =================== */
+.btn-action-verifikasi,
 .btn-action-sosmed {
     width: 38px;
     height: 38px;
@@ -100,16 +81,17 @@ body {
     align-items: center;
     font-size: 16px;
     color: #0f172a;
-
-    position: absolute;
-    top: 130px; /* sudah ok */
-    right: 22px;
-
     box-shadow: 0 4px 14px rgba(0,0,0,0.10);
     transition: 0.2s ease;
+    cursor: pointer;
 }
 
-/* =================== STATUS BADGE GLOBAL =================== */
+.btn-action-verifikasi:hover,
+.btn-action-sosmed:hover {
+    transform: scale(1.05);
+}
+
+/* =================== STATUS BADGE =================== */
 .status {
     display: inline-flex;
     align-items: center;
@@ -118,36 +100,31 @@ body {
     font-size: 13px;
     font-weight: 500;
     border-radius: 10px;
-    margin-top: 12px; /* default untuk verifikasi */
+    margin-top: 14px;
 }
 
 .status.pending { background: #fff7e6; color: #b77900; }
 .status.none { background: #ffeaea; color: #d61f1f; }
 .status.verified { background: #e7f9f0; color: #15803d; }
 
-/* =================== STATUS SOSMED — NAIK  =================== */
+/* SOSMED lebih rapat */
 .status-sosmed {
-    margin-top: 6px !important; /* lebih naik */
+    margin-top: 6px !important;
 }
 
-/* TEXT */
 .section-card p {
     font-size: 13px;
     color: #6b7280;
     margin: 8px 0 14px;
 }
-
 </style>
 @endsection
-
 
 
 @section('content')
 <div class="container mt-1 mb-5">
 
     <h3 class="page-title">Verifikasi Akun Anda</h3>
-
-
 
     {{-- ================== VERIFIKASI DOKUMEN ================== --}}
     <div class="section-card">
@@ -160,9 +137,12 @@ body {
                 <h4>Verifikasi Dokumen</h4>
             </div>
 
-            <a href="{{ route('user.verifikasi.upload') }}" class="btn-action-verifikasi">
-                <i class="fa-solid fa-upload"></i>
-            </a>
+{{-- Tampilkan tombol upload HANYA jika user belum upload atau ditolak --}}
+@if ($user->status_verifikasi === 'ditolak' || $user->status_verifikasi === null)
+    <a href="{{ route('user.verifikasi.upload') }}" class="btn-action-verifikasi">
+        <i class="fa-solid fa-upload"></i>
+    </a>
+@endif
         </div>
 
         @if ($user->status_verifikasi === 'menunggu')
@@ -208,14 +188,15 @@ body {
 
         <p>Minimal menautkan 1 akun media sosial untuk keamanan akun.</p>
 
+        {{-- REVISI PEMBAGI /4 --}}
         @if ($linkedCount === 0)
             <span class="status status-sosmed none">
                 <i class="fa-solid fa-link-slash"></i> Belum menautkan sosial media
             </span>
 
-        @elseif ($linkedCount < $totalPlatform)
+        @elseif ($linkedCount < 4)
             <span class="status status-sosmed pending">
-                <i class="fa-solid fa-link"></i> {{ $linkedCount }}/{{ $totalPlatform }} akun tertaut
+                <i class="fa-solid fa-link"></i> {{ $linkedCount }}/4 akun tertaut
             </span>
 
         @else
