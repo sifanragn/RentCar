@@ -23,16 +23,18 @@ $notConnectedIcon = '
     <div class="detail-wrapper">
 
         {{-- ========================= USER INFO ========================= --}}
-        <div class="social-card mb-4">
-<i class="bi bi-person-fill"></i> Informasi Pengguna
+<div class="social-card mb-4">
+    <h5 class="section-title">
+        <i class="bi bi-person-fill"></i> Informasi Pengguna
+    </h5>
 
-            <div class="info-row">
-                <div>
-                    <p><span class="label">User ID:</span> {{ $user->user_id }}</p>
-                    <p><span class="label">Email:</span> {{ $user->email }}</p>
-                </div>
-            </div>
+    <div class="info-row">
+        <div>
+            <p><span class="label">User ID:</span> {{ $user->user_id }}</p>
+            <p><span class="label">Email:</span> {{ $user->email }}</p>
         </div>
+    </div>
+</div>
 
         {{-- ========================= FACEBOOK ========================= --}}
         <div class="social-card">

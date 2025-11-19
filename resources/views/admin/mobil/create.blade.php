@@ -201,6 +201,7 @@ function previewFiles(inputId, previewId) {
   container.innerHTML = '';
 
   [...input.files].forEach((file, index) => {
+
     const wrapper = document.createElement('div');
     wrapper.classList.add('preview-wrapper');
 
@@ -214,19 +215,24 @@ function previewFiles(inputId, previewId) {
 
     del.addEventListener('click', (e) => {
       e.stopPropagation();
+
       const dt = new DataTransfer();
       [...input.files].forEach((f, i) => {
         if (i !== index) dt.items.add(f);
       });
       input.files = dt.files;
+
       wrapper.remove();
     });
 
+    // ❗ INI YANG BENAR — JANGAN pakai innerHTML lagi
     wrapper.appendChild(img);
     wrapper.appendChild(del);
+
     container.appendChild(wrapper);
   });
 }
+
 
 function setupUploadBox(boxId, inputId, previewId, multiple = false) {
   const box = document.getElementById(boxId);
@@ -302,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const brandImg = option.querySelector("img")?.src;
 
       selectedBrand.innerHTML = `
-        ${brandImg ? `<img src="${brandImg}" style="width:22px;height:22px;object-fit:contain;margin-right:6px;vertical-align:middle;">` : ''}
+        ${brandImg ? <img src="${brandImg}" style="width:22px;height:22px;object-fit:contain;margin-right:6px;vertical-align:middle;"> : ''}
         <span>${brandName}</span>
         <i class="bi bi-chevron-down"></i>
       `;
@@ -327,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadModelsByBrand(brandId) {
     modelSelect.innerHTML = '<option value="">Memuat...</option>';
-    fetch(`/admin/api/models/${brandId}`)
+    fetch(/admin/api/models/${brandId})
       .then(res => res.json())
       .then(data => {
         modelSelect.innerHTML = '<option value="">-- Pilih Model --</option>';

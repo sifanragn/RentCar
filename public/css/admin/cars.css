@@ -412,3 +412,7 @@ body:not(.light-mode) .car-detail-value {
 .modal-photo img:hover {
   transform: scale(1.02);
 }
+
+table td {
+    background: transparent !important;
+}

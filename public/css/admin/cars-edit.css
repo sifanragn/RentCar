@@ -1,59 +1,43 @@
+/* ========================
+   DEFAULT & RESET
+======================== */
 h2 {
   display: block;
   font-size: 1.5em;
-  margin-block-start: 0.83em;
-  margin-block-end: 0.83em;
-  margin-inline-start: 0px;
-  margin-inline-end: 0px;
+  margin: 0.83em 0;
   font-weight: bold;
   unicode-bidi: isolate;
 }
 
-.preview-wrapper {
-    position: relative;
-    display: inline-block;
-    margin: 5px;
-}
-
-.preview-wrapper .delete-btn {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 24px;
-    height: 24px;
-    font-size: 16px;
-    background: #ff3b30;
-    border-radius: 50%;
-    color: white;
-    border: none;
-    cursor: pointer;
-    z-index: 9999; /* ⬅️ paling penting */
-}
-
+/* ========================
+   FORM TITLE
+======================== */
 .form-title {
   font-size: 26px;
   font-weight: 600;
-  color: #1e3a8a; /* biru gelap elegan untuk light mode */
-  margin: 0 0 28px 8px; /* beri jarak sedikit ke kanan */
+  color: #1e3a8a;
+  margin: 0 0 28px 8px;
   padding-left: 10px;
   letter-spacing: 0.3px;
-  text-align: left;
 }
 
 body.dark-mode .form-title,
 body:not(.light-mode) .form-title {
-  color: #c8d9ff; /* biru lembut di dark mode */
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  color: #c8d9ff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
+/* ========================
+   FORM WRAPPER
+======================== */
 .car-form {
   width: 100%;
   max-width: 960px;
   background: #181c25;
   padding: 40px 45px;
   border-radius: 20px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.35);
   margin: auto;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.35);
 }
 
 body.light-mode .car-form {
@@ -61,6 +45,9 @@ body.light-mode .car-form {
   box-shadow: 0 4px 18px rgba(0,0,0,0.07);
 }
 
+/* ========================
+   GRID
+======================== */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -73,6 +60,9 @@ body.light-mode .car-form {
   gap: 8px;
 }
 
+/* ========================
+   LABEL + INPUT
+======================== */
 label {
   font-weight: 500;
   color: #a9c7ff;
@@ -88,44 +78,69 @@ input, select, textarea {
   font-size: 15px;
 }
 
-body.light-mode input, body.light-mode select, body.light-mode textarea {
+body.light-mode input,
+body.light-mode select,
+body.light-mode textarea {
   background: #f9fafb;
   border: 1px solid #d9dee5;
   color: #222;
 }
 
+/* ========================
+   FORM ACTIONS
+======================== */
 .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 35px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 35px;
 }
 
+/* === STYLE DASAR BUTTON (dipakai untuk submit & cancel) === */
+.btn-submit,
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 44px;           /* tinggi fix */
+    padding: 0 28px;        /* lebar konsisten */
+    border-radius: 10px;
+
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+
+    border: none;
+    cursor: pointer;
+
+    line-height: 1;         /* supaya text center */
+}
+
+
+/* === WARNA === */
 .btn-submit {
-  background: #264c9c;
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
+    background: linear-gradient(90deg, #00a2ff, #0077ff);
+    color: #fff;
 }
 
 .btn-cancel {
-  background: #3c4a5f;
-  color: #fff;
-  text-decoration: none;
-  padding: 10px 18px;
-  border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    color: #d0d0d0;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
+/* ========================
+   UPLOAD BOX
+======================== */
 .upload-box {
-  border: 2px dashed rgba(100, 149, 237, 0.4);
+  border: 2px dashed rgba(100,149,237,0.4);
   border-radius: 16px;
   padding: 28px 20px;
   text-align: center;
   cursor: pointer;
   background: rgba(255,255,255,0.03);
-  transition: all 0.3s ease;
+  transition: 0.3s ease;
 }
 
 .upload-box:hover {
@@ -133,48 +148,108 @@ body.light-mode input, body.light-mode select, body.light-mode textarea {
   background: rgba(59,130,246,0.05);
 }
 
-.preview-current {
-  width: 140px;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+/* ========================
+   PREVIEW AREA — FINAL CLEAN
+======================== */
+
+/* container */
+.preview-container,
+#preview-container,
+#preview-main {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  margin-top: 10px !important;
+  overflow: visible !important;
+  position: relative !important;
 }
 
-.preview-container img {
-  width: 95px;
-  height: 68px;
-  border-radius: 8px;
-  object-fit: cover;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+/* wrapper */
+.preview-wrapper {
+  position: relative !important;
+  width: auto !important;
+  height: auto !important;
+  display: inline-block !important;
+  overflow: visible !important;
+  z-index: 20 !important;
 }
 
-/* ==== MODAL FULLSCREEN ==== */
+/* gambar */
+.preview-wrapper img,
+.preview-container img,
+.preview-img {
+  width: 95px !important;
+  height: 68px !important;
+  border-radius: 10px !important;
+  object-fit: cover !important;
+  display: block !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25) !important;
+
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* tombol close untuk foto baru & foto lama */
+.delete-btn,
+.delete-existing {
+  position: absolute !important;
+  top: -8px !important;
+  right: -8px !important;
+  width: 24px !important;
+  height: 24px !important;
+  background: #ffffff !important;
+  color: #000 !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(0,0,0,0.3) !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  z-index: 999999 !important;
+  transition: 0.2s ease !important;
+        opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.delete-btn:hover,
+.delete-existing:hover {
+  background: #ff3b30 !important;
+  color: #fff !important;
+  transform: scale(1.12) !important;
+}
+
+/* ========================
+   MODAL PREVIEW
+======================== */
 #imageModal {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(6px);
-  justify-content: center;
+  background: rgba(0,0,0,0.85);
   align-items: center;
+  justify-content: center;
   z-index: 9999;
 }
+
 #imageModal.active {
   display: flex;
   animation: fadeIn 0.25s ease;
 }
+
 .image-modal-content {
-  position: relative;
   max-width: 90%;
   max-height: 90%;
 }
+
 #modalImage {
   max-width: 90vw;
   max-height: 85vh;
   border-radius: 14px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.6);
   animation: zoomIn 0.3s ease;
 }
+
 .close-modal {
   position: absolute;
   top: -40px;
@@ -183,18 +258,59 @@ body.light-mode input, body.light-mode select, body.light-mode textarea {
   color: white;
   cursor: pointer;
   font-weight: 600;
-  transition: transform 0.2s ease, color 0.2s ease;
 }
-.close-modal:hover {
-  transform: scale(1.2);
-  color: #60a5fa;
+
+/* ========== UPLOAD-BOX TEXT MODE FIX ========== */
+
+/* Default (dark mode) */
+.upload-box * {
+    color: #f5f5f5 !important;
 }
+
+/* Light mode */
+body.light-mode .upload-box * {
+    color: #222 !important;
+}
+
+/* Icon warnanya juga ikut */
+.upload-box i {
+    opacity: 0.7;
+}
+
+body.light-mode .upload-box i {
+    opacity: 0.8;
+}
+
+
+/* ========================
+   ANIMATIONS
+======================== */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
 @keyframes zoomIn {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
+.btn-submit,
+.btn-cancel {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    height: 44px !important;       /* tinggi fix */
+    padding: 0 26px !important;    /* kiri kanan sama */
+    border-radius: 10px !important;
+
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    border: none !important;
+
+    line-height: 1 !important;
+    box-sizing: border-box !important;
+    margin-top: 17px;
+}

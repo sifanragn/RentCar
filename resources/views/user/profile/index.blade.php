@@ -107,18 +107,13 @@
   width: 92%;
 }
 
-/* === LOGOUT SECTION === */
 .logout-section {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-
-  /* ⭐ JARAK DITAMBAH BIAR 100% AMAN DI SAFARI + BOTTOM NAV */
-  margin: 28px auto calc(env(safe-area-inset-bottom) + 150px);
-
+  margin: 20px auto;
   width: 92%;
-  margin-bottom: -20px;
 }
 
 
