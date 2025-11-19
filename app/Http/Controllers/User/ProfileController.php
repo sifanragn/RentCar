@@ -21,80 +21,84 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // Hitung apakah user boleh mengganti username (>= 7 hari sejak terakhir update)
+        // Hitung apakah user boleh mengganti username (>= 7 hari)
         $lastChanged = $user->updated_at ?? Carbon::now()->subDays(8);
         $daysSince = $lastChanged->diffInDays(Carbon::now(), false);
         $canChangeUsername = $daysSince >= 7;
         $daysLeftToChangeUsername = max(0, ceil(7 - $daysSince));
 
-        return view('user.profile.edit', compact('user', 'canChangeUsername', 'daysLeftToChangeUsername'));
+        return view(
+            'user.profile.edit',
+            compact('user', 'canChangeUsername', 'daysLeftToChangeUsername')
+        );
     }
 
     public function update(Request $request)
-{
-    $user = Auth::user();
-
-    $request->validate([
+    {
+        $user = Auth::user();
+        
+        $request->validate([
         'nama_lengkap' => 'required|string|max:100',
         'email'        => 'required|email',
         'username'     => 'required|string|max:50',
-        'current_password' => 'nullable|string',
-        'password'     => 'nullable|string|min:6|confirmed',
         'foto_profil'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
     ]);
 
-    // --- Username change rules (7 hari) ---
-    if ($request->username !== $user->username) {
-        $lastChange = $user->last_username_change ?? Carbon::now()->subDays(8);
-        $daysSince = $lastChange->diffInDays(Carbon::now());
-        if ($daysSince < 7) {
-            return back()->with('error', 'Username hanya bisa diubah setiap 7 hari. Tunggu lagi ' . (7 - $daysSince) . ' hari.');
+        // === Username change rules ===
+        if ($request->username !== $user->username) {
+            $lastChange = $user->last_username_change ?? Carbon::now()->subDays(8);
+            $daysSince = $lastChange->diffInDays(Carbon::now());
+
+            if ($daysSince < 7) {
+                return back()->with('error', 'Username hanya bisa diubah setiap 7 hari. Tunggu lagi ' . (7 - $daysSince) . ' hari.');
+            }
+
+            $user->username = $request->username;
+            $user->last_username_change = now();
         }
 
-        $user->username = $request->username;
-        $user->last_username_change = now(); // catat waktu perubahan username
+        // === Update basic fields ===
+        $user->nama_lengkap = $request->nama_lengkap;
+        $user->email = $request->email;
+
+        // === Password change ===
+if ($request->filled('password')) {
+
+    $request->validate([
+        'password' => 'required|string|min:6|confirmed',
+        'current_password' => 'required|string',
+    ]);
+
+    if (!Hash::check($request->current_password, $user->password)) {
+        return back()->with('error', 'Password lama salah. Tidak bisa mengubah password.');
     }
 
-    // --- Update fields lainnya ---
-    $user->nama_lengkap = $request->nama_lengkap;
-    $user->email = $request->email;
-
-    // --- Password change ---
-    if ($request->filled('password')) {
-        if (!$request->filled('current_password')) {
-            return back()->with('error', 'Untuk mengubah password, masukkan password lama terlebih dahulu.');
-        }
-
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->with('error', 'Password lama salah. Tidak bisa mengubah password.');
-        }
-
-        $user->password = Hash::make($request->password);
-    }
-
-    // --- Foto profil ---
-    if ($request->hasFile('foto_profil')) {
-        if ($user->foto_profil) {
-            Storage::disk('public')->delete($user->foto_profil);
-        }
-        $user->foto_profil = $request->file('foto_profil')->store('uploads/profil', 'public');
-    }
-
-    $user->save();
-
-    return redirect()->route('user.profile.index')->with('success', 'Profil berhasil diperbarui.');
+    $user->password = Hash::make($request->password);
 }
+
+        // === FOTO PROFIL (FIXED) ===
+        if ($request->file('foto_profil')) {
+            $file = $request->file('foto_profil');
+
+            $path = $file->store('uploads/profil', 'public');
+
+            $user->foto_profil = $path;
+        }
+
+        $user->save();
+
+        return redirect()->route('user.profile.index')->with('success', 'Profil berhasil diperbarui.');
+    }
 
     public function hapusVerifikasi($tipe = null)
     {
         $user = Auth::user();
 
-        // jika memang menghapus semua verifikasi
         if ($user->foto_ktp) Storage::disk('public')->delete($user->foto_ktp);
-        if ($user->foto_kk)  Storage::disk('public')->delete($user->foto_kk);
+        if ($user->foto_kk) Storage::disk('public')->delete($user->foto_kk);
 
         $user->foto_ktp = null;
-        $user->foto_kk  = null;
+        $user->foto_kk = null;
         $user->status_verifikasi = 'belum_upload';
         $user->save();
 
@@ -102,15 +106,14 @@ class ProfileController extends Controller
     }
 
     public function verifyPassword(Request $request)
-{
-    $request->validate(['current_password' => 'required|string']);
-    $user = Auth::user();
+    {
+        $request->validate(['current_password' => 'required|string']);
+        $user = Auth::user();
 
-    if (!Hash::check($request->current_password, $user->password)) {
-        return response()->json(['success' => false, 'message' => 'Password lama salah.'], 401);
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['success' => false, 'message' => 'Password lama salah.'], 401);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Password terverifikasi.']);
     }
-
-    return response()->json(['success' => true, 'message' => 'Password terverifikasi.']);
-}
-
 }

@@ -114,6 +114,14 @@ button:focus, .btn:focus { box-shadow: none !important; }
   opacity: 1;
 }
 
+#fotoInput {
+    visibility: hidden;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+
 </style>
 @endsection
 
@@ -136,7 +144,7 @@ button:focus, .btn:focus { box-shadow: none !important; }
 {{-- Foto Profil --}}
 <div class="profile-header">
   @php
-    $foto = $user->foto_profil && file_exists(public_path('storage/'.$user->foto_profil))
+    $foto = $user->foto_profil
       ? asset('storage/'.$user->foto_profil)
       : asset('images/guest.png');
   @endphp
@@ -146,7 +154,7 @@ button:focus, .btn:focus { box-shadow: none !important; }
       <div class="edit-icon" onclick="document.getElementById('fotoInput').click();">
         <i class="fas fa-pen"></i>
       </div>
-      <input type="file" name="foto_profil" id="fotoInput" accept="image/*" style="display:none;">
+      <input type="file" name="foto_profil" id="fotoInput" accept="image/*" class="d-none">
   </div>
 
   <h4 class="fw-bold text-capitalize">{{ $user->nama_lengkap }}</h4>
@@ -159,10 +167,11 @@ button:focus, .btn:focus { box-shadow: none !important; }
 <div class="mb-3"><label class="form-label">Nama Lengkap</label><input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $user->nama_lengkap) }}" class="form-control"></div>
 <div class="mb-3">
   <label class="form-label">Username</label>
-  <input type="text" name="username" id="usernameInput"
-         value="{{ old('username', $user->username) }}"
-         class="form-control"
-         {{ !$canChangeUsername ? 'disabled' : '' }}>
+<input type="text" 
+       name="username"
+       value="{{ old('username', $user->username) }}"
+       class="form-control"
+       {{ !$canChangeUsername ? 'readonly' : '' }}>
   <small class="text-muted" style="font-size: 13px;">
     {{ $canChangeUsername
         ? 'Username dapat diganti kembali setelah 7 hari.'
@@ -221,77 +230,91 @@ button:focus, .btn:focus { box-shadow: none !important; }
 @include('partials.bottom-navbar')
 
 <script>
-// ======== SHOW "UPDATE" BUTTON WHEN ANY CHANGE DETECTED ========
+/* ====== DETEKSI PERUBAHAN ====== */
 const form = document.getElementById('profileForm');
 const updateBtn = document.querySelector('.btn-update');
+const fotoInput = document.getElementById('fotoInput');
 
-// Simpan nilai awal hanya untuk field yang bisa diubah
+// Simpan nilai awal
 const initialValues = {};
 form.querySelectorAll('input, select, textarea').forEach(input => {
-  if (input.name && input.type !== 'hidden') {
-    initialValues[input.name] = input.value;
-  }
-});
-
-form.addEventListener('input', () => {
-  let changed = false;
-  form.querySelectorAll('input, select, textarea').forEach(input => {
-    if (input.name && input.type !== 'hidden') {
-      // kalau ada beda value dari awal, aktifkan tombol
-      if (initialValues[input.name] !== input.value) {
-        changed = true;
-      }
+    if (input.name && input.type !== 'hidden' && input.type !== 'file') {
+        initialValues[input.name] = input.value;
     }
-  });
-  if (changed) {
-    updateBtn.classList.add('show');
-  } else {
-    updateBtn.classList.remove('show');
-  }
 });
-</script>
 
-<script>
+function checkChanges() {
+    let changed = false;
 
-const fotoInput = document.getElementById('fotoInput'),
-      previewFoto = document.getElementById('previewFoto');
-if (fotoInput){
-  fotoInput.addEventListener('change', e => previewFoto.src = URL.createObjectURL(e.target.files[0]));
+    form.querySelectorAll('input, select, textarea').forEach(input => {
+        if (input.type === 'file') return; 
+
+        if (input.name && input.type !== 'hidden') {
+            if (initialValues[input.name] !== input.value) changed = true;
+        }
+    });
+
+    if (changed) updateBtn.classList.add('show');
+    else updateBtn.classList.remove('show');
 }
 
+form.addEventListener('input', checkChanges);
+
+// 🔥 Jika foto berubah → langsung show tombol Update
+if (fotoInput) {
+    fotoInput.addEventListener('change', () => {
+        updateBtn.classList.add('show');
+        previewFoto.src = URL.createObjectURL(fotoInput.files[0]);
+    });
+}
+
+
+/* ===== VERIFIKASI PASSWORD ===== */
 const verifyBtn = document.getElementById('verifyButton'),
       verifyMsg = document.getElementById('verifyMsg'),
       pwSection = document.getElementById('passwordFields'),
       cancelBtn = document.getElementById('cancelChangePw');
 
-if (verifyBtn){
-  verifyBtn.addEventListener('click', async () => {
-    const oldPw = document.getElementById('current_password').value.trim();
-    if (!oldPw) return verifyMsg.textContent="⚠️ Masukkan password lama dulu.";
+if (verifyBtn) {
+    verifyBtn.addEventListener('click', async () => {
+        const oldPw = document.getElementById('current_password').value.trim();
+        if (!oldPw) return verifyMsg.textContent = "⚠️ Masukkan password lama dulu.";
 
-    verifyMsg.textContent="⏳ Memverifikasi...";
-    const res = await fetch("{{ route('user.profile.verifyPassword') }}",{
-      method:"POST",
-      headers:{ "Content-Type":"application/json","X-CSRF-TOKEN":"{{ csrf_token() }}" },
-      body:JSON.stringify({ current_password:oldPw })
+        verifyMsg.textContent = "⏳ Memverifikasi...";
+
+        const res = await fetch("{{ route('user.profile.verifyPassword') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({ current_password: oldPw })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            verifyMsg.textContent = "✅ Password benar.";
+            verifyMsg.style.color = "green";
+
+            pwSection.style.display = "block";
+            updateBtn.classList.add('show'); // allow update
+        } else {
+            verifyMsg.textContent = "❌ Password salah.";
+            verifyMsg.style.color = "red";
+
+            pwSection.style.display = "none";
+        }
     });
-    const data = await res.json();
-
-    if(data.success){
-      verifyMsg.textContent="✅ Password lama benar."; verifyMsg.style.color="#008000";
-      pwSection.style.display="block"; pwSection.style.opacity="0";
-      setTimeout(()=>pwSection.style.opacity="1",50);
-    } else {
-      verifyMsg.textContent="❌ Password salah."; verifyMsg.style.color="#c00";
-      pwSection.style.display="none";
-    }
-  });
 }
 
-if (cancelBtn){
-  cancelBtn.addEventListener('click',()=>{
-    pwSection.style.display="none"; verifyMsg.textContent=""; document.getElementById('current_password').value="";
-  });
+if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+        pwSection.style.display = "none";
+        verifyMsg.textContent = "";
+        document.getElementById('current_password').value = "";
+        checkChanges();
+    });
 }
 </script>
 
