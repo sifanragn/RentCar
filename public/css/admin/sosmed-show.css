@@ -216,3 +216,17 @@ body:not(.light-mode) .btn-back {
 body:not(.light-mode) .btn-back:hover {
     background: #475569;
 }
+
+/* === FORCE ALL TEXT IN SOCIAL CARD TO WHITE IN DARK MODE === */
+body:not(.light-mode) .social-card p,
+body:not(.light-mode) .social-card span,
+body:not(.light-mode) .social-card div,
+body:not(.light-mode) .social-card a,
+body:not(.light-mode) .social-card li {
+    color: #ffffff !important;
+}
+
+/* === FIX TITLE (H5) DARK MODE === */
+body:not(.light-mode) .social-card h5 {
+    color: #ffffff !important;
+}

@@ -1,6 +1,6 @@
 /* ==========================
    RENTCAR ADMIN FORM (ELEGANT BALANCED)
-   ========================== */
+========================== */
 
 /* ==== GLOBAL ==== */
 html, body {
@@ -23,7 +23,6 @@ body.light-mode {
   flex-direction: column;
   align-items: center;
   padding: 40px 20px 70px;
-  background: transparent;
 }
 
 /* ==== HEADER ==== */
@@ -53,8 +52,7 @@ body.light-mode .form-header h1 {
   padding: 40px 45px;
   border-radius: 20px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.35);
-  margin: 0 auto 40px;
-  transition: all 0.3s ease;
+  margin-bottom: 40px;
 }
 body.light-mode .car-form {
   background: #fff;
@@ -64,13 +62,14 @@ body.light-mode .car-form {
 
 /* ==== TITLE ==== */
 .form-title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 600;
+  color: #1e3a8a;
   margin-bottom: 28px;
-  color: #9fc8ff;
+  padding-left: 10px;
 }
-body.light-mode .form-title {
-  color: #2c3e50;
+body.dark-mode .form-title {
+  color: #c8d9ff;
 }
 
 /* ==== GRID ==== */
@@ -96,25 +95,14 @@ body.light-mode .form-group label {
 }
 
 /* ==== INPUTS ==== */
-input[type="text"],
-input[type="number"],
-input[type="file"],
-select,
-textarea {
+input, select, textarea {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: 10px;
   padding: 10px 13px;
-  color: #f2f5fa;
+  color: #f5f5f5;
   font-size: 15px;
-  transition: all 0.25s ease;
-  outline: none;
 }
-input::placeholder,
-textarea::placeholder {
-  color: rgba(230,230,230,0.5);
-}
-
 body.light-mode input,
 body.light-mode select,
 body.light-mode textarea {
@@ -123,354 +111,162 @@ body.light-mode textarea {
   color: #222;
 }
 
-input:focus, select:focus, textarea:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
-  background: rgba(255,255,255,0.12);
-}
-
-/* Dropdown */
-select {
-  cursor: pointer;
-}
-select option {
-  background-color: #1e2430;
-  color: #f5f7fa;
-}
-body.light-mode select option {
-  background: #fff;
-  color: #222;
-}
-
 /* ==== LINK TAMBAH ==== */
 .link-add {
   font-size: 13px;
-  text-decoration: none;
   color: #3498db;
+  text-decoration: none;
 }
 .link-add:hover {
+  color: #60a5fa;
   text-decoration: underline;
-  color: #60a5fa;
 }
 
-/* ==== FOTO PREVIEW ==== */
-.preview-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 8px;
-}
-.preview-img {
-  width: 95px;
-  height: 68px;
-  border-radius: 8px;
-  object-fit: cover;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
-  transition: transform 0.25s ease;
-}
-.preview-img:hover {
-  transform: scale(1.05);
+/* ==========================
+   FIX PREVIEW — FINAL CLEAN VERSION
+========================== */
+
+/* Container Preview */
+.preview-container,
+#preview-container,
+#preview-main {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  margin-top: 10px !important;
+  overflow: visible !important;
+  position: relative !important;
 }
 
-/* ==== BUTTONS ==== */
-/* ==== BUTTONS ==== */
-/* ==== FIX TOMBOL ANEH (TINGGI KEATAS) ==== */
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;   /* ⬅️ pastikan sejajar horizontal */
-  gap: 12px;
-  margin-top: 35px;
-}
-
-.btn-submit,
-.btn-cancel {
-  display: inline-block !important;   /* ⬅️ pastikan bukan flex! */
-  width: auto !important;             /* ⬅️ jangan pakai width penuh */
-  height: auto !important;            /* ⬅️ tinggi menyesuaikan isi */
-  padding: 10px 30px !important;      /* ⬅️ padding seimbang */
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.4 !important;        /* ⬅️ tinggi baris normal */
-  text-align: center;
-  cursor: pointer;
-  border: none;
-  transition: all 0.25s ease;
-}
-
-/* Tombol Simpan */
-.btn-submit {
-  background: #2ecc71;
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(46,204,113,0.3);
-}
-
-.btn-submit:hover {
-  background: #27ae60;
-  transform: translateY(-2px);
-}
-
-/* Tombol Kembali */
-.btn-cancel {
-  background: #3c4a5f;
-  color: #fff;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-.btn-cancel:hover {
-  background: #2e3a4a;
-  transform: translateY(-2px);
-}
-
-
-/* ==== RESPONSIVE ==== */
-@media (max-width: 768px) {
-  .car-form {
-    padding: 28px 22px;
-  }
-  .form-header h1 {
-    font-size: 22px;
-  }
-  .form-title {
-    font-size: 20px;
-  }
-}
-
-/* === FORM TITLE / HEADING === */
-/* === FORM TITLE (ELEGANT CLEAN VERSION) === */
-.form-title {
-  font-size: 26px;
-  font-weight: 600;
-  color: #1e3a8a; /* biru gelap elegan untuk light mode */
-  margin: 0 0 28px 8px; /* beri jarak sedikit ke kanan */
-  padding-left: 10px;
-  letter-spacing: 0.3px;
-  text-align: left;
-}
-
-body.dark-mode .form-title,
-body:not(.light-mode) .form-title {
-  color: #c8d9ff; /* biru lembut di dark mode */
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-/* Tambahkan variasi kecil biar adaptif */
-@media (max-width: 768px) {
-  .form-title {
-    font-size: 22px;
-    margin-left: 4px;
-  }
-}
-
-/* ==== UPLOAD AREA (CLOUD STYLE) ==== */
-.upload-box {
-  border: 2px dashed rgba(100, 149, 237, 0.4);
-  border-radius: 16px;
-  padding: 28px 20px;
-  text-align: center;
-  cursor: pointer;
-  background: rgba(255,255,255,0.03);
-  transition: all 0.3s ease;
-}
-body.light-mode .upload-box {
-  background: #f9fafb;
-  border-color: #cbd5e1;
-}
-.upload-box:hover {
-  border-color: #3b82f6;
-  background: rgba(59,130,246,0.05);
-  transform: scale(1.01);
-}
-.upload-content i {
-  font-size: 42px;
-  color: #60a5fa;
-  margin-bottom: 8px;
-}
-.upload-content p {
-  margin: 0;
-  font-size: 15px;
-  color: #e2e8f0;
-}
-body.light-mode .upload-content p { color: #374151; }
-.upload-content span {
-  color: #60a5fa;
-  font-weight: 500;
-}
-.upload-content small {
-  display: block;
-  margin-top: 6px;
-  font-size: 13px;
-  color: #9ca3af;
-}
-
-/* Preview */
-/* === PREVIEW CONTAINER === */
-.preview-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 10px;
-}
+/* Wrapper */
 .preview-wrapper {
-  position: relative;
-  display: inline-block;
+  position: relative !important;
+  width: auto !important;
+  height: auto !important;
+  display: inline-block !important;
+  overflow: visible !important;
+  z-index: 10 !important;
 }
+
+/* Gambar Preview */
+.preview-wrapper img,
 .preview-img {
-  width: 95px;
-  height: 68px;
-  border-radius: 8px;
-  object-fit: cover;
+  width: 95px !important;
+  height: 68px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  display: block !important;
   box-shadow: 0 3px 10px rgba(0,0,0,0.25);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  cursor: pointer;
-}
-.preview-img:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+
+  /* supaya tombol tidak ketutup */
+  position: relative !important;
+  z-index: 1 !important;
 }
 
-/* Tombol hapus di tiap gambar */
+/* Tombol Close (foto baru & lama) */
+.delete-btn,
+.delete-existing {
+  position: absolute !important;
+  top: -8px !important;
+  right: -8px !important;
+  width: 24px !important;
+  height: 24px !important;
+  background: #ffffff !important;
+  color: #000 !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(0,0,0,0.4) !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  z-index: 999999 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+  transition: 0.15s ease !important;
+      opacity: 1 !important;
+    visibility: visible !important;
+}
+
 .delete-btn {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-.delete-btn:hover {
-  background: #dc2626;
-  transform: scale(1.1);
+    position: absolute !important;
+    top: -8px !important;
+    right: -8px !important;
+    z-index: 999999 !important;
+    background: white !important;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.4);
 }
 
-/* === MODAL FULLSCREEN === */
-/* ==== MODAL FULLSCREEN ==== */
+.delete-btn:hover,
+.delete-existing:hover {
+  background: #ef4444 !important;
+  color: #fff !important;
+  transform: scale(1.12) !important;
+}
+
+/* ==========================
+   MODAL IMAGE
+========================== */
+
 #imageModal {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.85);
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
 #imageModal.active {
   display: flex;
-  animation: fadeIn 0.25s ease;
 }
-.image-modal-content {
-  position: relative;
-  max-width: 90%;
-  max-height: 90%;
-}
+
 #modalImage {
   max-width: 90vw;
   max-height: 85vh;
   border-radius: 14px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.6);
-  animation: zoomIn 0.3s ease;
-}
-.close-modal {
-  position: absolute;
-  top: -40px;
-  right: -20px;
-  font-size: 46px;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-.close-modal:hover {
-  transform: scale(1.2);
-  color: #60a5fa;
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes zoomIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
 }
 
-.options-list {
-  display: none;
-  position: absolute;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-top: 4px;
-  max-height: 180px;
-  overflow-y: auto;
-  width: 100%;
-  z-index: 100;
-}
-
-.options-list.show {
-  display: block;
-}
-
-.options-list li {
+/* ==========================
+   BUTTONS
+========================== */
+.form-actions {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  cursor: pointer;
-  transition: background 0.2s;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 35px;
 }
 
-.options-list li:hover {
-  background: #f0f0f0;
-}
-
-.options-list img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-
-/* === COLOR PICKER FIELD === */
-.color-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.color-input-wrapper input[type="color"] {
-  width: 45px;
-  height: 45px;
-  padding: 0;
-  border: none;
+.btn-submit {
+  background: #2ecc71;
+  padding: 10px 30px;
+  color: #fff;
   border-radius: 8px;
-  background: none;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.btn-cancel {
+  background: #3c4a5f;
+  padding: 10px 30px;
+  color: #fff;
+  border-radius: 8px;
 }
 
-.color-input-wrapper input[type="text"] {
-  width: 110px;
-  font-weight: 600;
-  text-transform: uppercase;
-  text-align: center;
+/* FIX UTAMA — agar tombol close tidak ketutup */
+.upload-box {
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 1 !important;
 }
 
-.color-preview {
-  width: 35px;
-  height: 35px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: transparent;
-  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+/* Container preview harus paling atas */
+#preview-main,
+#preview-container {
+    position: relative !important;
+    z-index: 9999 !important;
+    overflow: visible !important;
 }
+
+
+

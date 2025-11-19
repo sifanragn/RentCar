@@ -32,7 +32,7 @@
       width: 100%;
       min-height: 100vh;
       padding: 16px;
-padding-bottom: calc(env(safe-area-inset-bottom) + 180px);
+      margin-bottom: 50px;
     }
 
     /* ✅ tampilan saat buka di laptop */
@@ -53,6 +53,9 @@ padding-bottom: calc(env(safe-area-inset-bottom) + 180px);
 <div class="app-container">
     @yield('content')
 </div>
+
+@include('partials.bottom-navbar')
+
 
 <!-- ✅ Bootstrap JS di akhir body -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

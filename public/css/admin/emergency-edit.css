@@ -74,31 +74,21 @@ body.light-mode textarea {
 
 .btn-submit,
 .btn-cancel {
-  padding: 12px 26px;            /* dibuat sama */
-  font-size: 15px;
-  font-weight: 600;
-  border-radius: 10px;
-  display: inline-flex;
-  align-items: center;           /* biar teks sejajar */
-  justify-content: center;
-  height: 48px;                  /* tinggi sama untuk kedua tombol */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    height: 44px !important;       /* tinggi fix */
+    padding: 0 26px !important;    /* kiri kanan sama */
+    border-radius: 10px !important;
+
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    border: none !important;
+
+    line-height: 1 !important;
+    box-sizing: border-box !important;
+    margin-top: 17px;
 }
 
-.btn-submit {
-  background: #264c9c;
-  color: #fff;
-  margin-top: 0px;
-}
-
-.btn-cancel {
-  background: #3c4a5f;
-  color: #fff;
-  text-decoration: none;
-}
-
-.btn-submit:hover,
-.btn-cancel:hover {
-  opacity: .9;
-  transform: translateY(-2px);
-  transition: .2s;
-}

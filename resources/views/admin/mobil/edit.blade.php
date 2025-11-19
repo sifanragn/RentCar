@@ -144,8 +144,31 @@
                     <img src="{{ asset('storage/' . $p->path) }}" class="preview-img" alt="Foto Tambahan">
 
                     {{-- Tombol Hapus --}}
-                    <button type="button" class="delete-btn delete-existing"
-                        data-photo-id="{{ $p->id }}">×</button>
+<button type="button"
+    class="delete-existing"
+    data-photo-id="{{ $p->id }}"
+    style="
+        position:absolute;
+        top:-8px;
+        right:-5px;
+        width:20px;
+        height:20px;
+        border-radius:50%;
+        background:white;
+        color:black;
+        font-size:18px;
+        font-weight:bold;
+        border:1px solid #333;
+        z-index:999999;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        cursor:pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    "
+>×</button>
+
+
                 </div>
             @endforeach
         </div>
@@ -210,13 +233,13 @@ function loadModels() {
     });
 }
 
-// === PREVIEW FOTO ===
 function previewFiles(inputId, previewId) {
   const input = document.getElementById(inputId);
   const container = document.getElementById(previewId);
   container.innerHTML = '';
 
   [...input.files].forEach((file, index) => {
+
     const wrapper = document.createElement('div');
     wrapper.classList.add('preview-wrapper');
 
@@ -230,19 +253,24 @@ function previewFiles(inputId, previewId) {
 
     del.addEventListener('click', (e) => {
       e.stopPropagation();
+
       const dt = new DataTransfer();
       [...input.files].forEach((f, i) => {
         if (i !== index) dt.items.add(f);
       });
       input.files = dt.files;
+
       wrapper.remove();
     });
 
+    // ❗ INI YANG BENAR — JANGAN pakai innerHTML lagi
     wrapper.appendChild(img);
     wrapper.appendChild(del);
+
     container.appendChild(wrapper);
   });
 }
+
 
 // === DRAG & DROP ===
 function setupUploadBox(boxId, inputId, previewId, multiple = false) {
