@@ -137,8 +137,11 @@ body {
                 <h4>Verifikasi Dokumen</h4>
             </div>
 
-{{-- Tampilkan tombol upload HANYA jika user belum upload atau ditolak --}}
-@if ($user->status_verifikasi === 'ditolak' || $user->status_verifikasi === null)
+@php
+    $status = strtolower(trim($user->status_verifikasi));
+@endphp
+
+@if (in_array($status, ['', 'null', 'none', 'belum', 'belum upload', 'belum_upload', 'unverified', '0', 'ditolak']))
     <a href="{{ route('user.verifikasi.upload') }}" class="btn-action-verifikasi">
         <i class="fa-solid fa-upload"></i>
     </a>
