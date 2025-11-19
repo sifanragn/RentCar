@@ -59,34 +59,26 @@ class ProfileController extends Controller
     $user->nama_lengkap = $request->nama_lengkap;
     $user->email = $request->email;
 
-// --- Password change ---
-if ($request->filled('password')) {
+    // --- Password change ---
+    if ($request->filled('password')) {
+        if (!$request->filled('current_password')) {
+            return back()->with('error', 'Untuk mengubah password, masukkan password lama terlebih dahulu.');
+        }
 
-    if (!$request->filled('current_password')) {
-        return back()->with('error', 'Untuk mengubah password, masukkan password lama.');
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->with('error', 'Password lama salah. Tidak bisa mengubah password.');
+        }
+
+        $user->password = Hash::make($request->password);
     }
 
-    if (!Hash::check($request->current_password, $user->password)) {
-        return back()->with('error', 'Password lama salah.');
+    // --- Foto profil ---
+    if ($request->hasFile('foto_profil')) {
+        if ($user->foto_profil) {
+            Storage::disk('public')->delete($user->foto_profil);
+        }
+        $user->foto_profil = $request->file('foto_profil')->store('uploads/profil', 'public');
     }
-
-    $user->password = Hash::make($request->password);
-}
-
-// --- Foto profil ---
-if ($request->hasFile('foto_profil')) {
-
-    // hapus foto lama
-    if ($user->foto_profil) {
-        Storage::disk('public')->delete($user->foto_profil);
-    }
-
-    // simpan foto baru ke folder "profile"
-    $path = $request->file('foto_profil')->store('profile', 'public');
-
-    $user->foto_profil = $path;
-}
-
 
     $user->save();
 
