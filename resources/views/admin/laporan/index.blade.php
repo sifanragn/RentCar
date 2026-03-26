@@ -87,9 +87,32 @@
         </span>
     </td>
 
-    <td>
-        {{ strtoupper($payment->metode_pembayaran) ?? '-' }}
-    </td>
+    <td class="payment-method">
+    @php
+        $method = strtolower($payment->metode_pembayaran);
+        $logos = [
+            'bca' => 'bca.png',
+            'bni' => 'bni.png',
+            'bri' => 'bri.png',
+            'mandiri' => 'mandiri.png',
+            'gopay' => 'gopay.png',
+            'ovo' => 'ovo.png',
+            'dana' => 'dana.png',
+            'qris' => 'qris.png',
+            'cash' => 'cash.png',
+        ];
+    @endphp
+
+    @if(isset($logos[$method]))
+        <img 
+            src="{{ asset('images/payment/' . $logos[$method]) }}" 
+            alt="{{ strtoupper($method) }}" 
+            class="payment-logo"
+        >
+    @else
+        <span>-</span>
+    @endif
+</td>
 
     <td>
         <span class="badge {{ $payment->payment_type === 'charge' ? 'badge-tambahan' : 'badge-utama' }}">

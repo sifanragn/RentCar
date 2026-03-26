@@ -253,3 +253,13 @@ body.light-mode select option {
     background: #ffffff !important;
     color: #111 !important;
 }
+
+.payment-method {
+  text-align: center;
+}
+
+.payment-logo {
+  height: 28px;
+  max-width: 70px;
+  object-fit: contain;
+}

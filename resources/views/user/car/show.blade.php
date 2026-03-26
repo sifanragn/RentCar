@@ -4,6 +4,12 @@
 
 @section('styles')
 <style>
+
+html, body {
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+}
+
 body {
   margin: 0;
   padding: 0;

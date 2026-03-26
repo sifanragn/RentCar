@@ -9,7 +9,6 @@ use App\Models\CarCapacity;
 use Illuminate\Http\Request;
 use App\Models\Rental;
 
-
 class CarController extends Controller
 {
     /**
@@ -62,6 +61,7 @@ class CarController extends Controller
      */
 public function show($id)
 {
+    
     $car = Car::with(['brand', 'capacity', 'photos'])->findOrFail($id);
     // 🔹 Tambahin 'photos' biar galeri ikut di-load
 

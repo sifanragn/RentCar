@@ -281,7 +281,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-// 🔹 CUSTOM DROPDOWN BRAND + AUTO ISI MODEL & KAPASITAS TANGKI
 document.addEventListener("DOMContentLoaded", () => {
   const brandDropdown = document.getElementById("brandDropdown");
   const selectedBrand = document.getElementById("selectedBrand");
@@ -290,62 +289,97 @@ document.addEventListener("DOMContentLoaded", () => {
   const modelSelect = document.getElementById("model");
   const tankInput = document.getElementById("liter_tangki");
 
+  // 🔑 FLAG: apakah user sudah edit manual
+  let isTankEditedManually = false;
+
   const defaultTankCapacities = {
-    "Toyota": 45, "Honda": 42, "Mitsubishi": 60, "Daihatsu": 40,
-    "Suzuki": 43, "Nissan": 55, "Hyundai": 50, "Kia": 48,
-    "Wuling": 52, "Mazda": 47, "BMW": 65, "Mercedes": 70,
-    "Porsche": 64, "Lamborghini": 85, "Ferrari": 78
+    Toyota: 45, Honda: 42, Mitsubishi: 60, Daihatsu: 40,
+    Suzuki: 43, Nissan: 55, Hyundai: 50, Kia: 48,
+    Wuling: 52, Mazda: 47, BMW: 65, Mercedes: 70
   };
 
+  // ===============================
+  // DETEKSI EDIT MANUAL
+  // ===============================
+  tankInput.addEventListener("input", () => {
+    isTankEditedManually = true;
+    tankInput.style.backgroundColor = "";
+  });
+
+  // buka dropdown
   selectedBrand.addEventListener("click", () => {
     brandOptions.classList.toggle("show");
   });
 
+  // pilih brand
   brandOptions.querySelectorAll("li").forEach(option => {
     option.addEventListener("click", () => {
-      const brandId = option.getAttribute("data-id");
-      const brandName = option.querySelector("span").textContent.trim();
-      const brandImg = option.querySelector("img")?.src;
+      const brandId = option.dataset.id;
+      const brandName = option.querySelector("span").innerText.trim();
+      const imgEl = option.querySelector("img");
 
       selectedBrand.innerHTML = `
-        ${brandImg ? <img src="${brandImg}" style="width:22px;height:22px;object-fit:contain;margin-right:6px;vertical-align:middle;"> : ''}
+        ${imgEl ? `<img src="${imgEl.src}" style="width:22px;height:22px;object-fit:contain;margin-right:6px;">` : ""}
         <span>${brandName}</span>
         <i class="bi bi-chevron-down"></i>
       `;
+
       brandInput.value = brandId;
       brandOptions.classList.remove("show");
+
+      // load model
       loadModelsByBrand(brandId);
 
-      const kapasitas = defaultTankCapacities[brandName];
-      if (kapasitas) {
-        tankInput.value = kapasitas;
+      // ===============================
+      // AUTO ISI TANGKI (AMAN)
+      // ===============================
+      if (!isTankEditedManually && defaultTankCapacities[brandName]) {
+        tankInput.value = defaultTankCapacities[brandName];
+
+        // efek visual auto isi
         tankInput.style.backgroundColor = "#e8f9e9";
-        setTimeout(() => (tankInput.style.backgroundColor = ""), 800);
-      } else {
-        tankInput.value = "";
+        setTimeout(() => {
+          tankInput.style.backgroundColor = "";
+        }, 800);
       }
     });
   });
 
+  // klik luar dropdown
   document.addEventListener("click", (e) => {
-    if (!brandDropdown.contains(e.target)) brandOptions.classList.remove("show");
+    if (!brandDropdown.contains(e.target)) {
+      brandOptions.classList.remove("show");
+    }
   });
 
+  // ===============================
+  // LOAD MODEL
+  // ===============================
   function loadModelsByBrand(brandId) {
-    modelSelect.innerHTML = '<option value="">Memuat...</option>';
-    fetch(/admin/api/models/${brandId})
+    modelSelect.innerHTML = '<option value="">Memuat model...</option>';
+    modelSelect.disabled = true;
+
+    fetch(`/admin/api/models/${brandId}`)
       .then(res => res.json())
       .then(data => {
         modelSelect.innerHTML = '<option value="">-- Pilih Model --</option>';
-        data.forEach(m => {
+
+        if (data.length === 0) {
+          modelSelect.innerHTML += '<option value="">(Model belum tersedia)</option>';
+        }
+
+        data.forEach(model => {
           const opt = document.createElement("option");
-          opt.value = m.nama_model;
-          opt.textContent = m.nama_model;
+          opt.value = model.nama_model;
+          opt.textContent = model.nama_model;
           modelSelect.appendChild(opt);
         });
+
+        modelSelect.disabled = false;
       })
       .catch(() => {
         modelSelect.innerHTML = '<option value="">Gagal memuat model</option>';
+        modelSelect.disabled = false;
       });
   }
 });
