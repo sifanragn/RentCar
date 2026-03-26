@@ -189,7 +189,7 @@ body {
             </a>
         </div>
 
-        <p>Minimal menautkan 1 akun media sosial untuk keamanan akun.</p>
+        <p>Minimal menautkan 2 akun media sosial untuk keamanan akun.</p>
 
         {{-- REVISI PEMBAGI /4 --}}
         @if ($linkedCount === 0)

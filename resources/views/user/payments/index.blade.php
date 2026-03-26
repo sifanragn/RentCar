@@ -658,9 +658,9 @@ function openReceipt(id){
         <tr><th>Status</th><td>${p.status_pembayaran}</td></tr>
       </table>
       ${p.status_pembayaran==='success'
-        ? `<button onclick="downloadPDF(...)" class="btn btn-download">
-    ⬇️ Download PDF
-</button>`
+        ?       `<button type="button" class="btn btn-download" onclick="downloadPDF(${p.payment_id})">
+         ⬇️ Download PDF
+       </button>`
         : (p.status_pembayaran==='pending'
             ? `<a href="${p.payment_token}" target="_blank" class="btn" style="margin-top:10px;">Lanjutkan Pembayaran</a>`
             : ``)}
