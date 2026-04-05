@@ -33,8 +33,6 @@
       min-height: 100vh;
       padding: 16px;
       margin-bottom: 50px;
-        margin: 0 auto; /* ⭐ TAMBAH INI */
-
     }
 
     /* ✅ tampilan saat buka di laptop */
@@ -57,6 +55,9 @@
 <div class="app-container">
     @yield('content')
 </div>
+
+@include('partials.bottom-navbar')
+
 
 <!-- ✅ Bootstrap JS di akhir body -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

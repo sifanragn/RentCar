@@ -9,27 +9,9 @@ h2 {
   unicode-bidi: isolate;
 }
 
-.preview-wrapper {
-    position: relative;
-    display: inline-block;
-    margin: 5px;
-}
-
-.preview-wrapper .delete-btn {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 24px;
-    height: 24px;
-    font-size: 16px;
-    background: #ff3b30;
-    border-radius: 50%;
-    color: white;
-    border: none;
-    cursor: pointer;
-    z-index: 9999; /* ⬅️ paling penting */
-}
-
+/* ========================
+   FORM TITLE
+======================== */
 .form-title {
   font-size: 26px;
   font-weight: 600;
@@ -112,7 +94,10 @@ body.light-mode textarea {
     justify-content: flex-end;
     gap: 12px;
     margin-top: 35px;
+<<<<<<< HEAD
     grid-column: 1 / -1;
+=======
+>>>>>>> 6e74681 (bismillaah)
 }
 
 /* === STYLE DASAR BUTTON (dipakai untuk submit & cancel) === */

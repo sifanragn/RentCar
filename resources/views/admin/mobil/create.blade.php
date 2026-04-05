@@ -319,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const imgEl = option.querySelector("img");
 
       selectedBrand.innerHTML = `
-        ${imgEl ? `<img src="${imgEl.src}" style="width:22px;height:22px;object-fit:contain;margin-right:6px;">` : ""}
+        ${brandImg ? <img src="${brandImg}" style="width:22px;height:22px;object-fit:contain;margin-right:6px;vertical-align:middle;"> : ''}
         <span>${brandName}</span>
         <i class="bi bi-chevron-down"></i>
       `;
@@ -356,10 +356,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // LOAD MODEL
   // ===============================
   function loadModelsByBrand(brandId) {
-    modelSelect.innerHTML = '<option value="">Memuat model...</option>';
-    modelSelect.disabled = true;
-
-    fetch(`/admin/api/models/${brandId}`)
+    modelSelect.innerHTML = '<option value="">Memuat...</option>';
+    fetch(/admin/api/models/${brandId})
       .then(res => res.json())
       .then(data => {
         modelSelect.innerHTML = '<option value="">-- Pilih Model --</option>';

@@ -230,12 +230,3 @@ body:not(.light-mode) .social-card li {
 body:not(.light-mode) .social-card h5 {
     color: #ffffff !important;
 }
-
-/* =====================================
-   BACK BUTTON POSITION (KANAN)
-===================================== */
-.back-wrapper {
-    display: flex;
-    justify-content: flex-end; /* ⬅️ geser ke kanan */
-    margin-bottom: 16px;
-}
