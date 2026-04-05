@@ -105,10 +105,10 @@
 
     @if(isset($logos[$method]))
         <img 
-            src="{{ asset('images/payment/' . $logos[$method]) }}" 
-            alt="{{ strtoupper($method) }}" 
-            class="payment-logo"
-        >
+        src="{{ asset('images/' . $logos[$method]) }}" 
+        alt="{{ strtoupper($method) }}" 
+        class="payment-logo"
+      >
     @else
         <span>-</span>
     @endif

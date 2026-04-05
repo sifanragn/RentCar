@@ -130,27 +130,31 @@
 <div class="detail-wrapper">
   <h3>🔧 Update Status Penyewaan</h3>
   <form method="POST" action="{{ route('admin.rentals.updateStatus', $rental->rental_id) }}">
-    @csrf
-    <label for="status_rental">Ubah Status:</label><br>
+  @csrf
 
-    {{-- custom dropdown --}}
-    <div class="status-dropdown">
-      <button type="button" class="dropdown-toggle" id="statusDropdown">
-        <span id="selected-status">-- Pilih Status --</span>
-        <i class="bi bi-chevron-down"></i>
-      </button>
-      <ul class="dropdown-menu" id="statusOptions">
-        <li data-value="berjalan"><span class="icon">🚗</span> <span class="label">Sedang Berjalan</span></li>
-        <li data-value="selesai"><span class="icon">✅</span> <span class="label">Selesai</span></li>
-        <li data-value="dibatalkan"><span class="icon">❌</span> <span class="label">Dibatalkan</span></li>
-      </ul>
-      <input type="hidden" name="status_rental" id="statusInput" required>
-    </div>
+  <label for="status_rental">Ubah Status:</label><br>
+
+  <div class="status-dropdown">
+    <button type="button" class="dropdown-toggle" id="statusDropdown">
+      <span id="selected-status">-- Pilih Status --</span>
+      <i class="bi bi-chevron-down"></i>
+    </button>
+
+    <ul class="dropdown-menu" id="statusOptions">
+      <li data-value="berjalan">🚗 Sedang Berjalan</li>
+      <li data-value="selesai">✅ Selesai</li>
+      <li data-value="dibatalkan">❌ Dibatalkan</li>
+    </ul>
+
+    <input type="hidden" name="status_rental" id="statusInput" required>
+  </div>
+
+  {{-- ✅ tombol HARUS di dalam form --}}
+  <div class="form-actions">
+    <button type="submit" class="btn-submit">Update Status</button>
+    <a href="{{ route('admin.rentals.index') }}" class="btn-cancel">Kembali</a>
+  </div>
 </form>
-    <div class="form-actions">
-  <button type="submit" class="btn-submit">Update Status</button>
-  <a href="{{ route('admin.rentals.index') }}" class="btn-cancel">Kembali</a>
-</div>
   </div>
 
   <script>

@@ -146,6 +146,62 @@ button:hover { background: #222; transform: scale(1.03); }
   transform: scale(1.1);
 }
 
+.custom-driver-modal {
+  max-width: 420px;
+  padding: 28px 22px 30px;
+  border-radius: 22px;
+  text-align: center;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: #111;
+}
+
+.driver-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin: 10px auto 20px;
+  display: block;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* GRID 2 KOLOM */
+.driver-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* BOX HITAM */
+.info-box {
+  background: #000;
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-box span {
+  font-size: 12px;
+  color: #bbb;
+  margin-bottom: 4px;
+}
+
+.info-box strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
 /* ===== Car Info Header ===== */
 .car-info-box {
   background: #ffffff;
@@ -217,6 +273,14 @@ button:hover { background: #222; transform: scale(1.03); }
   color: #666;
 }
 
+.option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.option.disabled:hover {
+  background: transparent;
+}
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
 </style>
@@ -294,18 +358,37 @@ button:hover { background: #222; transform: scale(1.03); }
             </div>
             <ul class="options">
               @foreach($drivers as $driver)
-                <li class="option"
-                    data-id="{{ $driver->driver_id }}"
-                    data-foto="{{ asset('storage/' . $driver->foto) }}"
-                    data-nama="{{ $driver->nama }}"
-                    data-lokasi="{{ $driver->lokasi ?? 'Tidak diketahui' }}"
-                    data-harga="{{ number_format($driver->harga_per_jam ?? 0, 0, ',', '.') }}"
-                    data-pengalaman="{{ $driver->pengalaman ?? 'Tidak diketahui' }}"
-                    data-deskripsi="{{ $driver->deskripsi ?? 'Tidak ada deskripsi.' }}"
-                    onclick="selectDriver(this)">
-                  <img src="{{ asset('storage/' . $driver->foto) }}" alt="{{ $driver->nama }}">
-                  <span>{{ $driver->nama }}</span>
-                </li>
+                              @php
+                  $status = $driver['status_operasional'];
+
+                  $label = match($status) {
+                      'available' => '🟢 Available',
+                      'scheduled' => '🟡 Scheduled',
+                      'on_trip' => '🔴 On Trip',
+                      default => '⚫ Offline',
+                  };
+
+                  $disabled = $status !== 'available';
+              @endphp
+
+              <li class="option {{ $disabled ? 'disabled' : '' }}"
+                  data-id="{{ $driver['driver_id'] }}"
+                  data-foto="{{ asset('storage/' . $driver['foto']) }}"
+                  data-nama="{{ $driver['nama'] }}"
+                  data-lokasi="{{ $driver['lokasi'] ?? 'Tidak diketahui' }}"
+                  data-harga="{{ number_format($driver['harga_per_jam'] ?? 0, 0, ',', '.') }}"
+                  data-pengalaman="{{ $driver['pengalaman'] ?? 'Tidak diketahui' }}"
+                  data-deskripsi="{{ $driver['deskripsi'] ?? 'Tidak ada deskripsi.' }}"
+                  data-status="{{ $status }}"
+                  onclick="{{ $disabled ? '' : 'selectDriver(this)' }}">
+                  
+                  <img src="{{ asset('storage/' . $driver['foto']) }}">
+                  
+                  <div>
+                      <div>{{ $driver['nama'] }}</div>
+                      <small style="font-size:12px; color:#666;">{{ $label }}</small>
+                  </div>
+              </li>
               @endforeach
             </ul>
             <input type="hidden" name="driver_id" id="driver_id">
@@ -417,16 +500,38 @@ button:hover { background: #222; transform: scale(1.03); }
 
 {{-- Modal Driver --}}
 <div id="driverModal" class="modal-overlay">
-  <div class="modal-box">
-    <button class="close-btn" onclick="closeDriverModal()">×</button>
-    <img id="modalDriverFoto" src="">
-    <h3 id="modalDriverNama"></h3>
-    <p id="modalDriverHarga"></p>
-    <p id="modalDriverLokasi"></p>
-    <p id="modalDriverPengalaman"></p>
-    <p id="modalDriverDeskripsi"></p>
-  </div>
+  <div class="modal-box custom-driver-modal">
+    
+    <button class="modal-close-btn" onclick="closeDriverModal()">✕</button>
 
+    <h2 class="modal-title">Detail Driver</h2>
+
+    <img id="modalDriverFoto" class="driver-photo">
+    <h3 id="modalDriverNama"></h3>
+
+    <div class="driver-grid">
+      <div class="info-box">
+        <span>Tarif / Jam</span>
+        <strong id="modalDriverHarga"></strong>
+      </div>
+
+      <div class="info-box">
+        <span>Lokasi Driver</span>
+        <strong id="modalDriverLokasi"></strong>
+      </div>
+
+      <div class="info-box">
+        <span>Pengalaman</span>
+        <strong id="modalDriverPengalaman"></strong>
+      </div>
+
+      <div class="info-box">
+        <span>Deskripsi</span>
+        <strong id="modalDriverDeskripsi"></strong>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
@@ -449,15 +554,29 @@ window.addEventListener('load', () => {
   }
 
   mulai?.addEventListener('change', () => {
-    const startDate = new Date(mulai.value);
-    if (isNaN(startDate)) return;
+  const now = new Date();
+  const minStart = new Date(now.getTime() + 5 * 60000); // +5 menit
 
-    const minEndDate = new Date(startDate.getTime() + 6 * 60 * 60 * 1000);
-    selesai.min = minEndDate.toISOString().slice(0,16);
+  const selected = new Date(mulai.value);
 
-    if (selesai.value && new Date(selesai.value) < startDate) selesai.value = '';
-    hitungTotal();
-  });
+  // 🚫 kalau user pilih sebelum 5 menit dari sekarang
+  if (selected < minStart) {
+    alert('Waktu mulai minimal 5 menit dari sekarang!');
+    
+    // paksa balik ke waktu valid
+    mulai.value = minStart.toISOString().slice(0,16);
+    return;
+  }
+
+  const minEndDate = new Date(selected.getTime() + 6 * 60 * 60 * 1000);
+  selesai.min = minEndDate.toISOString().slice(0,16);
+
+  if (selesai.value && new Date(selesai.value) < selected) {
+    selesai.value = '';
+  }
+
+  hitungTotal();
+});
 
   function hitungTotal() {
     if (!mulai?.value || !selesai?.value) return;
@@ -502,10 +621,17 @@ window.addEventListener('load', () => {
     document.getElementById('driverModal').style.display='flex';
     document.getElementById('modalDriverFoto').src=el.dataset.foto;
     document.getElementById('modalDriverNama').textContent=el.dataset.nama;
-    document.getElementById('modalDriverHarga').textContent='💰 Rp'+el.dataset.harga+'/jam';
-    document.getElementById('modalDriverLokasi').textContent='📍 '+el.dataset.lokasi;
-    document.getElementById('modalDriverPengalaman').textContent='🕓 '+el.dataset.pengalaman;
-    document.getElementById('modalDriverDeskripsi').textContent=el.dataset.deskripsi;
+    document.getElementById('modalDriverHarga').textContent =
+  el.dataset.harga ? 'Rp' + el.dataset.harga : '-';
+
+document.getElementById('modalDriverLokasi').textContent =
+  el.dataset.lokasi || '-';
+
+document.getElementById('modalDriverPengalaman').textContent =
+  el.dataset.pengalaman || '-';
+
+document.getElementById('modalDriverDeskripsi').textContent =
+  el.dataset.deskripsi || '-';
   };
   window.closeDriverModal=()=>document.getElementById('driverModal').style.display='none';
 
@@ -591,6 +717,28 @@ btnCloseSosmed.onclick = () => {
 
 });
 
+async function loadAvailableDrivers() {
+  const mulai = document.getElementById('tanggal_mulai').value;
+  const selesai = document.getElementById('tanggal_selesai').value;
+
+  if (!mulai || !selesai) return;
+
+  const res = await fetch("{{ route('user.drivers.available') }}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-TOKEN": "{{ csrf_token() }}"
+    },
+    body: JSON.stringify({
+      tanggal_mulai: mulai,
+      tanggal_selesai: selesai
+    })
+  });
+
+  const drivers = await res.json();
+
+  console.log(drivers); // nanti bisa render ulang list
+}
 </script>
   @include('partials.bottom-navbar')
 @endsection

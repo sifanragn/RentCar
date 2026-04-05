@@ -35,6 +35,7 @@
             <th>Tarif / Jam</th>
             <th>Status</th>
             <th>Verifikasi</th>
+            <th>Status Operasional</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -57,6 +58,22 @@
                 {{ ucfirst($driver->status_verifikasi) }}
               </span>
             </td>
+            <td>
+  @php $status = $driver->status_operasional; @endphp
+
+  <span class="badge
+    {{ $status == 'available' ? 'available' :
+       ($status == 'scheduled' ? 'scheduled' :
+       ($status == 'on_trip' ? 'ontrip' : 'offline')) }}">
+       
+    {{ match($status) {
+        'available' => '🟢 Available',
+        'scheduled' => '🟡 Scheduled',
+        'on_trip' => '🔴 On Trip',
+        default => '⚫ Offline'
+    } }}
+  </span>
+</td>
             <td class="driver-actions">
               <button type="button" class="btn-view" onclick="openDriverDetail({{ $driver->toJson() }})">
               👁 Lihat
@@ -500,6 +517,28 @@ body.light-mode .doc-card { background:#ececec; }
   max-height: 90%;
   border-radius: 12px;
 }
+
+.badge.available {
+  background: rgba(40,167,69,0.15);
+  color: #28a745;
+}
+
+.badge.scheduled {
+  background: rgba(255,193,7,0.15);
+  color: #ffc107;
+}
+
+.badge.ontrip {
+  background: rgba(220,53,69,0.15);
+  color: #dc3545;
+}
+
+.badge.offline {
+  background: rgba(108,117,125,0.15);
+  color: #6c757d;
+}
+
+
 </style>
 
 <script>

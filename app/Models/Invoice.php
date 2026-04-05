@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Invoice extends Model
 {
-    protected $table = 'invoices';
+    protected $table = 'charge'; 
     protected $primaryKey = 'invoice_id';
     public $timestamps = false;
 
@@ -18,14 +18,13 @@ class Invoice extends Model
         'denda_tambahan',
         'total_akhir',
         'admin_id',
-        'status_invoice', // 🟢 TAMBAHKAN INI
+        'status_invoice',
     ];
 
     public function rental()
-{
-    return $this->belongsTo(\App\Models\Rental::class, 'rental_id', 'rental_id');
-}
-
+    {
+        return $this->belongsTo(\App\Models\Rental::class, 'rental_id', 'rental_id');
+    }
 
     public function admin()
     {
