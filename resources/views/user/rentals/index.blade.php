@@ -145,16 +145,6 @@ h2 {
 
 @section('content')
 
-{{-- 🔙 Tombol kembali (dinamis tergantung asal halaman) --}}
-<a 
-  href="{{ request()->query('from') === 'profile' 
-      ? route('user.profile.index') 
-      : route('user.dashboard') }}" 
-  class="back-link"
->
-  <i class="fa-solid fa-arrow-left"></i>
-</a>
-
 <div class="card-sewa">
   <h2>Riwayat Penyewaan Mobil</h2>
 

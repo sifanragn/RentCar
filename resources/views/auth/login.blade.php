@@ -22,11 +22,10 @@ body {
   max-width: 390px;
   min-height: auto;
   background: #fff;
-  padding:  24px 22px 10px;
+  padding: 20px 22px 10px; /* 🔥 ga terlalu nempel atas */
   display: flex;
   flex-direction: column;
-
-  margin: 0 auto; /* ⭐ bikin center */
+  margin: 0 auto;
 }
 
 /* Input radius fix */
@@ -42,7 +41,8 @@ body {
   align-items: center;
   gap: 6px;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-top: 8px;    /* 🔥 turunin dari atas */
+  margin-bottom: 6px; /* 🔥 rapetin ke gambar */
 }
 
 .logo img {
@@ -54,19 +54,24 @@ body {
   font-weight: 600;
 }
 
-/* HERO (SUDAH DIPERBAIKI) */
+/* ===== HERO ===== */
 .hero-box {
   width: 100%;
   display: flex;
-  justify-content: center; /* ⭐ center */
-  margin: 10px 0;
+  justify-content: flex-start;
+  margin: 0;
 }
 
 .hero {
   width: 100%;
-  max-width: 260px; /* ⭐ batasi biar ga overflow */
+  max-width: 440px;
   object-fit: contain;
   display: block;
+
+  margin-left: -38px; /* 🔥 nempel kiri */
+  margin-top: -5px;   /* 🔥 ga terlalu naik */
+  margin-bottom: -5px; /* 🔥 deket ke title */
+  filter: drop-shadow(0 12px 20px rgba(0,0,0,0.15));
 }
 
 /* Title */
@@ -74,6 +79,7 @@ body {
   font-size: 1.5rem;
   font-weight: 700;
   text-align: center;
+  margin-top: -5px;  /* 🔥 deket ke gambar */
   margin-bottom: 4px;
 }
 
@@ -81,7 +87,7 @@ body {
   font-size: .9rem;
   color: #666;
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 /* Form */
@@ -125,7 +131,7 @@ form {
   margin-top: 10px;
   cursor: pointer;
   transition: .25s;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .btn-login:hover {
@@ -137,7 +143,8 @@ form {
   text-align: center;
   font-size: .88rem;
   color: #555;
-  margin-top: 10px;
+  margin-top: 6px;   /* 🔥 ini bikin dia naik & deket ke button */
+  padding-bottom: 70px; /
 }
 
 .register-text a {

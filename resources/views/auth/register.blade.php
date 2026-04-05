@@ -22,11 +22,10 @@ body {
   max-width: 390px;
   min-height: 100vh;
   background: #fff;
-  padding: 24px 22px;
+  padding: 20px 22px 10px; /* 🔥 lebih rapet atas */
   display: flex;
   flex-direction: column;
-
-  margin: 0 auto; /* ⭐ center */
+  margin: 0 auto;
 }
 
 /* Input radius */
@@ -42,7 +41,8 @@ body {
   align-items: center;
   gap: 6px;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-top: 8px;    /* 🔥 ga nempel atas */
+  margin-bottom: 6px; /* 🔥 deket ke gambar */
 }
 
 .logo img {
@@ -54,19 +54,24 @@ body {
   font-weight: 600;
 }
 
-/* HERO (FIX TOTAL) */
+/* ===== HERO ===== */
 .hero-box {
   width: 100%;
   display: flex;
-  justify-content: center; /* ⭐ center */
-  margin: 10px 0;
+  justify-content: flex-start; /* 🔥 kiri biar sama kayak login */
+  margin: 0;
 }
 
 .hero {
   width: 100%;
-  max-width: 260px; /* ⭐ biar ga keluar layar */
+  max-width: 420px; /* 🔥 lebih besar */
   object-fit: contain;
   display: block;
+
+  margin-left: -38px; /* 🔥 nempel kiri */
+  margin-top: -5px;   /* 🔥 naik dikit */
+  margin-bottom: -5px; /* 🔥 deket ke title */
+  filter: drop-shadow(0 12px 20px rgba(0,0,0,0.15));
 }
 
 /* Titles */
@@ -74,6 +79,7 @@ body {
   font-size: 1.5rem;
   font-weight: 700;
   text-align: center;
+  margin-top: -5px; /* 🔥 deket ke gambar */
   margin-bottom: 4px;
 }
 
@@ -81,7 +87,7 @@ body {
   font-size: .9rem;
   color: #666;
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px; /* 🔥 dirapetin */
 }
 
 /* Form */
@@ -125,7 +131,7 @@ form {
   margin-top: 8px;
   cursor: pointer;
   transition: .25s;
-  margin-bottom: 20px;
+  margin-bottom: 16px; /* 🔥 dirapetin */
 }
 
 .btn-register:hover {
@@ -137,7 +143,8 @@ form {
   text-align: center;
   font-size: .88rem;
   color: #555;
-  margin-top: 10px;
+  margin-top: 6px;   /* 🔥 ini bikin dia naik & deket ke button */
+  padding-bottom: 70px; /
 }
 
 .login-text a {

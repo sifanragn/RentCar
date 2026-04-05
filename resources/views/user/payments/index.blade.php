@@ -443,6 +443,43 @@ button.btn:focus-visible {
     width: fit-content;
 }
 
+/* ================= FIX DESKTOP ================= */
+@media (min-width: 768px) {
+
+  .container {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 0 16px;
+  }
+
+  .payment-card {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .price,
+  .btn,
+  .btn-kuitansi,
+  .btn-info,
+  .btn-danger {
+    margin-left: 0 !important;
+  }
+
+  .back-link {
+    margin-left: 0 !important;
+    display: block;
+    text-align: left;
+  }
+
+  .filter-bar-horizontal {
+    margin: 0 auto;
+  }
+
+  .payment-list {
+    padding-bottom: 80px; /* biar ga ketutup navbar */
+  }
+}
+
 @media (max-width:700px) {
   .payment-card {
     flex-direction: column;
@@ -452,6 +489,34 @@ button.btn:focus-visible {
   .card-right { text-align: left; width: 100%; }
   .modal-box { padding: 22px 18px; font-size: 13px; }
   .receipt-table th, .receipt-table td { padding: 7px 8px; }
+}
+
+/* ================= FORCE MOBILE VIEW (DESKTOP) ================= */
+@media (min-width: 768px) {
+
+  .payment-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .card-right {
+    width: 100%;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .price {
+    margin-left: 45px !important;
+  }
+
+  .btn,
+  .btn-kuitansi,
+  .btn-info,
+  .btn-danger {
+    margin-left: 45px !important;
+  }
+
 }
 </style>
 @endsection
