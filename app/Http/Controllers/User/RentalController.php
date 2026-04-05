@@ -35,19 +35,22 @@ class RentalController extends Controller
         $car = Car::with('brand')->findOrFail($car_id);
 
         // 👨‍✈️ Ambil semua driver aktif & sudah diverifikasi
-        $drivers = Driver::where('status', 'aktif')
-            ->where('status_verifikasi', 'disetujui')
+            $drivers = Driver::aktif()
             ->orderBy('nama', 'asc')
-            ->get([
-                'driver_id',
-                'nama',
-                'foto',
-                'harga_per_jam',
-                'lokasi',
-                'pengalaman',
-                'deskripsi',
-                'status_verifikasi',
-            ]);
+            ->get()
+            ->map(function ($driver) {
+                return [
+                    'driver_id' => $driver->driver_id,
+                    'nama' => $driver->nama,
+                    'foto' => $driver->foto,
+                    'harga_per_jam' => $driver->harga_per_jam,
+                    'lokasi' => $driver->lokasi,
+                    'pengalaman' => $driver->pengalaman,
+                    'deskripsi' => $driver->deskripsi,
+                    'status_operasional' => $driver->status_operasional,
+                ];
+            });
+
 
         // 📦 Ambil user login
         $user = auth()->user()->refresh();
@@ -61,9 +64,10 @@ class RentalController extends Controller
  */
 public function store(Request $request, $car_id)
 {
+
     $user = auth()->user();
     $car  = Car::findOrFail($car_id);
-
+    
     // ❌ Kalau belum verifikasi → tidak boleh lanjut
     if ($user->status_verifikasi !== 'disetujui') {
         return back()->with('warning', 'Akun perlu verifikasi terlebih dahulu.');
@@ -108,12 +112,12 @@ public function store(Request $request, $car_id)
 
     // ✅ Validasi
     $validated = $request->validate([
-        'tanggal_mulai'   => 'required|date|after_or_equal:today',
-        'tanggal_selesai' => 'required|date|after:tanggal_mulai',
-        'driver'          => 'required|in:ya,tidak',
-        'driver_id'       => 'nullable|exists:drivers,driver_id',
-        'metode_pickup'   => 'required|in:ambil_sendiri,pickup_alamat',
-    ]);
+    'tanggal_mulai'   => 'required|date|after_or_equal:today',
+    'tanggal_selesai' => 'required|date|after:tanggal_mulai',
+    'driver'          => 'required|in:ya,tidak',
+    'driver_id'       => 'nullable|exists:drivers,driver_id',
+    'metode_pickup'   => 'required|in:ambil_sendiri,pickup_alamat',
+]);
 
     // 🕒 WIB
     $timezone = 'Asia/Jakarta';
@@ -154,14 +158,21 @@ public function store(Request $request, $car_id)
     // 💰 Biaya driver
     $hargaDriver = 0;
     $driver = null;
-    if ($validated['driver'] === 'ya' && $validated['driver_id']) {
-        $driver = Driver::where('status', 'aktif')
-            ->where('status_verifikasi', 'disetujui')
-            ->find($validated['driver_id']);
 
-        if ($driver) {
-            $hargaDriver = ($driver->harga_per_jam ?? 0) * $durasiJam;
+    if ($validated['driver'] === 'ya' && $validated['driver_id']) {
+
+        $driver = Driver::aktif()
+    ->where('driver_id', $validated['driver_id'])
+    ->first();
+
+        if (!$driver || !$driver->isAvailable($tanggalMulai, $tanggalSelesai)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Driver tidak tersedia di jadwal tersebut, silakan pilih driver lain.'
+            ], 409);
         }
+
+        $hargaDriver = ($driver->harga_per_jam ?? 0) * $durasiJam;
     }
 
     // Total minimal 10k
@@ -242,6 +253,25 @@ public function store(Request $request, $car_id)
 
     return redirect()->route('user.cars.index')
         ->with('success', 'Pesanan berhasil dibatalkan.');
+}
+
+public function getAvailableDrivers(Request $request)
+{
+    $drivers = Driver::aktif()
+        ->get()
+        ->filter(function ($driver) use ($request) {
+
+            if (!$request->tanggal_mulai || !$request->tanggal_selesai) {
+                return true;
+            }
+
+            return $driver->isAvailable(
+                $request->tanggal_mulai,
+                $request->tanggal_selesai
+            );
+        });
+
+    return response()->json($drivers->values());
 }
 
 }

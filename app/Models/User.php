@@ -29,6 +29,7 @@ class User extends Authenticatable
         'alamat',
         'foto_ktp',
         'foto_kk',
+        'foto_profil',
         'role',
         'status_verifikasi',
 

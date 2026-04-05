@@ -57,21 +57,22 @@
     <div class="verify-section">
       <h3>🔍 Ubah Status Verifikasi</h3>
       <form action="{{ route('admin.users.verify', $user->user_id) }}" method="POST">
-        @csrf
-        <div class="form-group">
-          <label>Status Verifikasi</label>
-          <select name="status_verifikasi" required>
-            <option value="">-- Pilih Status --</option>
-            <option value="disetujui">✅ Setujui</option>
-            <option value="ditolak">❌ Tolak</option>
-          </select>
-        </div>
+          @csrf
+
+          <div class="form-group">
+            <label>Status Verifikasi</label>
+            <select name="status_verifikasi" required>
+              <option value="">-- Pilih Status --</option>
+              <option value="disetujui">✅ Setujui</option>
+              <option value="ditolak">❌ Tolak</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-submit">Update Status</button>
+            <a href="{{ route('admin.users.index') }}" class="btn-cancel">Kembali</a>
+          </div>
       </form>
-    </div>
-<div class="form-actions">
-  <button type="submit" form="verifyForm" class="btn-submit">Update Status</button>
-  <a href="{{ route('admin.users.index') }}" class="btn-cancel">Kembali</a>
-</div>
 </div>
 
 {{-- Modal Preview Foto --}}

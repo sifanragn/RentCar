@@ -141,6 +141,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/rentals/{id}', [RentalController::class, 'show'])->name('rentals.show');
     Route::delete('/rentals/{id}', [RentalController::class, 'destroy'])->name('rentals.destroy');
 
+    Route::get('/drivers/available', [RentalController::class, 'getAvailableDrivers'])
+    ->name('drivers.available');
+
     // ===== PEMBAYARAN ===== //
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/detail-rental/{rental_id}', [PaymentController::class, 'detailRental'])->name('payments.detailRental');

@@ -119,94 +119,99 @@ class CarAdminController extends Controller
 
     // Mengupdate data mobil beserta foto utama dan galeri
     public function update(Request $request, $id)
-    {
-        $car = Car::with('photos')->findOrFail($id);
+{
+    $car = Car::with('photos')->findOrFail($id);
 
-        // ================= VALIDASI =================
-        $request->validate([
-            'brand_id' => 'required|exists:car_brands,brand_id',
-            'model' => 'required|string|max:100',
-            'tahun' => 'required|integer|min:1900|max:' . date('Y'),
-            'warna' => 'required|string|max:50',
-            'tipe_transmisi' => 'required|in:manual,otomatis',
-            'capacity_id' => 'required|exists:car_capacities,capacity_id',
-            'bahan_bakar' => 'required|in:bensin,diesel,hybrid',
-            'harga_sewa_per_jam' => 'required|numeric|min:0',
-            'lokasi' => 'required|string|max:100',
-            'kilometer' => 'required|integer|min:0',
-            'liter_tangki' => 'required|integer|min:1',
-            'deskripsi' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'gallery.*' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'delete_gallery' => 'array',
-        ]);
+    $request->validate([
+        'brand_id' => 'required|exists:car_brands,brand_id',
+        'model' => 'required|string|max:100',
+        'tahun' => 'required|integer|min:1900|max:' . date('Y'),
+        'warna' => 'required|string|max:50',
+        'tipe_transmisi' => 'required|in:manual,otomatis',
+        'capacity_id' => 'required|exists:car_capacities,capacity_id',
+        'bahan_bakar' => 'required|in:bensin,diesel,hybrid',
+        'harga_sewa_per_jam' => 'required|numeric|min:0',
+        'lokasi' => 'required|string|max:100',
+        'kilometer' => 'required|integer|min:0',
+        'liter_tangki' => 'required|integer|min:1',
+        'deskripsi' => 'nullable|string',
+        'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'gallery.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+        'delete_gallery' => 'array',
+    ]);
 
-        // ================= FOTO UTAMA =================
-        $path = $car->foto;
+    // =========================
+    // FOTO UTAMA
+    // =========================
+    $path = $car->foto;
 
-        if ($request->hasFile('foto')) {
+    if ($request->hasFile('foto')) {
 
-            // hapus foto lama jika ada
-            if ($car->foto && Storage::disk('public')->exists($car->foto)) {
-                Storage::disk('public')->delete($car->foto);
-            }
-
-            // simpan foto baru
-            $path = $request->file('foto')->store('cars', 'public');
+        if ($car->foto && Storage::disk('public')->exists($car->foto)) {
+            Storage::disk('public')->delete($car->foto);
         }
 
-        // ================= HAPUS FOTO GALERI =================
-        if ($request->delete_gallery) {
-            foreach ($request->delete_gallery as $photoId) {
-
-                $photo = CarPhoto::find($photoId);
-
-                if ($photo && Storage::disk('public')->exists($photo->path)) {
-                    Storage::disk('public')->delete($photo->path);
-                }
-
-                if ($photo) {
-                    $photo->delete();
-                }
-            }
-        }
-
-        // ================= TAMBAH FOTO BARU =================
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $file) {
-
-                $galleryPath = $file->store('cars/gallery', 'public');
-
-                CarPhoto::create([
-                    'car_id' => $car->car_id,
-                    'path' => $galleryPath,
-                ]);
-            }
-        }
-
-        // ================= UPDATE DATA =================
-        $car->update([
-            'brand_id' => $request->brand_id,
-            'model' => $request->model,
-            'tahun' => $request->tahun,
-            'warna' => $request->warna,
-            'tipe_transmisi' => $request->tipe_transmisi,
-            'capacity_id' => $request->capacity_id,
-            'bahan_bakar' => $request->bahan_bakar,
-            'harga_sewa_per_jam' => $request->harga_sewa_per_jam,
-            'status' => 'tersedia',
-            'lokasi' => $request->lokasi,
-            'kilometer' => $request->kilometer,
-            'liter_tangki' => $request->liter_tangki,
-            'deskripsi' => $request->deskripsi,
-            'foto' => $path,
-        ]);
-
-        return redirect()->route('admin.cars.index')
-            ->with('success', 'Data mobil berhasil diperbarui.');
+        $path = $request->file('foto')->store('cars', 'public');
     }
 
-    // Menghapus mobil beserta semua foto
+    // =========================
+    // HAPUS FOTO TAMBAHAN LAMA
+    // =========================
+    if ($request->delete_gallery) {
+        foreach ($request->delete_gallery as $photoId) {
+
+            $photo = CarPhoto::find($photoId);
+
+            if ($photo && Storage::disk('public')->exists($photo->path)) {
+                Storage::disk('public')->delete($photo->path);
+            }
+
+            if ($photo) {
+                $photo->delete();
+            }
+        }
+    }
+
+    // =========================
+    // TAMBAH FOTO BARU
+    // =========================
+    if ($request->hasFile('gallery')) {
+        foreach ($request->file('gallery') as $file) {
+
+            $galleryPath = $file->store('cars/gallery', 'public');
+
+            CarPhoto::create([
+                'car_id' => $car->car_id,
+                'path' => $galleryPath,
+            ]);
+        }
+    }
+
+    // =========================
+    // UPDATE DATA MOBIL
+    // =========================
+    $car->update([
+        'brand_id' => $request->brand_id,
+        'model' => $request->model,
+        'tahun' => $request->tahun,
+        'warna' => $request->warna,
+        'tipe_transmisi' => $request->tipe_transmisi,
+        'capacity_id' => $request->capacity_id,
+        'bahan_bakar' => $request->bahan_bakar,
+        'harga_sewa_per_jam' => $request->harga_sewa_per_jam,
+        'status' => 'tersedia',
+        'lokasi' => $request->lokasi,
+        'kilometer' => $request->kilometer,
+        'liter_tangki' => $request->liter_tangki,
+        'deskripsi' => $request->deskripsi,
+        'foto' => $path,
+    ]);
+
+    return redirect()->route('admin.cars.index')
+        ->with('success', 'Data mobil berhasil diperbarui.');
+}
+
+
     public function destroy($id)
     {
         $car = Car::with('photos')->findOrFail($id);
@@ -347,16 +352,17 @@ class CarAdminController extends Controller
 
         return response()->json($models);
     }
-
-    // Menghapus satu foto galeri via AJAX
     public function deletePhoto(CarPhoto $photo)
-    {
-        if ($photo->path && Storage::disk('public')->exists($photo->path)) {
-            Storage::disk('public')->delete($photo->path);
-        }
-
-        $photo->delete();
-
-        return response()->json(['success' => true]);
+{
+    // hapus file dari storage
+    if ($photo->path && Storage::disk('public')->exists($photo->path)) {
+        Storage::disk('public')->delete($photo->path);
     }
+
+    // hapus row database
+    $photo->delete();
+
+    return response()->json(['success' => true]);
+}
+
 }

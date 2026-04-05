@@ -104,4 +104,59 @@ class Driver extends Model
     {
         return $this->pengalaman ?: '-';
     }
+
+    public function isAvailable($start, $end)
+    {
+        return !$this->rentals()
+            ->whereIn('status_rental', [
+                'draft',
+                'menunggu_pembayaran',
+                'berjalan'
+            ])
+            ->where(function ($q) use ($start, $end) {
+                $q->whereBetween('tanggal_mulai', [$start, $end])
+                ->orWhereBetween('tanggal_selesai', [$start, $end])
+                ->orWhere(function ($q2) use ($start, $end) {
+                    $q2->where('tanggal_mulai', '<=', $start)
+                        ->where('tanggal_selesai', '>=', $end);
+                });
+            })
+            ->exists();
+    }
+
+
+public function getStatusOperasionalAttribute()
+{
+    $now = now();
+
+    // ❌ kalau nonaktif
+    if ($this->status !== 'aktif') {
+        return 'offline';
+    }
+
+    // 🔴 ON TRIP (lagi jalan sekarang)
+    $onTrip = $this->rentals()
+        ->where('status_rental', 'berjalan')
+        ->where('tanggal_mulai', '<=', $now)
+        ->where('tanggal_selesai', '>=', $now)
+        ->exists();
+
+    if ($onTrip) {
+        return 'on_trip';
+    }
+
+    // 🟡 SCHEDULED (ada jadwal ke depan)
+    $scheduled = $this->rentals()
+        ->whereIn('status_rental', ['draft','menunggu_pembayaran'])
+        ->where('tanggal_mulai', '>', $now)
+        ->exists();
+
+    if ($scheduled) {
+        return 'scheduled';
+    }
+
+    // 🟢 AVAILABLE
+    return 'available';
+}
+
 }

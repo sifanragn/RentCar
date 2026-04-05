@@ -59,7 +59,6 @@
   background-color: #111; /* lebih hitam saat hover */
 }
 
-
 /* ===== Card Mobil ===== */
 .car-list {
   display:flex;
