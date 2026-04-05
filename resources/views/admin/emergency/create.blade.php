@@ -52,10 +52,12 @@
         </select>
       </div>
 
-      <button type="submit" class="btn-save">Simpan</button>
-      <a href="{{ route('admin.emergency.index') }}" class="btn-back">
-    Kembali
-</a>
+      <div class="form-actions">
+    <button type="submit" class="btn-save">Simpan</button>
+    <a href="{{ route('admin.emergency.index') }}" class="btn-back">
+        Kembali
+    </a>
+</div>
     </form>
 
   </div>

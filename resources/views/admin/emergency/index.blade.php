@@ -9,16 +9,21 @@
 @section('content')
 <div class="container mt-4">
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
+  {{-- 🔹 HEADER --}}
+  <div class="emergency-header">
     <h3 class="fw-bold">📞 Daftar Nomor Darurat</h3>
-<a href="{{ route('admin.emergency.create') }}" class="btn-add-emergency">
-    + Tambah Nomor
-</a>  </div>
 
+    <a href="{{ route('admin.emergency.create') }}" class="btn-add-emergency">
+      + Tambah Nomor
+    </a>
+  </div>
+
+  {{-- 🔔 ALERT --}}
   @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
+  {{-- 🔹 CARD --}}
   <div class="emergency-card">
     <div class="card-body">
 
@@ -70,7 +75,6 @@
                   </form>
 
                 </td>
-
               </tr>
               @endforeach
             </tbody>

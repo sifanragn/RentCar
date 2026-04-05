@@ -103,8 +103,6 @@
   
   body {
     background: #f2f2f2;
-    display: flex;
-    justify-content: center;
   }
 
   .app-container {

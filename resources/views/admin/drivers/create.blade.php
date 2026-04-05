@@ -119,8 +119,8 @@
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="btn-primary">💾 Simpan Driver</button>
-      <a href="{{ route('admin.drivers.index') }}" class="btn-cancel">↩ Kembali</a>
+      <button type="submit" class="btn-primary">Simpan</button>
+      <a href="{{ route('admin.drivers.index') }}" class="btn-cancel">Kembali</a>
     </div>
   </form>
 </div>
@@ -149,6 +149,9 @@ body.light-mode .page-header {
   color: #f5f7fa;
   font-size: 22px;
   font-weight: 700;
+}
+.page-header p {
+  text-align: center;
 }
 body.light-mode .page-header h2 { color: #222; }
 .page-header p {
@@ -220,39 +223,48 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* === BUTTON AREA === */
+/* === FORM ACTIONS (SAMA) === */
 .form-actions {
-  margin-top: 40px;
   display: flex;
-  gap: 14px;
+  justify-content: flex-end;
+  align-items: center;
+  grid-column: 1 / -1;
+  gap: 12px;
+  margin-top: 35px;
 }
 
-.btn-primary {
-  background: #0d6efd;
-  color: #fff;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.25s ease;
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-}
-
-/* === KEMBALI BUTTON (gradien biru sama kayak detail) === */
+/* === BASE BUTTON === */
+.btn-primary,
 .btn-cancel {
-  background: linear-gradient(135deg, #0d6efd, #2563eb);
-  color: #fff;
-  padding: 12px 22px;
-  border-radius: 8px;
-  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 44px;
+  padding: 0 28px;
+  border-radius: 10px;
+
+  font-size: 15px;
   font-weight: 600;
-  transition: all 0.25s ease;
+  text-decoration: none;
+
+  border: none;
+  cursor: pointer;
+  line-height: 1;
 }
-.btn-cancel:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
+
+/* === SIMPAN (BIRU) === */
+.btn-primary {
+  background: linear-gradient(90deg, #00a2ff, #0077ff);
+  color: #fff;
+  margin-bottom: -15px;
+}
+
+/* === KEMBALI (ABU) === */
+.btn-cancel {
+  background: rgba(255,255,255,0.06);
+  color: #d0d0d0;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 /* === ALERT === */

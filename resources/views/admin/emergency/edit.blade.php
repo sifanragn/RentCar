@@ -75,8 +75,8 @@
     </div>
 
     <div class="form-actions">
-      <a href="{{ route('admin.emergency.index') }}" class="btn-cancel">Batal</a>
       <button type="submit" class="btn-submit">Perbarui</button>
+            <a href="{{ route('admin.emergency.index') }}" class="btn-cancel">Batal</a>
     </div>
 
   </form>

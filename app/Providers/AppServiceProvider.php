@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\URL;   // ← TAMBAHKAN INI
 use App\Models\Payment;
 use Carbon\Carbon;
+use Illuminate\Pagination\Paginator;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+            Paginator::useTailwind();
+
         // FORCE HTTPS kalau kamu akses dari ngrok
         if (request()->isSecure() || str_contains(env('APP_URL'), 'ngrok')) {
             URL::forceScheme('https');

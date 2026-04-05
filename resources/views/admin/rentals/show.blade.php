@@ -73,7 +73,7 @@
     @if(in_array($rental->status_rental, ['selesai']))
       <hr>
       <a href="{{ route('admin.invoices.create', $rental->rental_id) }}" class="btn btn-green">
-        🧾 Buat Invoice
+        + Buat Charge
       </a>
     @endif
   </div>
@@ -146,12 +146,11 @@
       </ul>
       <input type="hidden" name="status_rental" id="statusInput" required>
     </div>
-
-    <br><br>
-    <button type="submit" class="btn btn-blue">Update Status</button>
-  </form>
-
-    <a href="{{ route('admin.rentals.index') }}" class="back-link">← Kembali ke daftar</a>
+</form>
+    <div class="form-actions">
+  <button type="submit" class="btn-submit">Update Status</button>
+  <a href="{{ route('admin.rentals.index') }}" class="btn-cancel">Kembali</a>
+</div>
   </div>
 
   <script>

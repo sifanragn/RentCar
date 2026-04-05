@@ -66,15 +66,12 @@
             <option value="ditolak">❌ Tolak</option>
           </select>
         </div>
-        <button type="submit" class="btn-submit">Update</button>
       </form>
     </div>
-    {{-- 🔙 Tombol Kembali --}}
-<div class="back-wrapper">
-  <a href="{{ route('admin.users.index') }}" class="btn-back">
-    ← Kembali ke Daftar
-  </a>
-  </div>
+<div class="form-actions">
+  <button type="submit" form="verifyForm" class="btn-submit">Update Status</button>
+  <a href="{{ route('admin.users.index') }}" class="btn-cancel">Kembali</a>
+</div>
 </div>
 
 {{-- Modal Preview Foto --}}

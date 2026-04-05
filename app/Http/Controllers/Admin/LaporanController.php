@@ -9,52 +9,85 @@ use Illuminate\Http\Request;
 
 class LaporanController extends Controller
 {
+    // Menampilkan halaman laporan dengan filter bulan, tahun, dan jenis pembayaran
     public function index(Request $request)
     {
+        // ================= AMBIL FILTER =================
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $jenis = $request->jenis; // 'utama', 'tambahan', atau null
 
-        // 🔹 Ambil data rental dengan relasi & filter jenis pembayaran
-        $rentals = Rental::with(['car.brand', 'user', 'payments' => function ($q) use ($jenis) {
-                if ($jenis === 'utama') {
-                    $q->where('payment_type', 'main');
-                } elseif ($jenis === 'tambahan') {
-                    $q->where('payment_type', 'charge');
+        // ================= AMBIL DATA RENTAL =================
+        $rentals = Rental::with([
+                'car.brand',
+                'user',
+                'payments' => function ($q) use ($jenis) {
+
+                    // filter jenis pembayaran
+                    if ($jenis === 'utama') {
+                        $q->where('payment_type', 'main');
+                    } elseif ($jenis === 'tambahan') {
+                        $q->where('payment_type', 'charge');
+                    }
                 }
-            }])
+            ])
+            // filter berdasarkan bulan
             ->when($bulan, fn($q) => $q->whereMonth('tanggal_mulai', $bulan))
+
+            // filter berdasarkan tahun
             ->when($tahun, fn($q) => $q->whereYear('tanggal_mulai', $tahun))
-            ->orderBy('tanggal_mulai', 'desc')
+
+            ->orderBy('tanggal_mulai', 'desc') // urutkan terbaru
             ->get()
+
+            // hanya ambil rental yang punya pembayaran
             ->filter(fn($rental) => $rental->payments->isNotEmpty());
 
-        // 💰 Hitung total pendapatan sesuai filter
+        // ================= HITUNG TOTAL PENDAPATAN =================
         $totalPendapatan = Payment::where('status_pembayaran', 'success')
-            ->whereIn('payment_type', $jenis === 'utama' ? ['main'] :
-                ($jenis === 'tambahan' ? ['charge'] : ['main', 'charge']))
+
+            // filter jenis pembayaran
+            ->whereIn('payment_type',
+                $jenis === 'utama' ? ['main'] :
+                ($jenis === 'tambahan' ? ['charge'] : ['main', 'charge'])
+            )
+
+            // filter bulan & tahun
             ->when($bulan, fn($q) => $q->whereMonth('created_at', $bulan))
             ->when($tahun, fn($q) => $q->whereYear('created_at', $tahun))
-            ->sum('total_bayar');
+
+            ->sum('total_bayar'); // jumlahkan semua pembayaran
 
         return view('admin.laporan.index', compact(
-            'rentals', 'totalPendapatan', 'bulan', 'tahun', 'jenis'
+            'rentals',
+            'totalPendapatan',
+            'bulan',
+            'tahun',
+            'jenis'
         ));
     }
 
+    // Mencetak laporan dalam bentuk tampilan cetak (print)
     public function cetak(Request $request)
     {
+        // ================= AMBIL FILTER =================
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $jenis = $request->jenis;
 
-        $rentals = Rental::with(['car.brand', 'user', 'payments', 'invoice'])
+        // ================= AMBIL DATA RENTAL =================
+        $rentals = Rental::with([
+                'car.brand',
+                'user',
+                'payments',
+                'invoice'
+            ])
             ->when($bulan, fn($q) => $q->whereMonth('tanggal_mulai', $bulan))
             ->when($tahun, fn($q) => $q->whereYear('tanggal_mulai', $tahun))
-            ->orderBy('tanggal_mulai', 'asc')
+            ->orderBy('tanggal_mulai', 'asc') // urutkan dari lama ke baru
             ->get();
 
-        // 🔹 Filter jenis kuitansi
+        // ================= FILTER JENIS PEMBAYARAN =================
         if ($jenis === 'utama') {
             $rentals = $rentals->filter(fn($r) =>
                 $r->payments->where('payment_type', 'main')->isNotEmpty()
@@ -65,18 +98,27 @@ class LaporanController extends Controller
             );
         }
 
-        // 💰 Total pendapatan
+        // ================= HITUNG TOTAL PENDAPATAN =================
         $totalPendapatan = Payment::where('status_pembayaran', 'success')
-            ->whereIn('payment_type', $jenis === 'utama' ? ['main'] :
-                ($jenis === 'tambahan' ? ['charge'] : ['main', 'charge']))
+            ->whereIn('payment_type',
+                $jenis === 'utama' ? ['main'] :
+                ($jenis === 'tambahan' ? ['charge'] : ['main', 'charge'])
+            )
             ->when($bulan, fn($q) => $q->whereMonth('created_at', $bulan))
             ->when($tahun, fn($q) => $q->whereYear('created_at', $tahun))
             ->sum('total_bayar');
 
-        $tanggalCetak = Carbon::now('Asia/Jakarta')->translatedFormat('d F Y');
+        // ================= TANGGAL CETAK =================
+        $tanggalCetak = Carbon::now('Asia/Jakarta')
+            ->translatedFormat('d F Y'); // format tanggal Indonesia
 
         return view('admin.laporan.cetak', compact(
-            'rentals', 'totalPendapatan', 'tanggalCetak', 'bulan', 'tahun', 'jenis'
+            'rentals',
+            'totalPendapatan',
+            'tanggalCetak',
+            'bulan',
+            'tahun',
+            'jenis'
         ));
     }
 }

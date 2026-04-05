@@ -94,6 +94,7 @@ body.light-mode textarea {
     justify-content: flex-end;
     gap: 12px;
     margin-top: 35px;
+    grid-column: 1 / -1;
 }
 
 /* === STYLE DASAR BUTTON (dipakai untuk submit & cancel) === */

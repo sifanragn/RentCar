@@ -11,22 +11,27 @@
   font-family: 'Poppins', sans-serif;
 }
 
+/* cegah geser kiri-kanan */
+body {
+  overflow-x: hidden;
+}
+
 /* Wrapper */
 .login-wrap {
   width: 100%;
   max-width: 390px;
-  min-height: 100vh;
+  min-height: auto;
   background: #fff;
-  padding: 24px 22px;
+  padding:  24px 22px 10px;
   display: flex;
   flex-direction: column;
+
+  margin: 0 auto; /* ⭐ bikin center */
 }
 
-/* pastikan semua sudut bulat */
+/* Input radius fix */
 .login-wrap .input-group input {
   border-radius: 10px !important;
-  border-top-left-radius: 10px !important;
-  border-bottom-left-radius: 10px !important;
   -webkit-appearance: none;
   appearance: none;
 }
@@ -37,7 +42,7 @@
   align-items: center;
   gap: 6px;
   justify-content: center;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
 
 .logo img {
@@ -49,37 +54,34 @@
   font-weight: 600;
 }
 
+/* HERO (SUDAH DIPERBAIKI) */
 .hero-box {
   width: 100%;
   display: flex;
-  justify-content: flex-start;
-  margin: 4px auto 10px;
-  margin-top: -25px;
+  justify-content: center; /* ⭐ center */
+  margin: 10px 0;
 }
 
 .hero {
-  width: 130%; /* Besar banget, adjust kalau perlu */
+  width: 100%;
+  max-width: 260px; /* ⭐ batasi biar ga overflow */
   object-fit: contain;
   display: block;
-  margin-left: -110px; /* Geser lebih kiri */
-  margin-top: -25px;
-  margin-bottom: -100px; /* tambah ini */
 }
 
 /* Title */
 .title {
-  font-size: 1.55rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin-top: -5px;   /* sebelumnya -25px */
-  margin-bottom: 2px;
   text-align: center;
+  margin-bottom: 4px;
 }
 
 .subtitle {
   font-size: .9rem;
   color: #666;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 /* Form */
@@ -89,25 +91,26 @@ form {
   gap: 12px;
   margin-bottom: 6px;
 }
+
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+
 .input-group label {
   font-size: .88rem;
   font-weight: 600;
   color: #222;
 }
+
 .input-group input {
   width: 100%;
   padding: 11px 12px;
-  border: 1.6px solid #d4d4d4;
+  border: 1.5px solid #d4d4d4;
   border-radius: 10px;
   background: #fafafa;
   outline: none;
-  display: block; /* pastikan bukan inline */
-  overflow: visible; /* penting untuk border radius */
 }
 
 /* Button */
@@ -124,6 +127,7 @@ form {
   transition: .25s;
   margin-bottom: 20px;
 }
+
 .btn-login:hover {
   background: #111;
 }
@@ -133,9 +137,9 @@ form {
   text-align: center;
   font-size: .88rem;
   color: #555;
-  margin-top: 8px;
-  margin-bottom: -50px;
+  margin-top: 10px;
 }
+
 .register-text a {
   color: #000 !important;
   font-weight: 600;

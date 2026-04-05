@@ -134,9 +134,9 @@ $notConnectedIcon = '
             @endif
         </div>
 
-          <a href="{{ url()->previous() }}" class="btn-back mb-3">
-        <i class="bi bi-arrow-left"></i> Kembali
-    </a>
+<div class="back-wrapper">
+    <a href="{{ url()->previous() }}" class="btn-back">Kembali</a>
+</div>
 
     </div>
 

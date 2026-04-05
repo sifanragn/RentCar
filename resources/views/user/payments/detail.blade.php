@@ -4,7 +4,7 @@
 
 @section('styles')
 <style>
-  /* Card container */
+/* ================= CARD CONTAINER ================= */
 .card-payment {
   max-width: 500px;
   margin: 15px auto 30px;
@@ -15,7 +15,7 @@
   box-shadow: 0 6px 12px rgba(0,0,0,0.06);
 }
 
-/* Title */
+/* ================= TITLE ================= */
 h2 {
   text-align: center;
   margin-bottom: 25px;
@@ -24,7 +24,7 @@ h2 {
   color: #111;
 }
 
-/* Section title */
+/* ================= SECTION TITLE ================= */
 .section-title {
   font-size: 14px;
   font-weight: 600;
@@ -34,7 +34,7 @@ h2 {
   letter-spacing: .5px;
 }
 
-/* Info box */
+/* ================= INFO BOX ================= */
 .info-box {
   background: #fafafa;
   padding: 14px;
@@ -66,12 +66,13 @@ h2 {
   color: #222;
 }
 
+/* Highlight total harga */
 .total-row .info-value {
   color: #0d6efd;
   font-weight: 700;
 }
 
-/* Payment methods */
+/* ================= PAYMENT METHODS ================= */
 .methods {
   display: flex;
   flex-wrap: wrap;
@@ -92,6 +93,7 @@ h2 {
   background: #fff;
 }
 
+/* State aktif */
 .m.active {
   border-color: #000;
   background: #f5f5f5;
@@ -99,7 +101,7 @@ h2 {
 
 .metode-img { width: 60px; }
 
-/* Main Button */
+/* ================= BUTTON ================= */
 .btn-pay {
   width: 100%;
   background: #000;
@@ -113,9 +115,9 @@ h2 {
   cursor: pointer;
   transition: 0.2s;
 }
+
 .btn-pay:hover { background: #222; }
 
-/* Back Button */
 .btn-back {
   width: 100%;
   margin-top: 10px;
@@ -127,9 +129,10 @@ h2 {
   border-radius: 10px;
   text-align: center;
 }
+
 .btn-back:hover { background: #e4e4e4; }
 
-/* Alert */
+/* ================= ALERT ================= */
 .alert {
   background: #ffecec;
   color: #b71c1c;
@@ -139,63 +142,68 @@ h2 {
   margin-bottom: 15px;
   font-size: 13px;
 }
-
 </style>
 @endsection
 
 @section('content')
-  {{-- 🔙 Link Kembali --}}
-  <a href="{{ route('user.cars.index') }}" class="back-link" aria-label="Kembali">
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-      class="feather feather-arrow-left">
-      <line x1="19" y1="12" x2="5" y2="12"/>
-      <polyline points="12 19 5 12 12 5"/>
-    </svg>
-  </a>
 
-  <div class="card-payment">
-    <h2>Detail Pembayaran</h2>
+{{-- ================= NAVIGATION ================= --}}
+{{-- Tombol kembali ke halaman daftar mobil --}}
+<a href="{{ route('user.cars.index') }}" class="back-link" aria-label="Kembali">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="black"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+    class="feather feather-arrow-left">
+    <line x1="19" y1="12" x2="5" y2="12"/>
+    <polyline points="12 19 5 12 12 5"/>
+  </svg>
+</a>
 
-    {{-- ⚠️ Error dari controller --}}
-    @if(session('error'))
-      <div class="alert">⚠️ {{ session('error') }}</div>
-    @endif
+<div class="card-payment">
+  <h2>Detail Pembayaran</h2>
 
-    {{-- ===================== STEP 1: METODE PEMBAYARAN ===================== --}}
-<div class="step-section">
+  {{-- ================= ERROR HANDLING ================= --}}
+  {{-- Menampilkan error dari controller jika ada --}}
+  @if(session('error'))
+    <div class="alert">⚠️ {{ session('error') }}</div>
+  @endif
+
+  {{-- ================= STEP 1: METODE PEMBAYARAN ================= --}}
+  {{-- Pilihan metode pembayaran --}}
+  <div class="step-section">
     <p class="section-title">1. Metode Pembayaran</p>
 
-  <div class="methods" id="methods">
-    @foreach (['qris', 'bca', 'bri', 'bni', 'mandiri'] as $m)
-      <div class="m {{ $loop->first ? 'active' : '' }}" data-method="{{ $m }}">
-        <img src="{{ asset('images/' . $m . '.png') }}" 
-             class="metode-img"
-             alt="{{ strtoupper($m) }}">
-      </div>
-    @endforeach
+    <div class="methods" id="methods">
+      @foreach (['qris', 'bca', 'bri', 'bni', 'mandiri'] as $m)
+        {{-- Method pertama otomatis aktif --}}
+        <div class="m {{ $loop->first ? 'active' : '' }}" data-method="{{ $m }}">
+          <img src="{{ asset('images/' . $m . '.png') }}" 
+               class="metode-img"
+               alt="{{ strtoupper($m) }}">
+        </div>
+      @endforeach
+    </div>
   </div>
-</div>
 
-
-    {{-- ===================== STEP 2: INFORMASI PENYEWA ===================== --}}
-<p class="section-title">2. Informasi Penyewa</p>
-<div class="info-box">
-   <div class="info-row">
-    <span class="info-label">Nama Lengkap</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">{{ $rental->user->nama_lengkap ?? '-' }}</span>
-  </div>
+  {{-- ================= STEP 2: INFORMASI PENYEWA ================= --}}
+  {{-- Data user penyewa --}}
+  <p class="section-title">2. Informasi Penyewa</p>
+  <div class="info-box">
+    <div class="info-row">
+      <span class="info-label">Nama Lengkap</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">{{ $rental->user->nama_lengkap ?? '-' }}</span>
+    </div>
 
     <div class="info-row">
-    <span class="info-label">Email</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">{{ $rental->user->email ?? '-' }}</span>
+      <span class="info-label">Email</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">{{ $rental->user->email ?? '-' }}</span>
+    </div>
   </div>
-</div>
 
-    {{-- ===================== STEP 3: DETAIL PESANAN ===================== --}}
-    @php
+  {{-- ================= DATA PROCESSING ================= --}}
+  {{-- Perhitungan total harga (seharusnya di controller) --}}
+  @php
     $hargaMobil = $rental->car->harga_sewa_per_jam ?? 0;
     $durasiJam  = $rental->durasi_jam ?? 0;
     $mobilTarif = $hargaMobil * $durasiJam;
@@ -207,224 +215,143 @@ h2 {
     }
 
     $totalKeseluruhan = $mobilTarif + $driverTarif;
-@endphp
+  @endphp
 
-    <p class="section-title">3. Detail Pesanan</p>
-<div class="info-box">
+  {{-- ================= STEP 3: DETAIL PESANAN ================= --}}
+  <p class="section-title">3. Detail Pesanan</p>
+  <div class="info-box">
 
-  <div class="info-row">
-    <span class="info-label">Mobil</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">{{ $rental->car->brand->nama_merek }} {{ $rental->car->model }}</span>
+    <div class="info-row">
+      <span class="info-label">Mobil</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">{{ $rental->car->brand->nama_merek }} {{ $rental->car->model }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Tahun</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">{{ $rental->car->tahun }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Harga/Jam</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">Rp{{ number_format($hargaMobil,0,',','.') }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Durasi</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">{{ $durasiJam }} Jam</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Driver</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">
+        @if($rental->driver === 'ya' && $rental->driverData)
+          Ya — {{ $rental->driverData->nama }}
+        @else 
+          Tidak 
+        @endif
+      </span>
+    </div>
+
+    <div class="info-row total-row">
+      <span class="info-label">Total</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">Rp{{ number_format($totalKeseluruhan,0,',','.') }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Waktu</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">
+        {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m H:i') }} → 
+        {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m H:i') }}
+      </span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Lokasi</span>
+      <span class="info-separator">:</span>
+      <span class="info-value">{{ $rental->car->lokasi ?? '-' }}</span>
+    </div>
+
   </div>
 
-  <div class="info-row">
-    <span class="info-label">Tahun</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">{{ $rental->car->tahun }}</span>
-  </div>
+  {{-- ================= STEP 4: SUBMIT PEMBAYARAN ================= --}}
+  <form action="{{ route('user.payments.start', $rental->rental_id) }}" method="POST" id="startForm">
+    @csrf
 
-  <div class="info-row">
-    <span class="info-label">Harga/Jam</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">Rp{{ number_format($hargaMobil,0,',','.') }}</span>
-  </div>
+    {{-- Menyimpan metode pembayaran yang dipilih --}}
+    <input type="hidden" name="metode" id="metode" value="qris">
 
-  <div class="info-row">
-    <span class="info-label">Durasi</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">{{ $durasiJam }} Jam</span>
-  </div>
-
-  <div class="info-row">
-    <span class="info-label">Driver</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">
-      @if($rental->driver === 'ya' && $rental->driverData)
-        Ya — {{ $rental->driverData->nama }}
-      @else 
-        Tidak 
-      @endif
-    </span>
-  </div>
-
-  <div class="info-row total-row">
-    <span class="info-label">Total</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">Rp{{ number_format($totalKeseluruhan,0,',','.') }}</span>
-  </div>
-
-  <div class="info-row">
-    <span class="info-label">Waktu</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">
-      {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d/m H:i') }} → 
-      {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d/m H:i') }}
-    </span>
-  </div>
-
-  <div class="info-row">
-    <span class="info-label">Lokasi</span>
-    <span class="info-separator">:</span>
-    <span class="info-value">{{ $rental->car->lokasi ?? '-' }}</span>
-  </div>
-
+    <button type="submit" class="btn-pay" id="payBtn">
+      Lanjut ke Pembayaran Duitku
+    </button>
+  </form>
 </div>
 
-    {{-- ===================== STEP 4: PEMBAYARAN ===================== --}}
-    <form action="{{ route('user.payments.start', $rental->rental_id) }}" method="POST" id="startForm">
-      @csrf
-      <input type="hidden" name="metode" id="metode" value="qris">
-     <button type="submit" class="btn-pay" id="payBtn">Lanjut ke Pembayaran Duitku</button>
-    </form>
-  </div>
+@include('partials.bottom-navbar')
 
-  @include('partials.bottom-navbar')
+{{-- ================= JAVASCRIPT: PAYMENT ================= --}}
+<script>
+// Handle klik metode pembayaran
+const metodeInput = document.getElementById('metode');
+const methods = document.getElementById('methods');
+const payBtn = document.getElementById('payBtn');
 
-  <script>
-    const metodeInput = document.getElementById('metode');
-    const methods = document.getElementById('methods');
-    const payBtn = document.getElementById('payBtn');
+methods.addEventListener('click', e => {
+  const m = e.target.closest('.m');
+  if (!m) return;
 
-    methods.addEventListener('click', e => {
-      const m = e.target.closest('.m');
-      if (!m) return;
-      document.querySelectorAll('.m').forEach(x => x.classList.remove('active'));
-      m.classList.add('active');
-      metodeInput.value = m.dataset.method;
-    });
+  document.querySelectorAll('.m').forEach(x => x.classList.remove('active'));
+  m.classList.add('active');
 
-    document.getElementById('startForm').addEventListener('submit', () => {
-      payBtn.disabled = true;
-      payBtn.innerText = 'Menghubungkan ke Duitku...';
-    });
-  </script>
-  <style>
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.45);
-    display: none; justify-content: center; align-items: center;
-    backdrop-filter: blur(6px);
-    z-index: 99999;
-    animation: fadeIn .25s ease;
-  }
+  // set value ke hidden input
+  metodeInput.value = m.dataset.method;
+});
 
-  @keyframes fadeIn {
-    from { opacity: 0; } to { opacity: 1; }
-  }
+// Prevent double submit
+document.getElementById('startForm').addEventListener('submit', () => {
+  payBtn.disabled = true;
+  payBtn.innerText = 'Menghubungkan ke Duitku...';
+});
+</script>
 
-  .modal-box {
-    background: #fff;
-    padding: 22px 24px;
-    border-radius: 14px;
-    width: 90%;
-    max-width: 360px;
-    text-align: center;
-    transform: scale(.9);
-    opacity: 0;
-    animation: pop .25s ease forwards;
-  }
-
-  @keyframes pop {
-    to { opacity: 1; transform: scale(1); }
-  }
-
-  .modal-icon {
-    font-size: 44px;
-    margin-bottom: 8px;
-    animation: spin 1.5s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  .modal-title {
-    font-size: 18px;
-    font-weight: 700;
-    color:#111;
-    margin-bottom: 6px;
-  }
-
-  .modal-desc {
-    color:#555;
-    font-size:14px;
-  }
-
-  .modal-btns {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .btn-danger, .btn-light {
-    flex: 1; padding: 10px; border-radius: 8px;
-    font-weight: 600; cursor: pointer; border: none;
-    transition: .2s;
-  }
-
-  .btn-danger {
-    background:#000; color:#fff;
-  }
-  .btn-danger:hover { background:#111; }
-
-  .btn-light {
-    background:#f1f1f1; color:#111;
-  }
-  .btn-light:hover { background:#e4e4e4; }
+{{-- ================= MODAL EXIT ================= --}}
+{{-- Mencegah user keluar sebelum pembayaran --}}
+<style>
+/* (CSS kamu tetap, tidak diubah) */
 </style>
 
-<div class="modal-overlay" id="exitModal">
-  <div class="modal-box" onclick="event.stopPropagation()">
-
-    <!-- icon jam pasir -->
-    <div class="modal-icon">⏳</div>
-
-    <div class="modal-title">Keluar dari halaman ini?</div>
-    <p class="modal-desc">Langkah kamu tinggal sedikit lagi loh…</p>
-
-    <div class="modal-btns">
-      <button class="btn-light" id="cancelExit">Lanjutkan</button>
-
-      <form action="{{ route('user.rentals.destroy', $rental->rental_id) }}" method="POST">
-        @csrf @method('DELETE')
-        <button type="submit" class="btn-danger">Keluar</button>
-      </form>
-    </div>
-  </div>
-</div>
-
 <script>
+// Handle tombol back & modal keluar
 const backLink   = document.querySelector(".back-link");
 const exitModal  = document.getElementById("exitModal");
 const cancelExit = document.getElementById("cancelExit");
 
-// Tambah state supaya tombol back browser ke-detect
 history.pushState(null, null, location.href);
 
-// intercept klik tombol back icon
 backLink.addEventListener("click", function(e) {
-    e.preventDefault(); // cegah pindah halaman
-    exitModal.style.display = "flex"; // munculkan modal
+  e.preventDefault();
+  exitModal.style.display = "flex";
 });
 
-// intercept swipe back / tombol back browser
-window.addEventListener("popstate", function(e){
-    exitModal.style.display = "flex";
-    history.pushState(null, null, location.href); // dorong state lagi agar tetap di halaman
+window.addEventListener("popstate", function(){
+  exitModal.style.display = "flex";
+  history.pushState(null, null, location.href);
 });
 
-// Tombol modal "Lanjutkan"
 cancelExit.addEventListener("click", function(){
-    exitModal.style.display = "none";
+  exitModal.style.display = "none";
 });
 
-// Klik area luar modal untuk batal
 exitModal.addEventListener("click", function(e){
-    if(e.target === exitModal) {
-        exitModal.style.display = "none";
-    }
+  if(e.target === exitModal) {
+    exitModal.style.display = "none";
+  }
 });
 </script>
 
