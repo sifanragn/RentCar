@@ -9,9 +9,27 @@ h2 {
   unicode-bidi: isolate;
 }
 
-/* ========================
-   FORM TITLE
-======================== */
+.preview-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+}
+
+.preview-wrapper .delete-btn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    background: #ff3b30;
+    border-radius: 50%;
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 9999; /* ⬅️ paling penting */
+}
+
 .form-title {
   font-size: 26px;
   font-weight: 600;

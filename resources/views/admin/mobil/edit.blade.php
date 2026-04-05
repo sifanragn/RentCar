@@ -144,31 +144,8 @@
                     <img src="{{ asset('storage/' . $p->path) }}" class="preview-img" alt="Foto Tambahan">
 
                     {{-- Tombol Hapus --}}
-<button type="button"
-    class="delete-existing"
-    data-photo-id="{{ $p->id }}"
-    style="
-        position:absolute;
-        top:-8px;
-        right:-5px;
-        width:20px;
-        height:20px;
-        border-radius:50%;
-        background:white;
-        color:black;
-        font-size:18px;
-        font-weight:bold;
-        border:1px solid #333;
-        z-index:999999;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        cursor:pointer;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    "
->×</button>
-
-
+                    <button type="button" class="delete-btn delete-existing"
+                        data-photo-id="{{ $p->id }}">×</button>
                 </div>
             @endforeach
         </div>

@@ -183,23 +183,26 @@ Route::prefix('admin')->middleware('admin.session')->name('admin.')->group(funct
     Route::post('/kelola-admin/{id}', [ManageAdminController::class, 'update'])->name('manage.update');
     Route::post('/kelola-admin/{id}/deactivate', [ManageAdminController::class, 'deactivate'])->name('manage.deactivate');
 
-    // ===== MOBIL ===== //
+    // Mobil
 
-    // Delete foto tambahan
-    Route::delete('cars/delete-photo/{photo}', [CarAdminController::class, 'deletePhoto'])->name('cars.deletePhoto');
+// DELETE FOTO TAMBAHAN — taruh di atas route resource!
+Route::delete('cars/delete-photo/{photo}', [CarAdminController::class, 'deletePhoto'])
+    ->name('cars.deletePhoto');
 
-    // Brand
-    Route::get('cars/brands', [CarAdminController::class, 'brandIndex'])->name('cars.brands');
-    Route::post('cars/brands', [CarAdminController::class, 'brandStore'])->name('cars.brands.store');
-    Route::delete('cars/brands/{id}', [CarAdminController::class, 'brandDestroy'])->name('cars.brands.destroy');
+// BRAND
+Route::get('cars/brands', [CarAdminController::class, 'brandIndex'])->name('cars.brands');
+Route::post('cars/brands', [CarAdminController::class, 'brandStore'])->name('cars.brands.store');
+Route::delete('cars/brands/{id}', [CarAdminController::class, 'brandDestroy'])->name('cars.brands.destroy');
 
-    // Model
-    Route::get('cars/models', [CarAdminController::class, 'modelIndex'])->name('cars.models');
-    Route::post('cars/models', [CarAdminController::class, 'modelStore'])->name('cars.models.store');
-    Route::get('api/models/{brand_id}', [CarAdminController::class, 'getModelsByBrand']);
+// MODEL
+Route::get('cars/models', [CarAdminController::class, 'modelIndex'])->name('cars.models');
+Route::post('cars/models', [CarAdminController::class, 'modelStore'])->name('cars.models.store');
+Route::get('api/models/{brand_id}', [CarAdminController::class, 'getModelsByBrand']);
 
-    // Resource
-    Route::resource('cars', CarAdminController::class);
+// RESOURCE (taruh PALING BAWAH)
+Route::resource('cars', CarAdminController::class);
+
+
 
     // ===== USER VERIFICATION ===== //
     Route::get('/users', [UserVerificationController::class, 'index'])->name('users.index');
