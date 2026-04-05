@@ -308,7 +308,63 @@
     padding: 4px 8px;
   }
 }
+/* ===== Pagination Wrapper ===== */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;   /* jarak dari card */
+    margin-bottom: 15px; /* jarak ke bawah */
+}
 
+/* Biar ga terlalu turun jauh */
+.car-list {
+    margin-bottom: 10px; /* sebelumnya 35px, kepanjangan */
+}
+/* ===== Custom Pagination Buttons ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.pagination li {
+    list-style: none;
+}
+
+.pagination li a,
+.pagination li span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    color: #000;
+    font-weight: 500;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.pagination li a:hover {
+    background-color: #333;
+    color: #fff;
+    border-color: #333;
+}
+
+.pagination .active span {
+    background-color: #0077b6;
+    color: #fff;
+    border-color: #0077b6;
+}
+
+.pagination .disabled span {
+    color: #aaa;
+    border-color: #ddd;
+    cursor: not-allowed;
+}
 </style>
 @endsection
 
@@ -351,79 +407,78 @@
 <div class="car-list">
 
 @foreach($cars as $car)
-@php
-$rental = \App\Models\Rental::where('car_id', $car->car_id)
-    ->whereIn('status_rental',['verifikasi_diperlukan','menunggu','menunggu_pembayaran','berjalan'])
-    ->latest()->first();
-@endphp
+    @php
+        $rental = \App\Models\Rental::where('car_id', $car->car_id)
+            ->whereIn('status_rental',['verifikasi_diperlukan','menunggu','menunggu_pembayaran','berjalan'])
+            ->latest()->first();
+    @endphp
 
-{{-- 🚫 kalau sedang disewa → nonaktifkan klik --}}
-{{-- 🚫 kalau sedang disewa → nonaktifkan klik + efek abu --}}
-@if($rental)
-  <div class="car-card disabled">
-    <img src="{{ asset('storage/'.$car->foto) }}" class="car-image">
+    @if($rental)
+        <div class="car-card disabled">
+            <img src="{{ asset('storage/'.$car->foto) }}" class="car-image">
+            <div class="car-info">
+                <h4>{{ $car->tahun }} {{ $car->brand->nama_merek }} {{ $car->model }}</h4>
+                <p>Edisi {{ ucfirst($car->warna) }}</p>
+                <p class="price">Rp {{ number_format($car->harga_sewa_per_jam,0,',','.') }} / jam</p>
 
-    <div class="car-info">
-      <h4>{{ $car->tahun }} {{ $car->brand->nama_merek }} {{ $car->model }}</h4>
-      <p>Edisi {{ ucfirst($car->warna) }}</p>
-      <p class="price">Rp {{ number_format($car->harga_sewa_per_jam,0,',','.') }} / jam</p>
+                <div class="info-tags">
+                    <div class="tag">{{ number_format($car->kilometer) }} km</div>
+                    <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
+                    <div class="tag">{{ $car->capacity->jumlah_orang }} Org</div>
+                    <div class="tag">{{ $car->liter_tangki }} L</div>
+                    <div class="tag">{{ ucfirst($car->lokasi) }}</div>
+                    <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
+                </div>
+            </div>
 
-      <div class="info-tags">
-        <div class="tag">{{ number_format($car->kilometer) }} km</div>
-        <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
-        <div class="tag">{{ $car->capacity->jumlah_orang }} Org</div>
-        <div class="tag">{{ $car->liter_tangki }} L</div>
-        <div class="tag">{{ ucfirst($car->lokasi) }}</div>
-        <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
-      </div>
-    </div>
+            <div class="fav-btn">
+                <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png">
+            </div>
 
-    <div class="fav-btn">
-      <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png">
-    </div>
-
-    @if($rental->status_rental === 'menunggu_pembayaran')
-      <div class="pending">💰 Pembayaran Pending</div>
-    @else
-      <div class="unavailable">⛔ Sedang Disewa</div>
-    @endif
-  </div>
-
-@else
-  {{-- ✅ kalau tersedia → bisa diklik --}}
-  <a href="{{ route('user.cars.show',$car->car_id) }}" style="text-decoration:none; color:inherit;">
-    <div class="car-card">
-      <img src="{{ asset('storage/'.$car->foto) }}" class="car-image">
-
-      <div class="car-info">
-        <h4>{{ $car->tahun }} {{ $car->brand->nama_merek }} {{ $car->model }}</h4>
-        <p>Edisi {{ ucfirst($car->warna) }}</p>
-        <p class="price">Rp {{ number_format($car->harga_sewa_per_jam,0,',','.') }} / jam</p>
-
-        <div class="info-tags">
-          <div class="tag">{{ number_format($car->kilometer) }} km</div>
-          <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
-          <div class="tag">{{ $car->capacity->jumlah_orang }} Org</div>
-          <div class="tag">{{ $car->liter_tangki }} L</div>
-          <div class="tag">{{ ucfirst($car->lokasi) }}</div>
-          <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
+            @if($rental->status_rental === 'menunggu_pembayaran')
+                <div class="pending">💰 Pembayaran Pending</div>
+            @else
+                <div class="unavailable">⛔ Sedang Disewa</div>
+            @endif
         </div>
-      </div>
+    @else
+        <a href="{{ route('user.cars.show',$car->car_id) }}" style="text-decoration:none; color:inherit;">
+            <div class="car-card">
+                <img src="{{ asset('storage/'.$car->foto) }}" class="car-image">
+                <div class="car-info">
+                    <h4>{{ $car->tahun }} {{ $car->brand->nama_merek }} {{ $car->model }}</h4>
+                    <p>Edisi {{ ucfirst($car->warna) }}</p>
+                    <p class="price">Rp {{ number_format($car->harga_sewa_per_jam,0,',','.') }} / jam</p>
 
-      <div class="fav-btn">
-        <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png">
-      </div>
-    </div>
-  </a>
-@endif
+                    <div class="info-tags">
+                        <div class="tag">{{ number_format($car->kilometer) }} km</div>
+                        <div class="tag">{{ ucfirst($car->tipe_transmisi) }}</div>
+                        <div class="tag">{{ $car->capacity->jumlah_orang }} Org</div>
+                        <div class="tag">{{ $car->liter_tangki }} L</div>
+                        <div class="tag">{{ ucfirst($car->lokasi) }}</div>
+                        <div class="tag">{{ $car->dealer ?? 'Auto Center' }}</div>
+                    </div>
+                </div>
+
+                <div class="fav-btn">
+                    <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png">
+                </div>
+            </div>
+        </a>
+    @endif
 @endforeach
 
 </div>
 
+{{-- Pagination --}}
+<div class="pagination-wrapper">
+    {{ $cars->links('pagination::bootstrap-4') }}
+</div>
+
 @if($cars->isEmpty())
 <div style="text-align:center; margin-top:10px;">
-<p style="color:red; font-size:12px;">Tidak ditemukan mobil sesuai filter.</p>
-<a href="{{ route('user.cars.index') }}" class="btn-see-other">Lihat Mobil Lain</a>
+    <p style="color:red; font-size:12px;">Tidak ditemukan mobil sesuai filter.</p>
+    <a href="{{ route('user.cars.index') }}" class="btn-see-other">Lihat Mobil Lain</a>
 </div>
 @endif
 

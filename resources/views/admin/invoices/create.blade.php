@@ -1,6 +1,6 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Buat Invoice Baru')
+@section('title', 'Buat Charge Baru')
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('css/admin-invoice-create.css') }}">
@@ -9,8 +9,8 @@
 @section('content')
 <div class="admin-content-wrapper">
   <div class="page-header">
-    <h2>Buat Invoice Baru</h2>
-    <p>Lengkapi data untuk membuat invoice penyewaan mobil.</p>
+    <h2>Buat Charge Baru</h2>
+    <p>Lengkapi data untuk membuat charge penyewaan mobil.</p>
   </div>
 
   <div class="form-card">
@@ -72,7 +72,7 @@
 
       {{-- 🔹 Tombol Aksi --}}
       <div class="form-actions">
-        <button type="submit" class="btn-submit">💾 Buat Invoice</button>
+        <button type="submit" class="btn-submit">Buat Charge</button>
         <a href="{{ route('admin.invoices.index') }}" class="btn-cancel">Batal</a>
       </div>
     </form>

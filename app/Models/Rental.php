@@ -20,23 +20,23 @@ class Rental extends Model
         'durasi_jam',
         'metode_pickup',
         'driver',
-        'driver_id',  // ✅ tambahkan ini
+        'driver_id', // relasi ke tabel driver
         'harga_driver_per_hari',
         'total_biaya',
         'status_rental',
         'tanggal_pengembalian',
         'denda',
         'catatan_admin',
-        'expired_at', // 🟢 tambahkan ini
+        'expired_at', // waktu expired pembayaran / booking
     ];
 
     /*
     |--------------------------------------------------------------------------
-    | ❗ CAST WAKTU SEBAGAI STRING
+    | ⚠️ CAST WAKTU SEBAGAI STRING
     |--------------------------------------------------------------------------
-    | Ini penting supaya Laravel tidak auto-konversi UTC → local.
-    | Karena MySQL kita sudah simpan waktu lokal (WIB/WITA/WIT),
-    | jadi kita paksa Carbon baca langsung sebagai waktu Indonesia.
+    | Supaya Laravel tidak otomatis konversi timezone (UTC → local).
+    | Karena database sudah menyimpan waktu lokal Indonesia,
+    | kita paksa tetap dibaca sebagai string dulu.
     |--------------------------------------------------------------------------
     */
     protected $casts = [
@@ -50,54 +50,68 @@ class Rental extends Model
     | 🔗 RELATIONSHIPS
     |--------------------------------------------------------------------------
     */
+
+    // Relasi ke mobil
     public function car()
     {
         return $this->belongsTo(Car::class, 'car_id');
     }
 
+    // Relasi ke user
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    // Semua payment terkait rental
     public function payments()
     {
         return $this->hasMany(\App\Models\Payment::class, 'rental_id', 'rental_id');
     }
 
+    // Ambil payment terbaru
     public function payment()
     {
-        // Ambil payment terbaru berdasarkan payment_id
         return $this->hasOne(\App\Models\Payment::class, 'rental_id', 'rental_id')
                     ->latestOfMany('payment_id');
     }
-public function invoice()
-{
-    return $this->hasOne(\App\Models\Invoice::class, 'rental_id', 'rental_id');
-}
 
-public function invoices()
-{
-    return $this->hasMany(\App\Models\Invoice::class, 'rental_id', 'rental_id');
-}
+    // Relasi invoice (1)
+    public function invoice()
+    {
+        return $this->hasOne(\App\Models\Invoice::class, 'rental_id', 'rental_id');
+    }
 
+    // Relasi invoice (banyak)
+    public function invoices()
+    {
+        return $this->hasMany(\App\Models\Invoice::class, 'rental_id', 'rental_id');
+    }
 
+    // Ambil payment utama (main payment)
+    public function mainPayment()
+    {
+        return $this->hasOne(Payment::class, 'rental_id')
+                    ->where('payment_type', 'main');
+    }
+
+    // Relasi driver (versi standar)
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class, 'driver_id');
+    }
+
+    // Relasi driver (custom key lengkap)
+    public function driverData()
+    {
+        return $this->belongsTo(\App\Models\Driver::class, 'driver_id', 'driver_id');
+    }
 
     /*
     |--------------------------------------------------------------------------
-    | 🕒 AUTO KONVERSI WAKTU SESUAI ZONA INDONESIA
+    | 🕒 KONVERSI STRING → CARBON (WAKTU INDONESIA)
     |--------------------------------------------------------------------------
     */
-    private function detectIndonesianTimezone(): string
-    {
-        $offset = now()->offsetHours;
-        return match ($offset) {
-            7 => 'Asia/Jakarta',   // WIB
-            8 => 'Asia/Makassar',  // WITA
-            9 => 'Asia/Jayapura',  // WIT
-            default => 'Asia/Jakarta',
-        };
-    }
 
     public function getTanggalMulaiAttribute($value)
     {
@@ -122,12 +136,14 @@ public function invoices()
 
     /*
     |--------------------------------------------------------------------------
-    | 🧭 FORMAT UNTUK TAMPILAN VIEW (WIB/WITA/WIT)
+    | 🧭 FORMAT TAMPILAN WAKTU (WIB / WITA / WIT)
     |--------------------------------------------------------------------------
     */
+
     private function formatIndonesiaTime($datetime)
     {
         if (!$datetime) return '-';
+
         $dt = Carbon::parse($datetime);
         $offset = $dt->offsetHours;
 
@@ -156,20 +172,23 @@ public function invoices()
         return $this->formatIndonesiaTime($this->tanggal_pengembalian);
     }
 
-    public function mainPayment()
-{
-    return $this->hasOne(Payment::class, 'rental_id')->where('payment_type', 'main');
-}
+    /*
+    |--------------------------------------------------------------------------
+    | 🌏 DETEKSI TIMEZONE INDONESIA (TIDAK DIPAKAI SAAT INI)
+    |--------------------------------------------------------------------------
+    | Fungsi ini disiapkan jika nanti ingin auto-detect zona waktu user
+    | berdasarkan offset server / client.
+    |--------------------------------------------------------------------------
+    */
+    private function detectIndonesianTimezone(): string
+    {
+        $offset = now()->offsetHours;
 
-// App\Models\Rental
-public function driver()
-{
-    return $this->belongsTo(Driver::class, 'driver_id');
-}
-
-public function driverData()
-{
-    return $this->belongsTo(\App\Models\Driver::class, 'driver_id', 'driver_id');
-}
-
+        return match ($offset) {
+            7 => 'Asia/Jakarta',   // WIB
+            8 => 'Asia/Makassar',  // WITA
+            9 => 'Asia/Jayapura',  // WIT
+            default => 'Asia/Jakarta',
+        };
+    }
 }

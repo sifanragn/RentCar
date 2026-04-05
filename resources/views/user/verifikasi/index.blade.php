@@ -11,7 +11,7 @@ body {
     padding: 18px;
 }
 
-/* PAGE TITLE */
+/* =================== PAGE TITLE =================== */
 .page-title {
     text-align: center;
     font-size: 20px;
@@ -55,7 +55,7 @@ body {
     gap: 12px;
 }
 
-/* ICON KIRI */
+/* ICON */
 .icon-box {
     width: 40px;
     height: 40px;
@@ -103,15 +103,17 @@ body {
     margin-top: 14px;
 }
 
+/* Variasi status */
 .status.pending { background: #fff7e6; color: #b77900; }
 .status.none { background: #ffeaea; color: #d61f1f; }
 .status.verified { background: #e7f9f0; color: #15803d; }
 
-/* SOSMED lebih rapat */
+/* Sosmed spacing */
 .status-sosmed {
     margin-top: 6px !important;
 }
 
+/* Deskripsi */
 .section-card p {
     font-size: 13px;
     color: #6b7280;
@@ -124,11 +126,14 @@ body {
 @section('content')
 <div class="container mt-1 mb-5">
 
+    {{-- =================== PAGE TITLE =================== --}}
     <h3 class="page-title">Verifikasi Akun Anda</h3>
+
 
     {{-- ================== VERIFIKASI DOKUMEN ================== --}}
     <div class="section-card">
 
+        {{-- Header section --}}
         <div class="section-header">
             <div class="section-left">
                 <div class="icon-box">
@@ -137,17 +142,22 @@ body {
                 <h4>Verifikasi Dokumen</h4>
             </div>
 
-@php
-    $status = strtolower(trim($user->status_verifikasi));
-@endphp
+            {{-- ================= LOGIC: STATUS NORMALIZATION ================= --}}
+            {{-- Normalisasi status supaya aman dari variasi value --}}
+            @php
+                $status = strtolower(trim($user->status_verifikasi));
+            @endphp
 
-@if (in_array($status, ['', 'null', 'none', 'belum', 'belum upload', 'belum_upload', 'unverified', '0', 'ditolak']))
-    <a href="{{ route('user.verifikasi.upload') }}" class="btn-action-verifikasi">
-        <i class="fa-solid fa-upload"></i>
-    </a>
-@endif
+            {{-- Tampilkan tombol upload jika belum verifikasi / ditolak --}}
+            @if (in_array($status, ['', 'null', 'none', 'belum', 'belum upload', 'belum_upload', 'unverified', '0', 'ditolak']))
+                <a href="{{ route('user.verifikasi.upload') }}" class="btn-action-verifikasi">
+                    <i class="fa-solid fa-upload"></i>
+                </a>
+            @endif
         </div>
 
+        {{-- ================= STATUS DISPLAY ================= --}}
+        {{-- Menampilkan status verifikasi user --}}
         @if ($user->status_verifikasi === 'menunggu')
             <span class="status pending">
                 <i class="fa-solid fa-clock"></i> Menunggu verifikasi admin
@@ -172,10 +182,10 @@ body {
     </div>
 
 
-
     {{-- ================== SOSIAL MEDIA ================== --}}
     <div class="section-card">
 
+        {{-- Header --}}
         <div class="section-header">
             <div class="section-left">
                 <div class="icon-box">
@@ -184,14 +194,17 @@ body {
                 <h4>Tautan Sosial Media</h4>
             </div>
 
+            {{-- Tombol ke halaman pengelolaan sosmed --}}
             <a href="{{ route('user.social.index') }}" class="btn-action-sosmed">
                 <i class="fa-solid fa-link"></i>
             </a>
         </div>
 
+        {{-- Deskripsi --}}
         <p>Minimal menautkan 2 akun media sosial untuk keamanan akun.</p>
 
-        {{-- REVISI PEMBAGI /4 --}}
+        {{-- ================= STATUS SOSMED ================= --}}
+        {{-- Menampilkan jumlah akun yang sudah ditautkan --}}
         @if ($linkedCount === 0)
             <span class="status status-sosmed none">
                 <i class="fa-solid fa-link-slash"></i> Belum menautkan sosial media
@@ -212,5 +225,7 @@ body {
 
 </div>
 
+{{-- Bottom navigation --}}
 @include('partials.bottom-navbar')
+
 @endsection

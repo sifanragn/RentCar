@@ -1,6 +1,6 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Detail Invoice #' . $invoice->invoice_id)
+@section('title', 'Detail Charge #' . $invoice->invoice_id)
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('css/admin-invoice-show.css') }}">
@@ -21,7 +21,7 @@
 
   <div class="invoice-card">
     <div class="header">
-      <h2>Detail Invoice <span>#{{ $invoice->invoice_id }}</span></h2>
+      <h2>Detail Charge <span>#{{ $invoice->invoice_id }}</span></h2>
     </div>
 
     {{-- 🚗 Data Penyewaan --}}
@@ -108,9 +108,9 @@
     @endif
 
     {{-- 📄 Data Invoice --}}
-    <h3 class="section-title">📄 Data Invoice</h3>
+    <h3 class="section-title">📄 Data Charge</h3>
     <div class="grid">
-      <div class="label">Status Invoice:</div>
+      <div class="label">Status Charge:</div>
       <div class="value"><span class="status {{ strtolower($invoice->status_invoice) }}">{{ ucfirst($invoice->status_invoice) }}</span></div>
 
       <div class="label">Status Pengembalian:</div>
@@ -159,30 +159,34 @@
       <form method="POST" action="{{ route('admin.invoices.cancel', $invoice->invoice_id) }}" class="cancel-form"
             onsubmit="return confirm('Yakin ingin membatalkan invoice ini?')">
         @csrf
-        <button type="submit" class="btn btn-danger">❌ Batalkan Invoice</button>
+        <button type="submit" class="btn btn-danger">❌ Batalkan Charge</button>
       </form>
     @endif
     {{-- 🔧 Update Status Manual --}}
 <div class="manual-update-wrapper">
   <form method="POST" action="{{ route('admin.invoices.manualUpdate', $invoice->invoice_id) }}" class="form-inline" id="manualUpdateForm">
     @csrf
-    <label for="status_invoice">🔧 Update Status Invoice:</label>
+    <label for="status_invoice">🔧 Update Status Charge:</label>
     <select name="status_invoice" id="status_invoice" required>
       <option value="">-- Pilih Status --</option>
       <option value="pending" {{ $invoice->status_invoice === 'pending' ? 'selected' : '' }}>Pending</option>
       <option value="selesai" {{ $invoice->status_invoice === 'selesai' ? 'selected' : '' }}>Selesai</option>
       <option value="dibatalkan" {{ $invoice->status_invoice === 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
     </select>
-    <button type="submit" class="btn btn-secondary">💾 Simpan</button>
   </form>
 
   <div id="statusMessage" style="margin-top:10px;"></div>
 </div>
 
+<div class="form-actions">
+    <button type="submit" form="manualUpdateForm" class="btn-submit">
+        Simpan
+    </button>
 
-    <div class="back-wrapper">
-      <a href="{{ route('admin.invoices.index') }}" class="btn-back">Kembali ke Daftar</a>
-    </div>
+    <a href="{{ route('admin.invoices.index') }}" class="btn-cancel">
+        Kembali
+    </a>
+</div>
   </div>
 </div>
 @endsection

@@ -35,8 +35,8 @@ class CarController extends Controller
             $query->where('model', 'like', '%' . $request->search . '%');
         }
 
-        // Ambil hasil query
-        $cars = $query->orderBy('created_at', 'desc')->get();
+        // Ambil hasil query dengan paginate 5 per halaman
+        $cars = $query->orderBy('created_at', 'desc')->paginate(5)->withQueryString();
 
         // 🔹 Jika hasil kosong → tampilkan saran mobil lain
         $suggestions = collect();
@@ -59,21 +59,18 @@ class CarController extends Controller
     /**
      * 🚘 Tampilkan detail satu mobil
      */
-public function show($id)
-{
-    
-    $car = Car::with(['brand', 'capacity', 'photos'])->findOrFail($id);
-    // 🔹 Tambahin 'photos' biar galeri ikut di-load
+    public function show($id)
+    {
+        $car = Car::with(['brand', 'capacity', 'photos'])->findOrFail($id);
 
-    // 🔹 Cek apakah mobil sedang disewa / menunggu pembayaran / dsb
-    $rental = Rental::where('car_id', $car->car_id)
-        ->whereIn('status_rental', ['verifikasi_diperlukan', 'menunggu', 'menunggu_pembayaran', 'berjalan'])
-        ->latest()
-        ->first();
+        // 🔹 Cek apakah mobil sedang disewa / menunggu pembayaran / dsb
+        $rental = Rental::where('car_id', $car->car_id)
+            ->whereIn('status_rental', ['verifikasi_diperlukan', 'menunggu', 'menunggu_pembayaran', 'berjalan'])
+            ->latest()
+            ->first();
 
-    $isUnavailable = !!$rental; // true kalau sedang disewa
+        $isUnavailable = !!$rental; // true kalau sedang disewa
 
-    return view('user.car.show', compact('car', 'isUnavailable', 'rental'));
+        return view('user.car.show', compact('car', 'isUnavailable', 'rental'));
+    }
 }
-}
-

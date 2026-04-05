@@ -96,7 +96,7 @@
     <a href="{{ route('admin.invoices.index') }}" class="menu-item">
       <img src="{{ asset('img/icons/invoice.png') }}" class="menu-icon" alt="Invoice">
       <div class="menu-text">
-        <h3>Invoice</h3>
+        <h3>Charge</h3>
         <p>Lihat, buat, dan kelola tagihan pelanggan.</p>
       </div>
     </a>

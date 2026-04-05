@@ -1,6 +1,10 @@
 /* ===============================
    DETAIL RENTAL (ADMIN)
 =============================== */
+.page-header p {
+    text-align: center;
+
+}
 .detail-wrapper {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.08);
@@ -98,6 +102,8 @@ body.light-mode .card-section {
 .btn-green {
   background: linear-gradient(135deg, #23ff9d, #00b871);
   color: white;
+    margin-top: 10px; /* 🔽 biar turun dikit */
+
 }
 .btn-green:hover { background: linear-gradient(135deg, #12ec91, #00a65c); }
 .btn-danger {

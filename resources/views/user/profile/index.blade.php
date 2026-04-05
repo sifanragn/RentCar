@@ -4,6 +4,28 @@
 
 @section('styles')
 <style>
+/* FIX BACKGROUND LUAR */
+body {
+  background: #fff;
+}
+
+/* container utama (dari layout / partials.container) */
+.main-content,
+.content,
+.container {
+  min-height: 100vh;
+  padding-bottom: 110px; /* ⬅️ biar nyampe ke navbar */
+}
+
+  /* === WRAPPER BIAR RAPI & GA KE POTONG === */
+.wrapper-profile {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 12px;
+  padding-bottom: 90px; /* ⬅️ ini kunci */
+}
+
 /* === HEADER === */
 .profile-header {
   background: #000;
@@ -45,7 +67,7 @@
   border-radius: 14px;
   border: 1px solid #e0e0e0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  overflow: hidden;
+  overflow: visible; /* jangan hidden */
   margin: 20px auto 0;
   width: 92%;
 }
@@ -60,7 +82,6 @@
 }
 .menu-item:hover {
   background: #f9f9f9;
-  transform: scale(1.01);
 }
 .menu-item:last-child {
   border-bottom: none;

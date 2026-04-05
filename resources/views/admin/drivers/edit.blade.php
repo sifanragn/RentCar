@@ -112,10 +112,10 @@
 
       </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn-save">💾 Simpan Perubahan</button>
-        <a href="{{ route('admin.drivers.index') }}" class="btn-cancel">← Kembali</a>
-      </div>
+<div class="form-actions">
+  <button type="submit" class="btn-submit">Simpan</button>
+  <a href="{{ route('admin.drivers.index') }}" class="btn-cancel">Kembali</a>
+</div>
 
     </form>
   </div>
@@ -256,9 +256,43 @@ body:not(.light-mode) .btn-cancel:hover {
 /* === FORM ACTIONS === */
 .form-actions {
   display: flex;
-  justify-content: space-between;
-  margin-top: 25px;
-  flex-wrap: wrap;
+  justify-content: flex-end; /* ⬅️ bikin ke kanan */
+  gap: 12px;
+  margin-top: 35px;
+}
+
+/* === STYLE SAMA KAYAK CARS === */
+.btn-submit,
+.btn-cancel {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  height: 44px !important;        /* ⬅️ kunci tinggi sama */
+  padding: 0 28px !important;     /* ⬅️ kiri kanan aja */
+  border-radius: 10px !important;
+
+  font-size: 15px !important;
+  font-weight: 600 !important;
+
+  line-height: 1 !important;      /* ⬅️ biar ga beda tinggi */
+  box-sizing: border-box !important;
+
+  border: none;
+  cursor: pointer;
+}
+
+/* biru (Simpan) */
+.btn-submit {
+  background: linear-gradient(90deg, #00a2ff, #0077ff);
+  color: #fff;
+}
+
+/* abu (Kembali) */
+.btn-cancel {
+  background: rgba(255,255,255,0.06);
+  color: #d0d0d0;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 /* === ALERT ERROR === */

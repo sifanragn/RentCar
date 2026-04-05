@@ -13,7 +13,7 @@
   /* ========== SECTION: HUBUNGI KAMI ========== */
   .contact-section {
     text-align: center;
-  padding: 5px 10px 40px; /* 🟢 dari 40px jadi 25px supaya lebih naik */
+  padding: 40px 10px 20px; 
   }
 
   .contact-section h1 {
@@ -168,8 +168,8 @@
   /* ========== LOGO FOOTER ========== */
   .footer-logo {
     margin-top: 40px;
-    margin-bottom: 70px;
-    text-align: center;
+  margin-bottom: 20px; /* ⬅️ biar deket ke navbar */
+  text-align: center;
   }
 
   .footer-logo img {
@@ -202,14 +202,6 @@
 @endsection
 
 @section('content')
-<a 
-  href="{{ request()->query('from') === 'profile' 
-      ? route('user.profile.index') 
-      : route('user.dashboard') }}" 
-  class="back-link"
->
-  <i class="fa-solid fa-arrow-left"></i>
-</a>
 
 <div class="contact-section">
 

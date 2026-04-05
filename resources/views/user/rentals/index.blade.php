@@ -4,6 +4,7 @@
 
 @section('styles')
 <style>
+/* ===== JUDUL HALAMAN ===== */
 h2 {
   text-align: center;
   margin-bottom: 20px;
@@ -12,7 +13,7 @@ h2 {
   font-weight: 600;
 }
 
-/* ===== CONTAINER ===== */
+/* ===== CONTAINER LIST RENTAL ===== */
 .rentals-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -22,7 +23,7 @@ h2 {
   margin-bottom: 50px;
 }
 
-/* ===== CARD ===== */
+/* ===== CARD RENTAL ===== */
 .card {
   background: #fff;
   border-radius: 10px;
@@ -50,7 +51,7 @@ h2 {
   border-bottom: 1px solid #eee;
 }
 
-/* ===== STATUS RIBBON ===== */
+/* ===== STATUS RIBBON (POJOK ATAS) ===== */
 .status-ribbon {
   position: absolute;
   top: 12px;
@@ -66,6 +67,7 @@ h2 {
 .status-ribbon.berjalan { background: #198754; }
 .status-ribbon.selesai { background: #198754; }
 .status-ribbon.dibatalkan { background: #dc3545; }
+.status-ribbon.draft { background: #6c757d; } 
 
 /* ===== INFORMASI MOBIL ===== */
 .car-info {
@@ -84,7 +86,7 @@ h2 {
   line-height: 1.5;
 }
 
-/* ===== STATUS BADGE ===== */
+/* ===== STATUS BADGE TAMBAHAN ===== */
 .status {
   display: inline-block;
   padding: 4px 10px;
@@ -97,7 +99,6 @@ h2 {
 .status.berjalan { background: #d1e7dd; color: #0f5132; }
 .status.selesai { background: #cfe2ff; color: #084298; }
 .status.dibatalkan { background: #f8d7da; color: #842029; }
-.status-ribbon.draft { background: #6c757d; } 
 
 /* ===== BUTTON DETAIL ===== */
 .btn-detail {
@@ -123,15 +124,16 @@ h2 {
   margin-top: 40px;
 }
 
-  .back-link {
-    color:#000; text-decoration:none;
-    font-weight:250; font-size:15px;
-    margin-left: -275px;
-    margin-bottom: 15px;
-    }
-
-  .back-link:hover { text-decoration:underline; }
-
+/* ===== TOMBOL KEMBALI ===== */
+.back-link {
+  color:#000; 
+  text-decoration:none;
+  font-weight:250; 
+  font-size:15px;
+  margin-left: -275px;
+  margin-bottom: 15px;
+}
+.back-link:hover { text-decoration:underline; }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
@@ -142,6 +144,8 @@ h2 {
 @endsection
 
 @section('content')
+
+{{-- 🔙 Tombol kembali (dinamis tergantung asal halaman) --}}
 <a 
   href="{{ request()->query('from') === 'profile' 
       ? route('user.profile.index') 
@@ -154,46 +158,59 @@ h2 {
 <div class="card-sewa">
   <h2>Riwayat Penyewaan Mobil</h2>
 
-  {{-- Flash Message --}}
+  {{-- ✅ Flash message setelah aksi berhasil --}}
   @if(session('success'))
     <div style="background:#d1e7dd;color:#0f5132;padding:10px;margin-bottom:15px;border-radius:8px;text-align:center;">
       {{ session('success') }}
     </div>
   @endif
 
-  {{-- Kondisi Data Kosong --}}
+  {{-- 📭 Jika tidak ada data rental --}}
   @if($rentals->isEmpty())
     <p class="empty">Belum ada penyewaan mobil yang tercatat.</p>
   @else
+
+    {{-- 📦 List semua rental --}}
     <div class="rentals-container">
+
 @foreach($rentals as $rental)
   <div class="card">
 
-    {{-- Status Ribbon --}}
+    {{-- 🏷️ Status rental (ribbon pojok atas) --}}
     <div class="status-ribbon {{ $rental->status_rental }}">
       {{ ucfirst($rental->status_rental) }}
     </div>
 
     <div class="car-info">
+      {{-- 🚗 Nama mobil --}}
       <h4>{{ $rental->car->brand->nama_merek ?? '-' }} {{ $rental->car->model ?? '' }}</h4>
+
+      {{-- 📅 Informasi tanggal --}}
       <p><b>Tanggal Sewa:</b> {{ \Carbon\Carbon::parse($rental->tanggal_mulai)->format('d M Y') }}</p>
       <p><b>Selesai:</b> {{ \Carbon\Carbon::parse($rental->tanggal_selesai)->format('d M Y') }}</p>
+
+      {{-- ⏱️ Durasi & total biaya --}}
       <p><b>Durasi:</b> {{ $rental->durasi_hari }} Jam</p>
       <p><b>Total:</b> Rp {{ number_format($rental->total_biaya, 0, ',', '.') }}</p>
 
-      {{-- 🚨 Peringatan untuk Draft --}}
+      {{-- ⚠️ Kondisi khusus: status draft (belum dibayar / belum konfirmasi) --}}
       @if($rental->status_rental === 'draft')
+
+        {{-- Hitung waktu sisa sebelum auto delete (30 menit) --}}
         @php
           $expiredAt = \Carbon\Carbon::parse($rental->created_at)->addMinutes(30);
           $sisaMenit = now()->diffInMinutes($expiredAt, false);
         @endphp
 
+        {{-- Jika masih ada waktu --}}
         @if($sisaMenit > 0)
           <div style="margin-top:10px;padding:10px;background:#fff3cd;color:#664d03;border-radius:8px;font-size:13px;">
             ⚠️ Penyewaan ini belum dikonfirmasi. Akan otomatis dihapus dalam 
             <b><span class="cd" data-s="{{ $sisaMenit * 60 }}"></span></b>.
           </div>
         @else
+
+          {{-- Jika sudah expired --}}
           <div style="margin-top:10px;padding:10px;background:#f8d7da;color:#842029;border-radius:8px;font-size:13px;">
             ❌ Penyewaan ini telah kadaluarsa dan akan segera dihapus.
           </div>
@@ -201,29 +218,41 @@ h2 {
       @endif
     </div>
 
+    {{-- 🔍 Tombol ke halaman detail --}}
     <a href="{{ route('user.rentals.show', $rental->rental_id) }}" class="btn-detail">
       Lihat Detail
     </a>
   </div>
 @endforeach
+
     </div>
   @endif
 </div>
-  
+
+{{-- ⏳ Script countdown untuk status draft --}}
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const toMMSS = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
   document.querySelectorAll('.cd').forEach(el=>{
     let s = +el.dataset.s;
-    if(s<=0){ el.textContent='00:00'; return; }
-    const tick=()=>{
-      el.textContent=toMMSS(s);
-      if(s>0) setTimeout(()=>{ s--; tick(); },1000);
+
+    if(s <= 0){
+      el.textContent = '00:00';
+      return;
+    }
+
+    const tick = () => {
+      el.textContent = toMMSS(s);
+      if(s > 0) setTimeout(() => { s--; tick(); }, 1000);
     };
+
     tick();
   });
 });
 </script>
 
-  @include('partials.bottom-navbar')
+{{-- 📱 Bottom navbar --}}
+@include('partials.bottom-navbar')
+
 @endsection

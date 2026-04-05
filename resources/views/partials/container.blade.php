@@ -33,16 +33,20 @@
       min-height: 100vh;
       padding: 16px;
       margin-bottom: 50px;
+        margin: 0 auto; /* ⭐ TAMBAH INI */
+
     }
 
     /* ✅ tampilan saat buka di laptop */
     @media (min-width: 480px) {
-      .app-container {
-        max-width: 420px;
-        background: #fff;
-        border-left: 1px solid #ddd;
-        border-right: 1px solid #ddd;
-      }
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px;
+
+  margin: 0 auto;
+  padding-bottom: 120px; /* ⬅️ GANTI INI (buat ruang navbar) */
+}
     }
   </style>
   @stack('styles')

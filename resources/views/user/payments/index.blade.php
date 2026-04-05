@@ -457,26 +457,22 @@ button.btn:focus-visible {
 @endsection
 
 @section('content')
-<a 
-  href="{{ request()->query('from') === 'profile' 
-      ? route('user.profile.index') 
-      : route('user.dashboard') }}" 
-  class="back-link"
->
-  <i class="fa-solid fa-arrow-left"></i>
-</a>
 
 <!-- 🔍 FILTER -->
 <div class="filter-wrapper">
   <form method="GET" class="filter-bar-horizontal">
+
+    {{-- 🔎 Filter berdasarkan nomor transaksi --}}
     <input type="text" name="no_transaksi" 
            value="{{ request('no_transaksi') }}" 
            placeholder="No. Transaksi" class="filter-input">
 
+    {{-- 📅 Filter berdasarkan tanggal --}}
     <input type="date" name="tanggal" 
            value="{{ request('tanggal') }}" 
            class="filter-input">
 
+    {{-- 📌 Filter berdasarkan status pembayaran --}}
     <select name="status" class="filter-select">
       <option value="">Semua</option>
       <option value="pending" {{ request('status')=='pending'?'selected':'' }}>Pending</option>
@@ -491,20 +487,27 @@ button.btn:focus-visible {
 <div class="card-daftar">
   <h2>Daftar Pembayaran</h2>
 
+  {{-- ⚠️ Notifikasi warning dari controller --}}
   @if(session('warning'))
     <div style="background:#fff3cd;padding:10px;border-radius:8px;margin-bottom:12px;">
       {{ session('warning') }}
     </div>
   @endif
 
+  {{-- ❌ Jika tidak ada data --}}
   @if($payments->isEmpty())
     <p>Belum ada pembayaran.</p>
   @else
+
     <div class="payment-list">
+
+      {{-- 🔁 Loop semua data pembayaran --}}
       @foreach($payments as $p)
         @php
+          // ⏳ Hitung sisa waktu pembayaran (30 menit)
           $exp = now()->diffInSeconds(\Carbon\Carbon::parse($p->created_at)->addMinutes(30), false);
-          // tambahan dari branch lain: logika jenis kuitansi dan warna
+
+          // 🧾 Tentukan jenis kuitansi
           $jenis = match(true) {
               $p->payment_type === 'main' => 'Kuitansi Utama',
               $p->payment_type === 'charge' => 'Kuitansi Tambahan',
@@ -513,6 +516,8 @@ button.btn:focus-visible {
               $p->payment_type === 'final' => 'Kuitansi Akhir',
               default => ucfirst($p->payment_type),
           };
+
+          // 🎨 Warna label (kalau nanti mau dipakai)
           $warna = match(true) {
               $p->payment_type === 'main' => '#0d6efd',
               $p->payment_type === 'charge' 
@@ -523,52 +528,84 @@ button.btn:focus-visible {
           };
         @endphp
 
+        {{-- 💳 Card pembayaran --}}
         <div class="payment-card" data-payment-id="{{ $p->payment_id }}">
+
           <div class="card-left">
             <div class="icon-box">
               <img src="{{ asset('images/wallet.png') }}" alt="icon">
             </div>
+
+            {{-- 🚗 Info mobil --}}
             <div class="car-info">
-              <div class="car-name">{{ $p->rental->car->brand->nama_merek ?? '-' }} {{ $p->rental->car->model ?? '-' }}</div>
+              <div class="car-name">
+                {{ $p->rental->car->brand->nama_merek ?? '-' }} 
+                {{ $p->rental->car->model ?? '-' }}
+              </div>
+
               <div class="car-meta">
-                {{ $jenis }} • {{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y H:i') }}
+                {{ $jenis }} • 
+                {{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y H:i') }}
               </div>
             </div>
           </div>
 
           <div class="card-right">
-            <div class="price">Rp{{ number_format($p->total_bayar, 0, ',', '.') }}</div>
-<div class="status {{ strtolower($p->status_pembayaran) }}">
-    @if($p->status_pembayaran === 'pending')
-        <i class="fa-solid fa-clock"></i>
-    @elseif($p->status_pembayaran === 'success')
-        <i class="fa-solid fa-check"></i>
-    @else
-        <i class="fa-solid fa-xmark"></i>
-    @endif
-</div>
+
+            {{-- 💰 Total pembayaran --}}
+            <div class="price">
+              Rp{{ number_format($p->total_bayar, 0, ',', '.') }}
+            </div>
+
+            {{-- 🔘 Status icon --}}
+            <div class="status {{ strtolower($p->status_pembayaran) }}">
+              @if($p->status_pembayaran === 'pending')
+                  <i class="fa-solid fa-clock"></i>
+              @elseif($p->status_pembayaran === 'success')
+                  <i class="fa-solid fa-check"></i>
+              @else
+                  <i class="fa-solid fa-xmark"></i>
+              @endif
+            </div>
+
+            {{-- ⏳ Jika masih pending --}}
             @if($p->status_pembayaran === 'pending')
-<a class="btn btn-lanjut" href="{{ route('user.payments.continue', $p->payment_id) }}">Lanjutkan</a>
+
+              {{-- ▶️ Lanjutkan pembayaran --}}
+              <a class="btn btn-lanjut" 
+                 href="{{ route('user.payments.continue', $p->payment_id) }}">
+                 Lanjutkan
+              </a>
 
               @php
+                // 🔎 Cek apakah ini kuitansi tambahan (tidak bisa dibatalkan)
                 $isKuitansiTambahan = $p->payment_type === 'charge' ||
                   ($p->payment_type === 'invoice' &&
                   $p->rental->invoice?->denda_tambahan > 0 &&
                   $p->total_bayar == $p->rental->invoice->denda_tambahan);
               @endphp
 
+              {{-- ❌ Tombol batal (hanya jika bukan tambahan) --}}
               @if(!$isKuitansiTambahan)
-                <form action="{{ route('user.payments.cancelSoft', $p->payment_id) }}" method="POST" onsubmit="return confirm('Batalkan pembayaran ini?')">
+                <form action="{{ route('user.payments.cancelSoft', $p->payment_id) }}" 
+                      method="POST" 
+                      onsubmit="return confirm('Batalkan pembayaran ini?')">
                   @csrf
                   <button type="submit" class="btn btn-danger">Batalkan</button>
                 </form>
               @endif
+
             @else
+
+              {{-- 📄 Lihat kuitansi / info --}}
               <button 
                 class="btn {{ $p->status_pembayaran === 'success' ? 'btn-kuitansi' : 'btn-info' }}" 
                 onclick="openReceipt({{ $p->payment_id }})">
+
                 {{ $p->status_pembayaran === 'success' ? 'Lihat Kuitansi' : 'Lihat Info' }}
+
               </button>
+
             @endif
           </div>
         </div>
@@ -576,7 +613,6 @@ button.btn:focus-visible {
     </div>
   @endif
 </div>
-
 
 <!-- 🧾 Modal -->
 <div id="receiptModal" class="modal-overlay">
@@ -589,13 +625,16 @@ button.btn:focus-visible {
 @include('partials.bottom-navbar')
 
 <script>
-/* ---------------- Countdown ---------------- */
+
+/* ================= COUNTDOWN ================= */
+// ⏱ Convert detik ke format mm:ss
 const toMMSS = (s) => {
   const m = Math.floor(s / 60);
   const sec = s % 60;
   return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 };
 
+// 🔁 Loop semua elemen countdown
 document.querySelectorAll('.cd').forEach(el => {
   let s = parseInt(el.dataset.s) || 0;
 
@@ -616,64 +655,96 @@ document.querySelectorAll('.cd').forEach(el => {
 });
 
 
-/* ---------------- Modal Receipt ---------------- */
+/* ================= MODAL RECEIPT ================= */
 function openReceipt(id){
+
   const modal = document.getElementById('receiptModal');
   const box = document.getElementById('receiptContent');
+
   modal.style.display='flex';
   box.innerHTML='<p>⏳ Memuat data...</p>';
 
+  // 🔗 Fetch data JSON dari backend
   fetch(`{{ url('/user/payments') }}/${id}/json`)
   .then(r=>r.json())
   .then(p=>{
-    if(!p || !p.payment_id){ box.innerHTML='<p>Data tidak ditemukan.</p>'; return; }
+
+    // ❌ Jika data tidak ditemukan
+    if(!p || !p.payment_id){
+      box.innerHTML='<p>Data tidak ditemukan.</p>';
+      return;
+    }
+
+    // 🎯 Status text & class
     const cls = p.status_pembayaran.toLowerCase();
     const text = p.status_pembayaran==='success'?'✅ Pembayaran Berhasil':
                  p.status_pembayaran==='failed'?'❌ Pembayaran Gagal':'⏳ Pembayaran Pending';
 
     let extraRows = '';
+
+    // 🧾 Tambahan info untuk charge
     if(p.payment_type==='charge'){
       const statusPengembalian = p.rental?.invoice?.status_pengembalian?.replace(/_/g,' ') ?? '-';
       const catatan = p.rental?.invoice?.catatan ?? '-';
+
       extraRows = `
         <tr><th>Status Pengembalian</th><td>${statusPengembalian}</td></tr>
         <tr><th>Deskripsi</th><td>${catatan}</td></tr>
       `;
     }
 
+    // 🧾 Render HTML kuitansi
     box.innerHTML = `
       <h3 class="receipt-title">${p.payment_type==='charge'?'Kuitansi Tambahan':'Kuitansi Pembayaran'}</h3>
       <div class="receipt-status ${cls}">${text}</div>
       <div class="receipt-subtitle">#${p.payment_id} • ${p.gateway||'Duitku'}</div>
+
       <table class="receipt-table">
         <tr><th>Mobil</th><td>${p.rental?.car?.brand?.nama_merek ?? '-'} ${p.rental?.car?.model ?? ''}</td></tr>
         <tr><th>Tanggal Sewa</th><td>${p.rental?.tanggal_mulai_fmt ?? '-'} → ${p.rental?.tanggal_selesai_fmt ?? '-'}</td></tr>
         <tr><th>Metode Pengambilan</th><td>${
-          p.rental?.metode_pickup==='ambil_sendiri'?'Ambil Sendiri ke Kantor':(p.rental?.metode_pickup==='pickup_alamat'?'Antar ke Alamat Penyewa':'-')
+          p.rental?.metode_pickup==='ambil_sendiri'
+          ?'Ambil Sendiri ke Kantor'
+          :(p.rental?.metode_pickup==='pickup_alamat'
+          ?'Antar ke Alamat Penyewa':'-')
         }</td></tr>
+
         ${extraRows}
+
         <tr><th>Metode</th><td>${p.metode?.toUpperCase() ?? '-'}</td></tr>
         <tr><th>Total</th><td><strong>Rp${Number(p.total_bayar).toLocaleString('id-ID')}</strong></td></tr>
         <tr><th>Tanggal Bayar</th><td>${p.tanggal_bayar_fmt ?? '-'}</td></tr>
         <tr><th>Status</th><td>${p.status_pembayaran}</td></tr>
       </table>
-      ${p.status_pembayaran==='success'
-        ?       `<button type="button" class="btn btn-download" onclick="downloadPDF(${p.payment_id})">
-         ⬇️ Download PDF
-       </button>`
+
+      ${
+        p.status_pembayaran==='success'
+        ? `<button type="button" class="btn btn-download" onclick="downloadPDF(${p.payment_id})">
+            ⬇️ Download PDF
+          </button>`
         : (p.status_pembayaran==='pending'
             ? `<a href="${p.payment_token}" target="_blank" class="btn" style="margin-top:10px;">Lanjutkan Pembayaran</a>`
-            : ``)}
+            : ``)
+      }
     `;
   });
 }
 
-function closeModal(){ document.getElementById('receiptModal').style.display='none'; }
+// ❌ Tutup modal
+function closeModal(){
+  document.getElementById('receiptModal').style.display='none';
+}
 
+
+/* ================= DOWNLOAD PDF ================= */
 function downloadPDF(id){
+
   fetch(`/user/payments/${id}/download`)
     .then(async res=>{
-      if(!res.ok){ const err=await res.json().catch(()=>({})); throw new Error(err.error||'Gagal mengunduh PDF.'); }
+      if(!res.ok){
+        const err=await res.json().catch(()=>({}));
+        throw new Error(err.error||'Gagal mengunduh PDF.');
+      }
       return res.blob();
     })
     .then(blob=>{
@@ -681,6 +752,7 @@ function downloadPDF(id){
       const a=document.createElement('a');
       a.href=url;
       a.download=`Kuitansi_${id}.pdf`;
+
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -689,7 +761,11 @@ function downloadPDF(id){
     .catch(e=>alert('❌ '+e.message));
 }
 
-// Tutup modal jika klik di luar box
-window.onclick = e=>{ if(e.target===document.getElementById('receiptModal')) closeModal(); };
+
+// ❌ Klik luar modal = tutup
+window.onclick = e=>{
+  if(e.target===document.getElementById('receiptModal')) closeModal();
+};
+
 </script>
 @endsection

@@ -1,9 +1,25 @@
+
+
 /* === WRAPPER === */
 .emergency-card {
     background: #11141c;
     border-radius: 18px;
     padding: 24px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+}
+
+/* =====================================
+   HEADER (JUDUL + BUTTON)
+===================================== */
+.emergency-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+/* tombol auto ke kanan */
+.emergency-header .btn-add-emergency {
+    margin-left: auto;
 }
 
 /* === BUTTON TAMBAH NOMOR === */
@@ -151,3 +167,4 @@ body.light-mode .phone-link {
     color: #aaa;
     padding: 20px 0;
 }
+
