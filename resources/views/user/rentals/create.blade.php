@@ -234,7 +234,6 @@ button:hover { background: #222; transform: scale(1.03); }
   @endphp
 
 <a href="{{ route('user.cars.show', $car->car_id) }}" class="back-link" id="btnBack">
-    <span style="font-size:20px; padding:8px 10px; display:inline-block;">←</span>
 </a>
 
 
