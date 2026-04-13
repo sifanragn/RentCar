@@ -88,30 +88,42 @@
     </td>
 
     <td class="payment-method">
-    @php
-        $method = strtolower($payment->metode_pembayaran);
-        $logos = [
-            'bca' => 'bca.png',
-            'bni' => 'bni.png',
-            'bri' => 'bri.png',
-            'mandiri' => 'mandiri.png',
-            'gopay' => 'gopay.png',
-            'ovo' => 'ovo.png',
-            'dana' => 'dana.png',
-            'qris' => 'qris.png',
-            'cash' => 'cash.png',
-        ];
-    @endphp
+@php
+    $method = strtolower($payment->metode_pembayaran ?? '');
 
-    @if(isset($logos[$method]))
-        <img 
+    // normalisasi keyword
+    if (str_contains($method, 'bca')) $method = 'bca';
+    elseif (str_contains($method, 'bni')) $method = 'bni';
+    elseif (str_contains($method, 'bri')) $method = 'bri';
+    elseif (str_contains($method, 'mandiri')) $method = 'mandiri';
+    elseif (str_contains($method, 'gopay')) $method = 'gopay';
+    elseif (str_contains($method, 'ovo')) $method = 'ovo';
+    elseif (str_contains($method, 'dana')) $method = 'dana';
+    elseif (str_contains($method, 'qris')) $method = 'qris';
+    elseif (str_contains($method, 'cash')) $method = 'cash';
+
+    $logos = [
+        'bca' => 'bca.png',
+        'bni' => 'bni.png',
+        'bri' => 'bri.png',
+        'mandiri' => 'mandiri.png',
+        'gopay' => 'gopay.png',
+        'ovo' => 'ovo.png',
+        'dana' => 'dana.png',
+        'qris' => 'qris.png',
+        'cash' => 'cash.png',
+    ];
+@endphp
+
+@if(isset($logos[$method]))
+    <img 
         src="{{ asset('images/' . $logos[$method]) }}" 
         alt="{{ strtoupper($method) }}" 
         class="payment-logo"
-      >
-    @else
-        <span>-</span>
-    @endif
+    >
+@else
+    <span>{{ $payment->metode_pembayaran ?? '-' }}</span>
+@endif
 </td>
 
     <td>

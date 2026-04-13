@@ -13,7 +13,9 @@
     <tr><td><strong>Bahan Bakar:</strong></td><td>{{ ucfirst($car->bahan_bakar) }}</td></tr>
     <tr>
     <td><strong>Harga Sewa per Jam:</strong></td>
-    <td>Rp{{ number_format($car->harga_sewa_per_jam, 0, ',', '.') }}</td>
+    <td>
+    Rp{{ number_format($car->getRawOriginal('harga_sewa_per_jam') ?? 0, 0, ',', '.') }}
+</td>
     </tr>
     <tr><td><strong>Status:</strong></td><td>{{ ucfirst($car->status) }}</td></tr>
     <tr><td><strong>Lokasi:</strong></td><td>{{ $car->lokasi }}</td></tr>

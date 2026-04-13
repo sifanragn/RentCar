@@ -127,36 +127,11 @@ class Driver extends Model
 
 public function getStatusOperasionalAttribute()
 {
-    $now = now();
-
-    // ❌ kalau nonaktif
-    if ($this->status !== 'aktif') {
-        return 'offline';
-    }
-
-    // 🔴 ON TRIP (lagi jalan sekarang)
-    $onTrip = $this->rentals()
+    $isOnTrip = $this->rentals()
         ->where('status_rental', 'berjalan')
-        ->where('tanggal_mulai', '<=', $now)
-        ->where('tanggal_selesai', '>=', $now)
         ->exists();
 
-    if ($onTrip) {
-        return 'on_trip';
-    }
-
-    // 🟡 SCHEDULED (ada jadwal ke depan)
-    $scheduled = $this->rentals()
-        ->whereIn('status_rental', ['draft','menunggu_pembayaran'])
-        ->where('tanggal_mulai', '>', $now)
-        ->exists();
-
-    if ($scheduled) {
-        return 'scheduled';
-    }
-
-    // 🟢 AVAILABLE
-    return 'available';
+    return $isOnTrip ? 'on_trip' : 'available';
 }
 
 }

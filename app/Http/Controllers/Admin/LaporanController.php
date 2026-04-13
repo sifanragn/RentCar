@@ -58,12 +58,12 @@ class LaporanController extends Controller
 
             ->sum('total_bayar'); // jumlahkan semua pembayaran
 
-        return view('admin.laporan.index', compact(
-            'rentals',
-            'totalPendapatan',
-            'bulan',
-            'tahun',
-            'jenis'
+            return view('admin.laporan.index', compact(
+                'rentals',
+                'totalPendapatan',
+                'bulan',
+                'tahun',
+                'jenis'
         ));
     }
 

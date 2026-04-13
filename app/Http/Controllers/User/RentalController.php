@@ -35,22 +35,29 @@ class RentalController extends Controller
         $car = Car::with('brand')->findOrFail($car_id);
 
         // 👨‍✈️ Ambil semua driver aktif & sudah diverifikasi
-            $drivers = Driver::aktif()
-            ->orderBy('nama', 'asc')
-            ->get()
-            ->map(function ($driver) {
-                return [
-                    'driver_id' => $driver->driver_id,
-                    'nama' => $driver->nama,
-                    'foto' => $driver->foto,
-                    'harga_per_jam' => $driver->harga_per_jam,
-                    'lokasi' => $driver->lokasi,
-                    'pengalaman' => $driver->pengalaman,
-                    'deskripsi' => $driver->deskripsi,
-                    'status_operasional' => $driver->status_operasional,
-                ];
-            });
+           $drivers = Driver::aktif()
+    ->orderBy('nama', 'asc')
+    ->get()
+    ->map(function ($driver) {
 
+        // 🔴 kalau ada rental berjalan → langsung on_trip
+        $onTrip = Rental::where('driver_id', $driver->driver_id)
+            ->where('status_rental', 'berjalan')
+            ->exists();
+
+        $status = $onTrip ? 'on_trip' : 'available';
+
+        return [
+            'driver_id' => $driver->driver_id,
+            'nama' => $driver->nama,
+            'foto' => $driver->foto,
+            'harga_per_jam' => $driver->harga_per_jam,
+            'lokasi' => $driver->lokasi,
+            'pengalaman' => $driver->pengalaman,
+            'deskripsi' => $driver->deskripsi,
+            'status_operasional' => $status,
+        ];
+    });
 
         // 📦 Ambil user login
         $user = auth()->user()->refresh();
@@ -227,27 +234,42 @@ public function store(Request $request, $car_id)
      * ❌ Batalkan penyewaan terbaru (belum dibayar)
      */
     public function cancelLatest()
-    {
-        $rental = Rental::where('user_id', auth()->id())
-            ->whereIn('status_rental', ['verifikasi_diperlukan', 'menunggu_pembayaran'])
-            ->latest()
-            ->first();
+{
+    $rental = Rental::where('user_id', auth()->id())
+        ->whereIn('status_rental', ['verifikasi_diperlukan', 'menunggu_pembayaran'])
+        ->latest()
+        ->first();
 
-        if ($rental) {
-            $rental->update(['status_rental' => 'dibatalkan']);
-            Log::info('❌ Rental dibatalkan oleh user', [
-                'rental_id' => $rental->rental_id
-            ]);
+    if ($rental) {
+
+        // ❌ ubah status rental
+        $rental->update(['status_rental' => 'dibatalkan']);
+
+        // 🔥 TAMBAHAN: balikin mobil ke tersedia
+        $car = Car::find($rental->car_id);
+        if ($car) {
+            $car->update(['status' => 'tersedia']);
         }
 
-        return response()->json(['message' => 'Transaksi dibatalkan.']);
+        Log::info('❌ Rental dibatalkan oleh user', [
+            'rental_id' => $rental->rental_id
+        ]);
     }
+
+    return response()->json(['message' => 'Transaksi dibatalkan.']);
+}
 
     public function destroy($id)
 {
     $rental = Rental::findOrFail($id);
 
     abort_if($rental->user_id !== auth()->id(), 403);
+
+    // 🔥 TAMBAHAN: balikin mobil sebelum delete
+    $car = Car::find($rental->car_id);
+    if ($car) {
+        $car->update(['status' => 'tersedia']);
+    }
 
     $rental->delete();
 
@@ -273,5 +295,6 @@ public function getAvailableDrivers(Request $request)
 
     return response()->json($drivers->values());
 }
+
 
 }

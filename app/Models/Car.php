@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Car extends Model
 {
+    
     protected $table = 'cars';
     protected $primaryKey = 'car_id';
     protected $fillable = [

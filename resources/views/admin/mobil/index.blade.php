@@ -159,7 +159,7 @@ function showCarDetail(car) {
       <div class="car-detail-item">
       <div class="car-detail-label">Harga Sewa</div>
       <div class="car-detail-value">
-        Rp{{ number_format($car->harga_sewa_per_jam ?? 0, 0, ',', '.') }}
+        Rp${new Intl.NumberFormat('id-ID').format(car.harga_sewa_per_jam)}
       </div>
     </div>
       <div class="car-detail-item"><div class="car-detail-label">Status</div><div class="car-detail-value">${car.status}</div></div>
