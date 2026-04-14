@@ -23,7 +23,7 @@
 
     {{-- ✅ PILIH MEREK MOBIL (CUSTOM DROPDOWN DENGAN LOGO) --}}
     <div class="form-group">
-      <label for="brand_input">Pilih Merek</label>
+      <label for="brand_input" class="required-star">Pilih Merek</label>
 
       {{-- Hidden input untuk kirim brand_id ke backend --}}
       <input type="hidden" name="brand_id" id="brand_input" required>
@@ -50,7 +50,7 @@
 
     {{-- MODEL MOBIL --}}
     <div class="form-group">
-      <label for="model">Model Mobil</label>
+      <label for="model" class="required-star">Model Mobil</label>
       <div class="input-row">
         <select id="model" name="model" required>
           <option value="">-- Pilih Model --</option>
@@ -61,13 +61,13 @@
 
     {{-- TAHUN --}}
     <div class="form-group">
-      <label>Tahun</label>
+      <label class="required-star">Tahun</label>
       <input type="number" name="tahun" value="{{ old('tahun') }}" required>
     </div>
 
     {{-- WARNA DENGAN COLOR PICKER --}}
     <div class="form-group">
-      <label>Warna Mobil</label>
+      <label class="required-star">Warna Mobil</label>
       <div class="color-input-wrapper">
         <input type="color" id="colorPicker" value="#445677">
         <input 
@@ -85,7 +85,7 @@
 
     {{-- TRANSMISI --}}
     <div class="form-group">
-      <label>Tipe Transmisi</label>
+      <label class="required-star">Tipe Transmisi</label>
       <select name="tipe_transmisi" required>
         <option value="manual">Manual</option>
         <option value="otomatis">Otomatis</option>
@@ -94,7 +94,7 @@
 
     {{-- KAPASITAS ORANG --}}
     <div class="form-group">
-      <label>Kapasitas Orang</label>
+      <label class="required-star">Kapasitas Orang</label>
       <select name="capacity_id" required>
         <option value="">-- Pilih Kapasitas --</option>
         @foreach($capacities as $cap)
@@ -105,7 +105,7 @@
 
     {{-- BAHAN BAKAR --}}
     <div class="form-group">
-      <label>Bahan Bakar</label>
+      <label class="required-star">Bahan Bakar</label>
       <select name="bahan_bakar" required>
         <option value="bensin">Bensin</option>
         <option value="diesel">Diesel</option>
@@ -115,26 +115,26 @@
 
     {{-- HARGA --}}
     <div class="form-group">
-  <label>Harga Sewa per Jam (Rp)</label>
+  <label class="required-star">Harga Sewa per Jam (Rp)</label>
   <input type="number" step="0.01" name="harga_sewa_per_jam" required>
   <small class="hint-text">Minimal sewa 6 jam.</small>
 </div>
 
     {{-- LOKASI --}}
     <div class="form-group">
-      <label>Lokasi</label>
+      <label class="required-star">Lokasi</label>
       <input type="text" name="lokasi" value="{{ old('lokasi') }}" required>
     </div>
 
     {{-- KILOMETER --}}
     <div class="form-group">
-      <label>Kilometer</label>
+      <label class="required-star">Kilometer</label>
       <input type="number" name="kilometer" value="{{ old('kilometer') }}" required>
     </div>
 
     {{-- KAPASITAS TANGKI --}}
     <div class="form-group">
-      <label for="liter_tangki">Kapasitas Tangki (Liter)</label>
+      <label for="liter_tangki" class="required-star">Kapasitas Tangki (Liter)</label>
       <input 
         type="number" 
         name="liter_tangki" 
@@ -156,7 +156,7 @@
 
     {{-- FOTO UTAMA --}}
     <div class="form-group">
-      <label>Foto Utama Mobil</label>
+      <label class="required-star">Foto Utama Mobil</label>
       <div class="upload-box" id="mainUploadBox">
         <input type="file" name="foto" id="foto" accept="image/*" required hidden>
         <div class="upload-content" onclick="document.getElementById('foto').click()">

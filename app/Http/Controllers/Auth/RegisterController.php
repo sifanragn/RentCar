@@ -58,6 +58,31 @@ class RegisterController extends Controller
         return redirect()->route('login')->with('success', 'Pendaftaran berhasil. Silakan login.');
     }
 
+/**
+ * 📩 SEND OTP REGISTRATION
+ *
+ * Fungsi ini digunakan untuk mengirimkan kode OTP
+ * ke nomor WhatsApp user saat proses registrasi.
+ *
+ * Alur kerja:
+ * 1. Validasi data input registrasi
+ * 2. Normalisasi nomor HP (08 → 628)
+ * 3. Cek apakah nomor sudah terdaftar
+ * 4. Hapus OTP lama jika ada
+ * 5. Generate OTP baru
+ * 6. Kirim OTP via WhatsApp API
+ * 7. Simpan data registrasi ke session sementara
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ *
+ * ⚠️ Kemungkinan Eksepsi:
+ * - Input tidak lengkap (validasi gagal)
+ * - Nomor HP sudah terdaftar
+ * - Gagal generate OTP
+ * - Gagal mengirim WhatsApp (API error)
+ * - Session gagal disimpan
+ */
     public function sendOtp(Request $request)
 {
     $request->validate([
@@ -96,7 +121,32 @@ class RegisterController extends Controller
         ->with('success', 'Kode OTP sudah dikirim via WhatsApp');
 }
 
-
+/**
+ * 🔐 VERIFY OTP REGISTRATION
+ *
+ * Fungsi ini digunakan untuk memverifikasi kode OTP
+ * yang dikirim ke WhatsApp sebelum membuat akun user.
+ *
+ * Alur kerja:
+ * 1. Validasi input OTP
+ * 2. Ambil data registrasi dari session
+ * 3. Validasi keberadaan session
+ * 4. Cek OTP di database + expiry time
+ * 5. Jika valid, hapus OTP
+ * 6. Buat akun user baru
+ * 7. Hapus session registrasi
+ * 8. Redirect ke halaman login
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ *
+ * ⚠️ Kemungkinan Eksepsi:
+ * - OTP kosong / salah (validasi gagal)
+ * - Session registrasi hilang
+ * - OTP expired atau tidak ditemukan
+ * - Gagal membuat user
+ * - Error hashing password
+ */
     public function verifyOtp(Request $request)
     {
         $request->validate(['otp' => 'required']);
@@ -142,7 +192,29 @@ return redirect()
 
     }
 
-
+/**
+ * 🔄 RESEND OTP
+ *
+ * Fungsi ini digunakan untuk mengirim ulang kode OTP
+ * jika user belum menerima atau OTP sudah expired.
+ *
+ * Alur kerja:
+ * 1. Ambil data registrasi dari session
+ * 2. Validasi keberadaan data session
+ * 3. Normalisasi nomor HP
+ * 4. Generate OTP baru
+ * 5. Kirim OTP via WhatsApp
+ * 6. Return response JSON
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\JsonResponse
+ *
+ * ⚠️ Kemungkinan Eksepsi:
+ * - Session registrasi tidak ditemukan
+ * - Nomor HP tidak valid
+ * - Gagal generate OTP
+ * - Gagal kirim WhatsApp API
+ */
         public function resendOtp(Request $request)
     {
         $data = Session::get('register_data');

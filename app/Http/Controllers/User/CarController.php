@@ -11,11 +11,31 @@ use App\Models\Rental;
 
 class CarController extends Controller
 {
+/**
+ * 🏎️ LIST MOBIL USER (FILTER + SEARCH + REKOMENDASI)
+ *
+ * Menampilkan daftar mobil yang tersedia untuk user
+ * dengan fitur:
+ * - Filter brand
+ * - Filter kapasitas
+ * - Search berdasarkan model
+ * - Pagination
+ * - Rekomendasi jika data kosong
+ *
+ * @param Request $request
+ * @return \Illuminate\View\View
+ *
+ * ⚠️ Kemungkinan Eksepsi:
+ * - Data mobil kosong
+ * - Filter tidak valid
+ * - Query database gagal
+ */
     /**
      * 🏎️ Tampilkan daftar mobil untuk user dengan filter & rekomendasi
      */
     public function index(Request $request)
     {
+        
         // Query dasar: hanya mobil tersedia
         $query = Car::with(['brand', 'capacity'])
             ->where('status', 'tersedia');
@@ -56,6 +76,27 @@ class CarController extends Controller
         return view('user.car.index', compact('cars', 'brands', 'capacities', 'suggestions'));
     }
 
+/**
+ * 🚘 DETAIL MOBIL USER
+ *
+ * Menampilkan detail mobil berdasarkan ID
+ * beserta:
+ * - Brand
+ * - Kapasitas
+ * - Foto
+ * - Status ketersediaan (cek rental aktif)
+ *
+ * Sistem akan mengecek apakah mobil sedang disewa
+ * atau dalam status tidak tersedia.
+ *
+ * @param int $id
+ * @return \Illuminate\View\View
+ *
+ * ⚠️ Kemungkinan Eksepsi:
+ * - Mobil tidak ditemukan (404)
+ * - Relasi rental kosong
+ * - Query status rental gagal
+ */
     /**
      * 🚘 Tampilkan detail satu mobil
      */

@@ -89,18 +89,20 @@
 
     <td class="payment-method">
 @php
-    $method = strtolower($payment->metode_pembayaran ?? '');
+    $rawMethod = strtolower($payment->metode_pembayaran ?? '');
 
-    // normalisasi keyword
-    if (str_contains($method, 'bca')) $method = 'bca';
-    elseif (str_contains($method, 'bni')) $method = 'bni';
-    elseif (str_contains($method, 'bri')) $method = 'bri';
-    elseif (str_contains($method, 'mandiri')) $method = 'mandiri';
-    elseif (str_contains($method, 'gopay')) $method = 'gopay';
-    elseif (str_contains($method, 'ovo')) $method = 'ovo';
-    elseif (str_contains($method, 'dana')) $method = 'dana';
-    elseif (str_contains($method, 'qris')) $method = 'qris';
-    elseif (str_contains($method, 'cash')) $method = 'cash';
+    $method = match(true) {
+        str_contains($rawMethod, 'bca') => 'bca',
+        str_contains($rawMethod, 'bni') => 'bni',
+        str_contains($rawMethod, 'bri') => 'bri',
+        str_contains($rawMethod, 'mandiri') => 'mandiri',
+        str_contains($rawMethod, 'gopay') => 'gopay',
+        str_contains($rawMethod, 'ovo') => 'ovo',
+        str_contains($rawMethod, 'dana') => 'dana',
+        str_contains($rawMethod, 'qris') => 'qris',
+        str_contains($rawMethod, 'cash') => 'cash',
+        default => null
+    };
 
     $logos = [
         'bca' => 'bca.png',

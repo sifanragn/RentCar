@@ -18,7 +18,34 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function authenticate(Request $request)
+    /**
+ * 🔑 AUTHENTICATE USER / ADMIN LOGIN
+ *
+ * Fungsi ini digunakan untuk melakukan proses login
+ * baik untuk ADMIN maupun USER berdasarkan login_id
+ * (email atau nomor HP).
+ *
+ * Alur kerja:
+ * 1. Validasi input login_id dan password
+ * 2. Deteksi apakah login_id berupa email atau no HP
+ * 3. Normalisasi nomor HP (format 08 -> 628)
+ * 4. Cek login sebagai ADMIN
+ * 5. Jika gagal, cek login sebagai USER
+ * 6. Jika berhasil, buat session / login user
+ * 7. Jika gagal semua, return error
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ *
+ * ⚠️ Kemungkinan Eksepsi:
+ * - login_id kosong / tidak valid (validasi gagal)
+ * - password salah (Hash::check gagal)
+ * - admin tidak aktif
+ * - user tidak ditemukan
+ * - session gagal dibuat
+ * - route redirect tidak ditemukan
+ */
+public function authenticate(Request $request)
 {
     $request->validate([
         'login_id' => 'required',
@@ -69,14 +96,14 @@ class LoginController extends Controller
     return back()->withErrors([
         'login_error' => 'Email / No HP atau password salah, atau akun tidak aktif.',
     ])->withInput();
+    
 }
-
 
    public function __construct()
-{
-    $this->middleware(\App\Http\Middleware\PreventBackHistory::class)
-         ->only(['index', 'logout']);
-}
+    {
+        $this->middleware(\App\Http\Middleware\PreventBackHistory::class)
+            ->only(['index', 'logout']);
+    }
 
 
     public function logout(Request $request)

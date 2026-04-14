@@ -16,6 +16,12 @@ body.light-mode {
   color: #222;
 }
 
+.required-star::after {
+    content: " *";
+    color: red;
+    font-weight: bold;
+}
+
 /* ==== CONTAINER ==== */
 .admin-form-container {
   min-height: 100vh;

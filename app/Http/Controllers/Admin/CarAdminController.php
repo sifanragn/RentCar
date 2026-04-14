@@ -13,8 +13,15 @@ use Illuminate\Support\Facades\Storage;
 
 class CarAdminController extends Controller
 {
+    /**
+ * 📋 MENAMPILKAN DAFTAR MOBIL (ADMIN)
+ *
+ * Mengambil semua data mobil beserta relasi brand, kapasitas, dan foto
+ * lalu menampilkannya di halaman admin.
+ *
+ * @return \Illuminate\View\View
+ */
     // ====================== MOBIL ============================
-
     // Menampilkan daftar semua mobil beserta relasinya
     public function index()
     {
@@ -25,6 +32,14 @@ class CarAdminController extends Controller
         return view('admin.mobil.index', compact('cars'));
     }
 
+/**
+ * ➕ FORM TAMBAH MOBIL (ADMIN)
+ *
+ * Menampilkan form untuk menambahkan data mobil baru,
+ * termasuk data brand dan kapasitas.
+ *
+ * @return \Illuminate\View\View
+ */
     // Menampilkan form tambah mobil
     public function create()
     {
@@ -34,6 +49,15 @@ class CarAdminController extends Controller
         return view('admin.mobil.create', compact('brands', 'capacities'));
     }
 
+/**
+ * 🔍 DETAIL MOBIL (ADMIN)
+ *
+ * Menampilkan detail mobil berdasarkan ID.
+ * Jika request AJAX, akan mengembalikan partial view.
+ *
+ * @param int $id
+ * @return \Illuminate\View\View|\Illuminate\Http\Response
+ */
     // Menampilkan detail mobil
     public function show($id)
     {
@@ -47,6 +71,23 @@ class CarAdminController extends Controller
         return view('admin.mobil.show', compact('car'));
     }
 
+/**
+ * 💾 SIMPAN MOBIL BARU (ADMIN)
+ *
+ * Menyimpan data mobil ke database termasuk:
+ * - Data mobil
+ * - Foto utama
+ * - Foto gallery
+ *
+ * ⚠️ Eksepsi:
+ * - Validasi gagal
+ * - Upload file gagal
+ * - Storage error
+ * - Relasi tidak ditemukan
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
     // Menyimpan data mobil baru beserta foto utama dan galeri
     public function store(Request $request)
     {
@@ -107,6 +148,15 @@ class CarAdminController extends Controller
             ->with('success', 'Mobil dan foto tambahan berhasil ditambahkan.');
     }
 
+/**
+ * ✏️ EDIT FORM MOBIL (ADMIN)
+ *
+ * Menampilkan form edit mobil berdasarkan ID
+ * beserta data brand dan kapasitas.
+ *
+ * @param int $id
+ * @return \Illuminate\View\View
+ */
     // Menampilkan form edit mobil
     public function edit($id)
     {
@@ -117,6 +167,23 @@ class CarAdminController extends Controller
         return view('admin.mobil.edit', compact('car', 'brands', 'capacities'));
     }
 
+/**
+ * 🔄 UPDATE DATA MOBIL (ADMIN)
+ *
+ * Mengupdate data mobil termasuk:
+ * - Data utama mobil
+ * - Foto utama (opsional)
+ * - Foto gallery (tambah & hapus)
+ *
+ * ⚠️ Eksepsi:
+ * - File tidak ditemukan
+ * - Storage gagal hapus file
+ * - Validasi gagal
+ *
+ * @param Request $request
+ * @param int $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
     // Mengupdate data mobil beserta foto utama dan galeri
     public function update(Request $request, $id)
 {
@@ -211,7 +278,20 @@ class CarAdminController extends Controller
         ->with('success', 'Data mobil berhasil diperbarui.');
 }
 
-
+/**
+ * 🗑️ HAPUS MOBIL (ADMIN)
+ *
+ * Menghapus data mobil beserta:
+ * - Foto utama
+ * - Semua foto gallery
+ *
+ * ⚠️ Eksepsi:
+ * - File tidak ditemukan di storage
+ * - Relasi foto kosong
+ *
+ * @param int $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
     public function destroy($id)
     {
         $car = Car::with('photos')->findOrFail($id);
@@ -235,8 +315,14 @@ class CarAdminController extends Controller
             ->with('success', 'Mobil dan semua foto berhasil dihapus.');
     }
 
+/**
+ * 🏷️ LIST BRAND MOBIL
+ *
+ * Menampilkan semua data merek mobil.
+ *
+ * @return \Illuminate\View\View
+ */
     // ====================== MEREK ============================
-
     // Menampilkan daftar merek mobil
     public function brandIndex()
     {
@@ -244,6 +330,18 @@ class CarAdminController extends Controller
         return view('admin.merek.index', compact('brands'));
     }
 
+/**
+ * ➕ TAMBAH BRAND MOBIL
+ *
+ * Menyimpan data brand baru dengan logo otomatis berdasarkan mapping.
+ *
+ * ⚠️ Eksepsi:
+ * - Nama brand kosong
+ * - Duplikasi data brand
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
     // Menyimpan merek mobil dan menentukan logo otomatis
     public function brandStore(Request $request)
     {
@@ -283,6 +381,19 @@ class CarAdminController extends Controller
             ->with('success', 'Merek berhasil ditambahkan!');
     }
 
+/**
+ * 🗑️ HAPUS BRAND MOBIL
+ *
+ * Menghapus brand dan seluruh mobil yang terkait dengannya
+ * termasuk file gambar mobil.
+ *
+ * ⚠️ Eksepsi:
+ * - Relasi mobil masih ada
+ * - File storage tidak ditemukan
+ *
+ * @param int $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
     // Menghapus merek beserta semua mobil terkait
     public function brandDestroy($id)
     {
@@ -312,8 +423,14 @@ class CarAdminController extends Controller
             ->with('success', 'Merek dan semua mobil terkait berhasil dihapus!');
     }
 
+/**
+ * 📋 LIST MODEL MOBIL
+ *
+ * Menampilkan semua model mobil beserta brand-nya.
+ *
+ * @return \Illuminate\View\View
+ */
     // ====================== MODEL ============================
-
     // Menampilkan daftar model mobil
     public function modelIndex()
     {
@@ -323,6 +440,14 @@ class CarAdminController extends Controller
         return view('admin.model.index', compact('models', 'brands'));
     }
 
+/**
+ * ➕ TAMBAH MODEL MOBIL
+ *
+ * Menyimpan data model mobil berdasarkan brand.
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
     // Menyimpan model mobil
     public function modelStore(Request $request)
     {
@@ -340,8 +465,16 @@ class CarAdminController extends Controller
             ->with('success', 'Model berhasil ditambahkan!');
     }
 
+/**
+ * 📡 GET MODEL BY BRAND (API)
+ *
+ * Mengambil daftar model mobil berdasarkan brand_id
+ * untuk dropdown dinamis.
+ *
+ * @param int $brand_id
+ * @return \Illuminate\Http\JsonResponse
+ */
     // ====================== API ============================
-
     // Mengambil model berdasarkan brand (untuk dropdown dinamis)
     public function getModelsByBrand($brand_id)
     {
@@ -352,6 +485,19 @@ class CarAdminController extends Controller
 
         return response()->json($models);
     }
+
+/**
+ * 🗑️ DELETE FOTO MOBIL (AJAX API)
+ *
+ * Menghapus foto mobil dari storage dan database.
+ *
+ * ⚠️ Eksepsi:
+ * - File tidak ditemukan
+ * - Data foto tidak ada
+ *
+ * @param CarPhoto $photo
+ * @return \Illuminate\Http\JsonResponse
+ */
     public function deletePhoto(CarPhoto $photo)
 {
     // hapus file dari storage

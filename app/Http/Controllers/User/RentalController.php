@@ -71,7 +71,6 @@ class RentalController extends Controller
  */
 public function store(Request $request, $car_id)
 {
-
     $user = auth()->user();
     $car  = Car::findOrFail($car_id);
     

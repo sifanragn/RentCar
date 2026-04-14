@@ -170,30 +170,30 @@ private function getCallbackUrl()
     /* --------------------------------------------------------------------------
      | 📋 Daftar pembayaran (index)
      * -------------------------------------------------------------------------- */
-public function index(Request $r)
-{
-    $q = Payment::with(['rental.car.brand', 'rental.invoice'])
-        ->where(function ($query) {
-            $query->whereHas('rental', function ($rental) {
-                $rental->where('user_id', auth()->id());
-            })
-            ->orWhereNull('rental_id'); // 🔹 Tambahan: tampilkan juga jika rental_id null
-        });
+        public function index(Request $r)
+        {
+            $q = Payment::with(['rental.car.brand', 'rental.invoice'])
+                ->where(function ($query) {
+                    $query->whereHas('rental', function ($rental) {
+                        $rental->where('user_id', auth()->id());
+                    })
+                    ->orWhereNull('rental_id'); // 🔹 Tambahan: tampilkan juga jika rental_id null
+                });
 
-    if ($r->filled('no_transaksi'))
-        $q->whereHas('rental.invoice', fn($i) => 
-            $i->where('invoice_id', str_replace('INV', '', $r->no_transaksi))
-        );
+            if ($r->filled('no_transaksi'))
+                $q->whereHas('rental.invoice', fn($i) => 
+                    $i->where('invoice_id', str_replace('INV', '', $r->no_transaksi))
+                );
 
-    if ($r->filled('tanggal'))
-        $q->whereDate('created_at', $r->tanggal);
+            if ($r->filled('tanggal'))
+                $q->whereDate('created_at', $r->tanggal);
 
-    if ($r->filled('status'))
-        $q->where('status_pembayaran', $r->status);
+            if ($r->filled('status'))
+                $q->where('status_pembayaran', $r->status);
 
-    $payments = $q->latest()->get();
-    return view('user.payments.index', compact('payments'));
-}
+            $payments = $q->latest()->get();
+            return view('user.payments.index', compact('payments'));
+        }
 
 
     /* --------------------------------------------------------------------------
@@ -315,14 +315,34 @@ public function index(Request $r)
 
     Log::info('💾 Hasil update payment', ['updated' => $updated]);
 
-    if ($updated) {
-        $p->rental?->update([
-            'status_rental' => $status === 'success'
-                ? 'berjalan'
-                : ($status === 'failed' ? 'dibatalkan' : 'menunggu_pembayaran'),
-        ]);
-        Log::info('🚗 Rental ikut diupdate', ['rental_id' => $p->rental_id]);
+    if ($updated && $p->rental) {
+
+    if ($status === 'success') {
+
+        if ($p->payment_type === 'main') {
+            // ✅ pembayaran awal
+            $p->rental->update(['status_rental' => 'berjalan']);
+        }
+
+        if ($p->payment_type === 'charge') {
+            // ✅ pembayaran denda → tetap selesai
+            $p->rental->update(['status_rental' => 'selesai_dengan_charge']);
+        }
+
+    } elseif ($status === 'failed') {
+
+        // ❗ gagal hanya berlaku untuk payment utama
+        if ($p->payment_type === 'main') {
+            $p->rental->update(['status_rental' => 'dibatalkan']);
+        }
+
+    } else {
+        // pending
+        if ($p->payment_type === 'main') {
+            $p->rental->update(['status_rental' => 'menunggu_pembayaran']);
+        }
     }
+}
 
      // ✅ WhatsApp Notification & Invoice Auto-Send
 if ($status === 'success' && $p->rental) {
